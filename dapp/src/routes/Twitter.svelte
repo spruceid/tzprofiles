@@ -188,10 +188,16 @@
             next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
                 let nextClaimMap = verification;
+<<<<<<< HEAD
                 saveToKepler(vc).then((url) => {
                   nextClaimMap.TwitterControl.url = url;
                   claimsStream.set(nextClaimMap);
                 });
+=======
+                let url = createJsonBlobUrl(vc);
+                nextClaimMap.TwitterControl.url = url;
+                claimsStream.set(nextClaimMap);
+>>>>>>> Complete contract origination from browser, correct issues with in-browser Tezos signing
               }
             );
           }}

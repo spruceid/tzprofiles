@@ -48,7 +48,10 @@ const urlToTweetId = (url: string): string => {
 };
 
 export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
+<<<<<<< HEAD
   console.log(`Exchanging ${tweetURL} and ${userData.account.address} for VC`);
+=======
+>>>>>>> Complete contract origination from browser, correct issues with in-browser Tezos signing
   let tweetID = urlToTweetId(tweetURL);
   try {
     let res = await fetch(

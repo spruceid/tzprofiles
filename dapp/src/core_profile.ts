@@ -20,8 +20,8 @@ export const signCoreProfile = async (
           alias: 'https://schema.org/name',
           description: 'https://schema.org/description',
           logo: 'https://schema.org/logo',
-          CoreProfile: 'https://tzprofiles.me/CoreProfile',
-        },
+          CoreProfile: 'https://tzprofiles.me/CoreProfile'
+        }
       ],
       id: 'urn:uuid:' + uuid(),
       issuer: did,
