@@ -61,13 +61,8 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
                     },
                 });
                 originationOp = yield opSender.send();
-<<<<<<< HEAD
                 let c = yield originationOp.contract();
                 contractAddress = yield c.address;
-=======
-                const c = yield originationOp.contract();
-                contractAddress = c.address;
->>>>>>> Complete UI fixes and integration with Kepler
             }
             else {
                 originationOp = yield Tezos.contract.originate({

@@ -212,8 +212,10 @@
   {:else}
     <PrimaryButton
       text="Deploy Profile"
-      class="mx-auto mt-4 bottom-6"
-      disabled
+      class="bottom-6 mx-auto"
+      onClick={async () => {
+        await originate();
+      }}
     />
   {/if}
 </Card>

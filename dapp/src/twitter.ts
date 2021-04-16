@@ -48,7 +48,6 @@ const urlToTweetId = (url: string): string => {
 };
 
 export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
-  console.log(`Exchanging ${tweetURL} and ${userData.account.address} for VC`);
   let tweetID = urlToTweetId(tweetURL);
   try {
     let res = await fetch(

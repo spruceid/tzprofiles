@@ -91,8 +91,7 @@ export async function originate(
 
       originationOp = await opSender.send();
 
-      let c = await originationOp.contract();
-      contractAddress = await c.address;
+      contractAddress = await originationOp.contract().address;
     } else {
       originationOp = await Tezos.contract.originate({
         code: contract,
