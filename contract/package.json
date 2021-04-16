@@ -1,0 +1,23 @@
+{
+  "name": "tezospublicprofiles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@taquito/beacon-wallet": "^8.1.0",
+    "@taquito/rpc": "^8.1.0",
+    "@taquito/signer": "^8.1.0",
+    "@taquito/taquito": "^8.1.0",
+    "@taquito/tzip16": "^8.1.0",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
+    "process": "^0.11.10",
+    "yargs": "^16.2.0"
+  }
+}

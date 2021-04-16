@@ -1,0 +1,53 @@
+[package]
+name = "tzprofiles_witness"
+version = "0.1.0"
+authors = ["Spruce Systems, Inc."]
+edition = "2018"
+resolver = "2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+console_error_panic_hook = { version = "0.1" }
+
+# `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
+# compared to the default allocator's ~10K. It is slower than the default
+# allocator, however.
+wee_alloc = { version = "0.4" }
+
+ssi = { path = "../../ssi", default-features = false, features = ["ed25519-dalek", "sha2", "rand", "rand"] } # , "libsecp256k1", "p256"] }
+blake2b_simd = "0.5"
+did-pkh = { path = "../../ssi/did-pkh", default-features = false } #, features = ["secp256k1", "dalek", "p256"] }
+
+anyhow = "1"
+serde = "1"
+serde_json = "1"
+reqwest = { version = "=0.11.2", features = ["json"] }
+url = "2.2"
+chrono = { version = "0.4", features = ["serde", "wasmbind"] }
+
+log = "0.4"
+console_log = "0.2"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+# lto = true
+opt-level = "z"
+# codegen-units = 1
+
+[package.metadata.wasm-pack.profile.profiling]
+wasm-opt = ['-g', '-O']
+# opt-level = "z"

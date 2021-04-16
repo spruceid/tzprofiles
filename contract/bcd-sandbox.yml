@@ -1,0 +1,103 @@
+version: "3.6"
+services:
+  elastic:
+    image: bakingbad/bcdhub-elastic:3.4
+    restart: always
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    environment:
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+
+  mq:
+    image: rabbitmq:latest
+    restart: always
+    volumes:
+      - mqdata:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  db:
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=bcd_box
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  api:
+    restart: always
+    image: bakingbad/bcdhub-api:3.4
+    environment:
+      - BCD_ENV=sandbox
+      - GIN_MODE=debug
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=bcd_box
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - SANDBOX_NODE_URI=http://sandbox:8732
+      - SANDBOX_IPFS_GATEWAY=https://ipfs.io
+    depends_on:
+      - elastic
+      - db
+      - mq
+    ports:
+      - 127.0.0.1:14000:14000
+    extra_hosts:
+      sandbox: 172.17.0.1
+
+  indexer:
+    restart: always
+    image: bakingbad/bcdhub-indexer:3.4
+    environment:
+      - BCD_ENV=sandbox
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - SANDBOX_NODE_URI=http://sandbox:8732
+      - SANDBOX_IPFS_GATEWAY=https://ipfs.io
+    depends_on:
+      - elastic
+      - mq
+      - metrics
+    extra_hosts:
+      sandbox: 172.17.0.1
+
+  metrics:
+    restart: always
+    image: bakingbad/bcdhub-metrics:3.4
+    environment:
+      - BCD_ENV=sandbox
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=bcd_box
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - SANDBOX_NODE_URI=http://sandbox:8732
+      - SANDBOX_IPFS_GATEWAY=https://ipfs.io
+    depends_on:
+      - elastic
+      - mq
+      - db
+    extra_hosts:
+      sandbox: 172.17.0.1
+
+  flextesa:
+    restart: always
+    image: tqtezos/flextesa:20210316
+    command: edobox start
+    # environment:
+    #   - block_time=4
+    ports:
+      - 127.0.0.1:8732:20000
+      - 172.17.0.1:8732:20000
+
+volumes:
+  esdata:
+  mqdata:
+  db:
+    driver: local

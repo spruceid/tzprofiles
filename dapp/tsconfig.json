@@ -1,0 +1,18 @@
+{
+	"extends": "@tsconfig/svelte/tsconfig.json",
+	"include": ["src/**/*", "src/node_modules/**/*"],
+	"exclude": ["node_modules/*", "__sapper__/*", "static/*"],
+	"compilerOptions": {
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"importsNotUsedAsValues": "remove",
+		"isolatedModules": false,
+		"baseUrl": ".",
+		"paths": {
+			"components*": ["src/components/*", "src/components"],
+			"routes*": ["src/routes/*", "src/routes"],
+			"enums*": ["src/enums/*"],
+			"src*": ["src/*"],
+		}
+	},
+}
