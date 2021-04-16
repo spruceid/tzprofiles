@@ -85,7 +85,6 @@
       text="Deploy Profile"
       class="bottom-6 mx-auto"
       onClick={async () => {
-        console.log('about to originate');
         await originate();
       }}
     />

@@ -21,7 +21,7 @@ const CONFIRMATION_CHECKS = 3;
 // async (claimBody) => {
 // let encodedBody = new TextEncoder().encode(claimBody);
 // await crypto.subtle.digest('SHA-256', encodedBody)
-// } 
+// }
 // originate creates a new smart contract from a given wallet
 // Returns nothing or throws an err
 function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetchFunc) {
@@ -55,10 +55,8 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
             }
             const metadataBigMap = new taquito.MichelsonMap();
             metadataBigMap.set("", tzip16.char2Bytes("https://gist.githubusercontent.com/sbihel/a9273df118862acba2b4d15a8778e3dd/raw/0debf54a941fdda9cfde4d34866535d302856885/tpp-metadata.json"));
-            console.log("About to try origination");
             let originationOp, contractAddress;
             if (opts.useWallet) {
-                console.log("In use wallet");
                 let opSender = yield Tezos.wallet.originate({
                     code: common_1.contract,
                     storage: {
@@ -67,13 +65,10 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
                         metadata: metadataBigMap,
                     },
                 });
-                console.log("About to send");
                 originationOp = yield opSender.send();
-                console.log("awaiting confimation");
                 contractAddress = yield originationOp.contract().address;
             }
             else {
-                console.log("in use secret");
                 originationOp = yield Tezos.contract.originate({
                     code: common_1.contract,
                     storage: {
@@ -82,7 +77,6 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
                         metadata: metadataBigMap,
                     },
                 });
-                console.log("awaiting confimation");
                 yield originationOp.confirmation(CONFIRMATION_CHECKS);
                 contractAddress = originationOp.contractAddress;
             }
@@ -181,16 +175,14 @@ function url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc) {
             .map(b => ('00' + b.toString(16)).slice(-2))
             .join('');
         let claimJSON = JSON.parse(claimBody);
-        console.log(claimJSON);
         let t = "VerifiableCredential";
         if (claimJSON.type && claimJSON.type.length && claimJSON.type.length > 0) {
             t = claimJSON.type[claimJSON.type.length - 1];
         }
-        console.log("Survived URLToEntry");
         return [claim_url, vcHashHex, t];
     });
 }
-// retrieve_tpp finds a smart contract from it's owner's 
+// retrieve_tpp finds a smart contract from it's owner's
 // returns an address if found, false if not, or throws and error if the network fails
 function retrieve_tpp(bcd_url, address, network, fetchFunc) {
     return __awaiter(this, void 0, void 0, function* () {
