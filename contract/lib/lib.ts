@@ -14,14 +14,14 @@ interface SignerOpts {
 	useSecret?: boolean,
 	secret?: string
 	useKeyFile?: boolean,
-	key?: any 
+	key?: any
 }
 
 // NOTE: hashFunc for the browser is currently unimplemented but would look like:
 // async (claimBody) => {
 	// let encodedBody = new TextEncoder().encode(claimBody);
 	// await crypto.subtle.digest('SHA-256', encodedBody)
-// } 
+// }
 
 // originate creates a new smart contract from a given wallet
 // Returns nothing or throws an err
@@ -40,11 +40,11 @@ export async function originate(opts: SignerOpts, node_url: string, claim_urls: 
 			pkHash = await Tezos.signer.publicKeyHash();
 		} else if (opts.useKeyFile) {
 			await importKey(
-				Tezos, 
-				opts.key.email, 
-				opts.key.password, 
-				opts.key.mnemonic.join(' '), 
-				opts.key.secret, 
+				Tezos,
+				opts.key.email,
+				opts.key.password,
+				opts.key.mnemonic.join(' '),
+				opts.key.secret,
 			);
 			pkHash = await Tezos.signer.publicKeyHash();
 		} else {
@@ -61,10 +61,8 @@ export async function originate(opts: SignerOpts, node_url: string, claim_urls: 
 		const metadataBigMap = new taquito.MichelsonMap();
 		metadataBigMap.set("", tzip16.char2Bytes("https://gist.githubusercontent.com/sbihel/a9273df118862acba2b4d15a8778e3dd/raw/0debf54a941fdda9cfde4d34866535d302856885/tpp-metadata.json"));
 
-		console.log("About to try origination")
 		let originationOp, contractAddress;
 		if (opts.useWallet) {
-			console.log("In use wallet");
 			let opSender = await Tezos.wallet.originate({
 				code: contract,
 				storage: {
@@ -74,13 +72,10 @@ export async function originate(opts: SignerOpts, node_url: string, claim_urls: 
 				},
 			})
 
-			console.log("About to send")
 			originationOp = await opSender.send();
-			
-			console.log("awaiting confimation")
+
 			contractAddress = await originationOp.contract().address;
 		} else {
-			console.log("in use secret")
 			originationOp = await Tezos.contract.originate({
 				code: contract,
 				storage: {
@@ -89,7 +84,6 @@ export async function originate(opts: SignerOpts, node_url: string, claim_urls: 
 					metadata: metadataBigMap,
 				},
 			});
-			console.log("awaiting confimation")
 			await originationOp.confirmation(CONFIRMATION_CHECKS);
 			contractAddress = originationOp.contractAddress;
 		}
@@ -117,15 +111,15 @@ export async function add_claim(opts: SignerOpts, contract_address: string, clai
 			});
 		} else if (opts.useKeyFile) {
 			await importKey(
-				Tezos, 
-				opts.key.email, 
-				opts.key.password, 
-				opts.key.mnemonic.join(' '), 
-				opts.key.secret, 
+				Tezos,
+				opts.key.email,
+				opts.key.password,
+				opts.key.mnemonic.join(' '),
+				opts.key.secret,
 			);
 		} else {
 			throw new Error("No signing method found in opts");
-		}		
+		}
 
 		let entry = await url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc);
 		let contract = await
@@ -155,11 +149,11 @@ export async function remove_claim(opts: SignerOpts, contract_address: string, c
 			});
 		} else if (opts.useKeyFile) {
 			await importKey(
-				Tezos, 
-				opts.key.email, 
-				opts.key.password, 
-				opts.key.mnemonic.join(' '), 
-				opts.key.secret, 
+				Tezos,
+				opts.key.email,
+				opts.key.password,
+				opts.key.mnemonic.join(' '),
+				opts.key.secret,
 			);
 		} else {
 			throw new Error("No signing method found in opts");
@@ -199,7 +193,6 @@ async function url_to_entry(claim_url: string, verifyCredential: any, hashFunc: 
 		.join('');
 
 	let claimJSON = JSON.parse(claimBody);
-	console.log(claimJSON);
 
 	let t = "VerifiableCredential";
 	if (claimJSON.type && claimJSON.type.length && claimJSON.type.length > 0) {
@@ -207,12 +200,11 @@ async function url_to_entry(claim_url: string, verifyCredential: any, hashFunc: 
 	}
 
 
-	console.log("Survived URLToEntry")
 	return [claim_url, vcHashHex, t];
 }
 
 
-// retrieve_tpp finds a smart contract from it's owner's 
+// retrieve_tpp finds a smart contract from it's owner's
 // returns an address if found, false if not, or throws and error if the network fails
 export async function retrieve_tpp(bcd_url: string, address: string, network: string, fetchFunc: any) {
 	let searchRes = await fetchFunc(`${bcd_url}/v1/search?q=${address}&n=${network}&i=contract`);
@@ -236,4 +228,3 @@ export async function retrieve_tpp(bcd_url: string, address: string, network: st
 // read_all lists all entries in the contract metadata
 // export async function read_all(contract_address: string) {
 // }
-

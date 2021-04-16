@@ -90,7 +90,8 @@ services:
     restart: always
     image: tqtezos/flextesa:20210316
     command: edobox start
-    # environment:
+    environment:
+      - flextesa_node_cors_origin=*
     #   - block_time=4
     ports:
       - 127.0.0.1:8732:20000
