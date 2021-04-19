@@ -3,6 +3,7 @@
   let clazz: string = '';
   export { clazz as class };
   export let text: string;
+  export let title: string = '';
   export let onClick: (() => void) | null;
   export let disabled: boolean = false;
   export let small: boolean = false;
@@ -16,6 +17,8 @@
   class:opacity-50={disabled}
   class:cursor-not-allowed={disabled}
   on:click|preventDefault={disabled ? null : onClick}
+  aria-label={title}
+  {title}
 >
   <ButtonText value={text} />
 </button>

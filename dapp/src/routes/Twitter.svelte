@@ -8,7 +8,7 @@
     VerificationStep,
   } from 'components';
 
-  import { createJsonBlobUrl, claimsStream, wallet, userData } from 'src/store';
+  import { saveToKepler, claimsStream, wallet, userData } from 'src/store';
   import {
     signTwitterClaim,
     getTwitterClaim,
@@ -17,6 +17,9 @@
   } from 'src/twitter';
 
   import type { ClaimMap } from 'src/store';
+
+  import { useNavigate } from 'svelte-navigator';
+  let navigate = useNavigate();
 
   let verification: ClaimMap;
   claimsStream.subscribe((x) => {
@@ -44,12 +47,20 @@
   };
 </script>
 
-<BasePage class="justify-center items-center flex-wrap">
+<BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
     icon={verification['TwitterControl'].icon()}
     title={verification['TwitterControl'].title}
     description={verification['TwitterControl'].description}
-  />
+  >
+    {#if currentStep > 4}
+      <PrimaryButton
+        text="Return to Profile"
+        class="mt-8"
+        onClick={() => navigate('/')}
+      />
+    {/if}
+  </VerificationDescription>
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationStep
       step={1}
@@ -90,14 +101,14 @@
       description="Sign the message presented to you containing your Twitter handle and additional information."
     >
       {#if currentStep >= 2}
-        <div class="flex py-2 items-center w-full">
+        <div class="flex items-center w-full py-2">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
-            bind:value={tweetMessage}
+            bind:value={twitterClaim}
             readonly
             disabled
           />
-          <CopyButton text={tweetMessage} />
+          <CopyButton text={twitterClaim} />
         </div>
       {/if}
       {#if currentStep === 2}
@@ -105,9 +116,14 @@
           text="Signature Prompt"
           class="mt-8 lg:w-48"
           onClick={() => {
-            next(() => signTwitterClaim($userData, twitterClaim, $wallet)).then(
+            next(() =>
+              signTwitterClaim($userData, `${twitterClaim}\n\n`, $wallet)
+            ).then(
               (sig) =>
-                (tweetMessage = getTweetMessage($userData, twitterHandle) + sig)
+                (tweetMessage = `${getTweetMessage(
+                  $userData,
+                  twitterHandle
+                )}\n\n${sig}`)
             );
           }}
           disabled={lock}
@@ -121,7 +137,7 @@
       description="Tweet out your signed messaged to create a link between your Tezos account and your Twitter profile."
     >
       {#if currentStep > 2}
-        <div class="flex py-2 items-center w-full">
+        <div class="flex items-center w-full py-2">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
             bind:value={tweetMessage}
@@ -172,18 +188,19 @@
             next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
                 let nextClaimMap = verification;
-                let url = createJsonBlobUrl(vc);
-                nextClaimMap.TwitterControl.url = url;
-                claimsStream.set(nextClaimMap);
+                saveToKepler(vc).then((url) => {
+                  nextClaimMap.TwitterControl.url = url;
+                  claimsStream.set(nextClaimMap);
+                });
               }
             );
           }}
           disabled={lock}
         />
       {:else if currentStep > 4}
-        <div class="flex py-2 items-center w-full">
+        <div class="flex items-center w-full py-2">
           <input
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
+            class="w-full p-2 mr-4 overflow-x-auto rounded-lg resize-none bg-gray-650"
             bind:value={tweetURL}
             readonly
             disabled
