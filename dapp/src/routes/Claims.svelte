@@ -10,9 +10,11 @@
   });
 </script>
 
-<div class="flex h-full w-full flex-wrap justify-center">
+<div class="flex flex-wrap justify-center w-full h-full">
   <Profile />
-  <div class="flex flex-col md:mx-10 justify-around">
+  <div
+    class="flex flex-col self-center justify-around overflow-hidden md:mx-10"
+  >
     {#if $loadingContracts}
       <p>Looking for contract...</p>
     {:else}

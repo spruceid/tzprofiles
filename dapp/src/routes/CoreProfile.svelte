@@ -18,6 +18,9 @@
   import type { ClaimMap } from 'src/store';
   import { signCoreProfile } from 'src/core_profile';
 
+  import { useNavigate } from 'svelte-navigator';
+  let navigate = useNavigate();
+
   const verification: ClaimMap = $claimsStream;
 
   let lock: boolean = false;
@@ -29,7 +32,7 @@
   const next = () => (currentStep = currentStep + 1);
 </script>
 
-<BasePage class="justify-center items-center flex-wrap">
+<BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
     icon={verification['TezosControl'].icon()}
     title={verification['TezosControl'].title}
@@ -59,6 +62,12 @@
         }}
         disabled={lock}
       />
+    {:else if currentStep > 2}
+      <PrimaryButton
+        text="Return to Profile"
+        class="mt-8"
+        onClick={() => navigate('/')}
+      />
     {/if}
   </VerificationDescription>
   <div class="flex flex-col justify-evenly md:w-1/2">
@@ -68,7 +77,7 @@
       title="Fill in Basic Information"
       description="Self-attest to your brand’s information and link it to other identifiers that have been provided."
     >
-      <Label fieldName="alias" value="Alias" class="text-white mt-6" />
+      <Label fieldName="alias" value="Alias" class="mt-6 text-white" />
       <Input
         bind:value={alias}
         name="alias"
@@ -79,7 +88,7 @@
       <Label
         fieldName="description"
         value="Description"
-        class="text-white mt-2"
+        class="mt-2 text-white"
       />
       <Input
         bind:value={description}
@@ -88,7 +97,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label fieldName="logo" value="Logo" class="text-white mt-2" />
+      <Label fieldName="logo" value="Logo" class="mt-2 text-white" />
       {#if currentStep === 1}
         <Input
           bind:value={logo}
@@ -102,7 +111,7 @@
           name="logo"
           src={logo}
           alt="Logo"
-          class="w-32 h-32 rounded-lg"
+          class="object-contain w-32 h-32 bg-white border rounded-lg cursor-not-allowed border-green-550 opacity-60"
         />
       {/if}
 

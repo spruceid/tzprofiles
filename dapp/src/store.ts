@@ -14,8 +14,55 @@ import SvelteComponentDev from '*.svelte';
 
 // TODO: Change this to kepler, then remove.
 export const createJsonBlobUrl = (object) => {
-  const blob = new Blob([JSON.stringify(object, null, 2)]);
+  const blob = new Blob([JSON.stringify(object)], {
+    type: 'application/json',
+  });
   return URL.createObjectURL(blob);
+};
+
+export const loadJsonBlob = async (url: string): Promise<any> => {
+  return await fetch(url)
+    .then((r) => r.blob())
+    .then((b) => b.text())
+    .then((s) => JSON.parse(JSON.parse(s)));
+};
+
+export const loadCoreProfile = async ({
+  TezosControl: { url },
+}: ClaimMap): Promise<{
+  alias: string;
+  description: string;
+  logo: string;
+}> => {
+  if (url) {
+    const { credentialSubject } = await loadJsonBlob(url);
+    const { alias, description, logo } = credentialSubject;
+    return {
+      alias,
+      description,
+      logo,
+    };
+  } else {
+    return {
+      alias: '',
+      description: '',
+      logo: '',
+    };
+  }
+};
+
+export const loadTwitterProfile = async ({
+  TwitterControl: { url },
+}: ClaimMap): Promise<{
+  handle: string;
+}> => {
+  if (url) {
+    const { credentialSubject } = await loadJsonBlob(url);
+    const { handle } = credentialSubject;
+    return { handle };
+  } else {
+    return { handle: '' };
+  }
 };
 
 export let DIDKit = writable(null);

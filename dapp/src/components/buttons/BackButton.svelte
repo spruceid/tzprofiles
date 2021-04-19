@@ -5,6 +5,8 @@
 </script>
 
 <button
+  aria-label="Return"
+  title="Return"
   on:click={() => {
     navigate(-1);
   }}

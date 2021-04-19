@@ -14,6 +14,11 @@
   });
 </script>
 
-<button on:click={copyToClipboard} class={clazz}>
+<button
+  aria-label="Copy to clipboard"
+  title="Copy to clipboard"
+  on:click={copyToClipboard}
+  class={clazz}
+>
   <ClipboardIcon {color} />
 </button>

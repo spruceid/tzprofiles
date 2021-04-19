@@ -2,7 +2,13 @@ import { v4 as uuid } from 'uuid';
 import { alert, dappUrl } from 'src/store';
 import { signClaim } from 'src/utils';
 
-export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, profile) => {
+export const signCoreProfile = async (
+  userData,
+  wallet,
+  networkStr,
+  DIDKit,
+  profile
+) => {
   try {
     const { alias, description, logo } = profile;
     const did = `did:pkh:tz:${userData.account.address}`;
@@ -10,10 +16,10 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       '@context': [
         'https://www.w3.org/2018/credentials/v1',
         {
-          name: 'https://schema.org/name',
+          alias: 'https://schema.org/name',
           description: 'https://schema.org/description',
-          logo: 'https://schema.org/logo'
-        }
+          logo: 'https://schema.org/logo',
+        },
       ],
       id: 'urn:uuid:' + uuid(),
       issuer: did,
@@ -21,9 +27,9 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       type: ['VerifiableCredential', 'CoreProfile'],
       credentialSubject: {
         id: did,
-        name: alias,
+        alias,
         description,
-        logo
+        logo,
       },
     };
 
@@ -60,6 +66,11 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       prepStr,
       signature
     );
+
+    alert.set({
+      message: "You've completed your Core Profile successfully!",
+      variant: 'success',
+    });
 
     return vcStr;
   } catch (e) {
