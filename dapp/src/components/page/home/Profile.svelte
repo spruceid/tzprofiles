@@ -34,6 +34,7 @@
     });
 
     loadTwitterProfile($claimsStream).then((res) => {
+      console.log(res);
       let { handle } = res;
       twitterHandle = handle || '';
     });
@@ -106,7 +107,13 @@
 
   <Label class="mt-4" fieldName="core-twitter-handle" value="Twitter Handle" />
   {#if twitterHandle}
-    <Input fluid name="core-twitter-handle" value={twitterHandle} disabled />
+    <Input
+      prefix="@"
+      fluid
+      name="core-twitter-handle"
+      value={twitterHandle}
+      disabled
+    />
   {:else}
     <LinkInput href="/twitter" source="Twitter Account Information" />
   {/if}

@@ -19,6 +19,9 @@
 
   import type { ClaimMap } from 'src/store';
 
+  import { useNavigate } from 'svelte-navigator';
+  let navigate = useNavigate();
+
   let verification: ClaimMap;
   claimsStream.subscribe((x) => {
     verification = x;
@@ -45,12 +48,20 @@
   };
 </script>
 
-<BasePage class="justify-center items-center flex-wrap">
+<BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
     icon={verification['TwitterControl'].icon()}
     title={verification['TwitterControl'].title}
     description={verification['TwitterControl'].description}
-  />
+  >
+    {#if currentStep > 4}
+      <PrimaryButton
+        text="Return to Profile"
+        class="mt-8"
+        onClick={() => navigate('/')}
+      />
+    {/if}
+  </VerificationDescription>
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationStep
       step={1}
@@ -90,9 +101,9 @@
       description="Sign the message presented to you containing your Twitter handle and additional information."
     >
       {#if currentStep >= 2}
-        <div class="flex py-2 items-center w-full">
+        <div class="flex items-center w-full py-2">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
+            class="w-full p-2 mr-4 overflow-x-auto rounded-lg resize-none bg-gray-650"
             bind:value={twitterClaim}
             readonly
             disabled
@@ -120,9 +131,9 @@
       description="Tweet out your signed messaged to create a link between your Tezos account and your Twitter profile."
     >
       {#if currentStep > 2}
-        <div class="flex py-2 items-center w-full">
+        <div class="flex items-center w-full py-2">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
+            class="w-full p-2 mr-4 overflow-x-auto rounded-lg resize-none bg-gray-650"
             bind:value={signature}
             readonly
             disabled
@@ -177,9 +188,9 @@
           disabled={lock}
         />
       {:else if currentStep > 4}
-        <div class="flex py-2 items-center w-full">
+        <div class="flex items-center w-full py-2">
           <input
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
+            class="w-full p-2 mr-4 overflow-x-auto rounded-lg resize-none bg-gray-650"
             bind:value={tweetURL}
             readonly
             disabled

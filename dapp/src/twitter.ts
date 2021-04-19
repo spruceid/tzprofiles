@@ -68,7 +68,7 @@ export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
 
     if (res.ok) {
       alert.set({
-        message: 'Success!',
+        message: "You've completed your Twitter Profile successfully!",
         variant: 'success',
       });
 

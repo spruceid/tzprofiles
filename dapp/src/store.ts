@@ -58,7 +58,8 @@ export const loadTwitterProfile = async ({
 }> => {
   if (url) {
     const { credentialSubject } = await loadJsonBlob(url);
-    const { handle } = credentialSubject;
+    const { sameAs } = credentialSubject;
+    const handle = sameAs.replace('https://twitter.com/', '');
     return { handle };
   } else {
     return { handle: '' };
