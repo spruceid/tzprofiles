@@ -5,8 +5,8 @@
   let navigate = useNavigate();
 </script>
 
-<div class="flex flex-col mt-8 xl:mt-0">
-  <h3 class="text-xl mb-4">Available Credentials</h3>
+<div class="flex flex-col my-8">
+  <h3 class="mb-4 text-xl">Available Credentials</h3>
   {#if $loadingContracts}
     Loading...
   {:else if Object.values($claimsStream).every((claim) => claim.url)}
@@ -23,19 +23,19 @@
           {#if !$claimsStream[claim].url}
             <tr>
               <td
-                class="my-1 sm:px-4 md:px-6 px-2 flex items-center cursor-pointer"
+                class="flex items-center px-2 my-1 cursor-pointer sm:px-4 md:px-6"
                 on:click={() => navigate($claimsStream[claim].route)}
               >
                 <svelte:component
                   this={$claimsStream[claim].icon()}
-                  class="w-10 sm:w-4 h-12 sm:h-4 mr-3"
+                  class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
                 />
                 <p class="font-bold">{$claimsStream[claim].display}</p>
               </td>
-              <td class="sm:px-4 md:px-6 px-2">
+              <td class="px-2 sm:px-4 md:px-6">
                 {$claimsStream[claim].type}
               </td>
-              <td class="sm:px-4 md:px-6 px-2">
+              <td class="px-2 sm:px-4 md:px-6">
                 {$claimsStream[claim].proof}
               </td>
             </tr>
