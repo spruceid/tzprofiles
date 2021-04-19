@@ -47,12 +47,7 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
             else {
                 throw new Error("No signing method found in opts");
             }
-            let claims = [];
-            for (let i = 0, x = claim_urls.length; i < x; i++) {
-                let claim_url = claim_urls[i];
-                let nextClaim = yield url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc);
-                claims.push(nextClaim);
-            }
+            let claims = yield Promise.all(claim_urls.map(claim_url => url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc)));
             const metadataBigMap = new taquito.MichelsonMap();
             metadataBigMap.set("", tzip16.char2Bytes("https://gist.githubusercontent.com/sbihel/a9273df118862acba2b4d15a8778e3dd/raw/0debf54a941fdda9cfde4d34866535d302856885/tpp-metadata.json"));
             let originationOp, contractAddress;
@@ -66,7 +61,8 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
                     },
                 });
                 originationOp = yield opSender.send();
-                contractAddress = yield originationOp.contract().address;
+                const c = yield originationOp.contract();
+                contractAddress = c.address;
             }
             else {
                 originationOp = yield Tezos.contract.originate({

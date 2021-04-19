@@ -3,7 +3,13 @@ import { alert, dappUrl } from 'src/store';
 import { signClaim } from 'src/utils';
 import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-sdk';
 
-export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, profile) => {
+export const signCoreProfile = async (
+  userData,
+  wallet,
+  networkStr,
+  DIDKit,
+  profile
+) => {
   try {
     const { alias, description, logo } = profile;
     const did = `did:pkh:tz:${userData.account.address}`;
@@ -11,11 +17,11 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       '@context': [
         'https://www.w3.org/2018/credentials/v1',
         {
-          name: 'https://schema.org/name',
+          alias: 'https://schema.org/name',
           description: 'https://schema.org/description',
           logo: 'https://schema.org/logo',
-          CoreProfile: 'https://tzprofiles.me/CoreProfile'
-        }
+          CoreProfile: 'https://tzprofiles.me/CoreProfile',
+        },
       ],
       id: 'urn:uuid:' + uuid(),
       issuer: did,
@@ -23,9 +29,9 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       type: ['VerifiableCredential', 'CoreProfile'],
       credentialSubject: {
         id: did,
-        name: alias,
+        alias,
         description,
-        logo
+        logo,
       },
     };
 
@@ -43,7 +49,7 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       publicKeyJwkString
     );
     const preparation = JSON.parse(prepStr);
-    const {signingInput} = preparation;
+    const { signingInput } = preparation;
     const micheline = signingInput && signingInput.micheline;
     if (!micheline) {
       throw new Error('Expected micheline signing input');
@@ -63,15 +69,24 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
     );
 
     const verifyOptionsString = '{}';
-    const verifyResult = JSON.parse(await DIDKit.verifyCredential(
-      vcStr,
-      verifyOptionsString
-    ));
+    const verifyResult = JSON.parse(
+      await DIDKit.verifyCredential(vcStr, verifyOptionsString)
+    );
     if (verifyResult.errors.length > 0) {
-      throw new Error("Unable to verify credential: " + verifyResult);
+      const errorMessage = `Unable to verify credential: ${verifyResult}`;
+      alert.set({
+        message: errorMessage,
+        variant: 'error',
+      });
+      throw new Error(errorMessage);
     }
 
+    alert.set({
+      message: "You've completed your Core Profile successfully!",
+      variant: 'success',
+    });
     console.log(vcStr);
+
     return vcStr;
   } catch (e) {
     alert.set({

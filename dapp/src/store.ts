@@ -6,16 +6,104 @@ import { Tzip16Module } from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
 import { loadDIDKit } from 'didkit-wasm/didkit-loader';
-import * as contractLib from '../../contract/lib/lib';
-// TODO: get this style of import working
-// import * as contractLib from 'tezospublicprofiles';
+import * as contractLib from 'tezospublicprofiles';
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
+// TODO fix export in kepler :facepalm:
+import { Kepler, authenticator } from 'kepler-sdk';
 
 // TODO: Change this to kepler, then remove.
-export const createJsonBlobUrl = (object) => {
-  const blob = new Blob([JSON.stringify(object, null, 2)]);
-  return URL.createObjectURL(blob);
+export const saveToKepler = async (obj) => {
+  const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
+  if (localKepler) {
+    try {
+      const address = await localKepler.put(dummyOrbit, obj);
+      console.log("ADDRESS:", address)
+      alert.set({
+        message: 'Successfuly uploaded to Kepler',
+        variant: 'success',
+      });
+
+      return  `${keplerInstance}/${dummyOrbit}/${address}` 
+    } catch (e) {
+      alert.set({
+        message: e.message || JSON.stringify(e),
+        variant: 'error',
+      });
+      throw e;
+    }
+  }
+
+  throw new Error("No Kepler integration found")
+};
+
+export const loadJsonBlob = async (url: string): Promise<any> => {
+  if (localKepler) {
+    const [orbit, cid] = url.split('/');
+    return await localKepler.get(orbit, cid, false);
+  }
+  return await fetch(url)
+    .then((r) => r.blob())
+    .then((b) => b.text())
+    .then((s) => JSON.parse(JSON.parse(s)));
+};
+
+export const loadCoreProfile = async ({
+  TezosControl: { url },
+}: ClaimMap): Promise<{
+  alias: string;
+  description: string;
+  logo: string;
+}> => {
+  if (url) {
+     const res = await fetch(url);
+     if (!res.ok || res.status !== 200) {
+       throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
+     }
+
+     const innerJSON = await res.json();
+     const json = JSON.parse(innerJSON);
+     console.log(json);
+     console.log(json.credentialSubject);
+     console.log(Object.keys(json));
+     const { credentialSubject } = json;
+     console.log(credentialSubject);
+     const { description, logo, alias } = credentialSubject;
+    return {
+      alias,
+      description,
+      logo,
+    };
+  } else {
+    return {
+      alias: '',
+      description: '',
+      logo: '',
+    };
+  }
+};
+
+export const loadTwitterProfile = async ({
+  TwitterControl: { url },
+}: ClaimMap): Promise<{
+  handle: string;
+}> => {
+  if (url) {
+    const res = await fetch(url);
+    if (!res.ok || res.status !== 200) {
+      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
+    }
+
+    const innerJSON = await res.json();
+    const json = JSON.parse(innerJSON);
+
+    const { credentialSubject } = json;
+    const { sameAs } = credentialSubject;
+    const handle = sameAs.replace('https://twitter.com/', '');
+    return { handle };
+  } else {
+    return { handle: '' };
+  }
 };
 
 export let DIDKit = writable(null);
@@ -23,6 +111,7 @@ export const userData = writable(null);
 export const contractAddress: Writable<string> = writable<string>(null);
 export const dappUrl = 'http://localhost:8080';
 export const witnessUrl = 'http://localhost:8787';
+// export const witnessUrl = 'https://tzprofiles_witness.krhoda-spruce.workers.dev';
 export let nodeUrl: Writable<string> = writable<string>(null);
 export let loadingContracts: Writable<boolean> = writable(true);
 export let networkStr: Writable<string> = writable<string>(null);
@@ -89,6 +178,8 @@ let localClaimsStream: ClaimMap;
 let localContractAddress: string;
 let localDIDKit: any;
 let localWallet: BeaconWallet;
+let localKepler: Kepler;
+let keplerInstance: string = 'http://127.0.0.1:8000';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
@@ -119,9 +210,7 @@ export const originate = async (): Promise<void> => {
 
   let claimsKeys = Object.keys(localClaimsStream);
 
-  // There msut be a less ridiculous way to do this.
-  let urlList: [string] = ['make the typechecker happy'];
-  urlList.pop();
+  let urlList: string[] = [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
@@ -298,6 +387,10 @@ export const initWallet: () => Promise<void> = async () => {
   wallet.set(newWallet);
   try {
     await newWallet.requestPermissions(requestPermissionsInput);
+    localKepler = new Kepler(
+      keplerInstance,
+      await authenticator(newWallet.client)
+    );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
     Tezos.setWalletProvider(newWallet);

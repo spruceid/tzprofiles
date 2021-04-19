@@ -8,6 +8,7 @@
   export let value: string = '';
   export let disabled: boolean = false;
   export let prefix: string = '';
+  export let fluid: boolean = false;
   let inputElement;
   onMount(() => {
     inputElement.type = type;
@@ -21,7 +22,7 @@
 >
   {#if prefix}
     <span
-      class="absolute py-3 left-2 text-xs leading-3"
+      class="absolute py-3 text-xs left-2 leading-3"
       class:text-gray-350={!value}
       class:text-gray-500={value}
       class:cursor-not-allowed={disabled}
@@ -35,7 +36,8 @@
     id={name}
     {name}
     {placeholder}
-    class="flex w-full lg:w-80 p-2 text-sm rounded-lg bg-transparent border border-green-550 focus:outline-green font-montserrat bg-white {clazz}"
+    class="flex w-full p-2 text-sm rounded-lg bg-transparent border border-green-550 focus:outline-green font-montserrat bg-white {clazz}"
+    class:lg:w-80={!fluid}
     class:italic={!value}
     class:text-gray-350={!value}
     class:text-gray-500={value}

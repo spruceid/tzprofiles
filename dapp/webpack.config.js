@@ -17,6 +17,7 @@ module.exports = {
 			components: path.resolve(__dirname, 'src/components'),
 			routes: path.resolve(__dirname, 'src/routes'),
 			enums: path.resolve(__dirname, 'src/enums'),
+			tezospublicprofiles: path.resolve(__dirname, '../contract/lib/lib'),
 			process: "process/browser",
 			src: path.resolve(__dirname, 'src/'),
 		},
