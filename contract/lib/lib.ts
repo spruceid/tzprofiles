@@ -193,10 +193,9 @@ async function url_to_entry(claim_url: string, verifyCredential: any, hashFunc: 
 		.map(b => ('00' + b.toString(16)).slice(-2))
 		.join('');
 
-	let claimJSON = JSON.parse(JSON.parse(claimBody));
+	let claimJSON = JSON.parse(claimBody);
 
 	let t = "VerifiableCredential";
-	
 	if (claimJSON.type && claimJSON.type.length && claimJSON.type.length > 0) {
 		t = claimJSON.type[claimJSON.type.length - 1];
 	}
@@ -209,13 +208,8 @@ async function url_to_entry(claim_url: string, verifyCredential: any, hashFunc: 
 // retrieve_tpp finds a smart contract from it's owner's
 // returns an address if found, false if not, or throws and error if the network fails
 export async function retrieve_tpp(bcd_url: string, address: string, network: string, fetchFunc: any) {
-	// TODO: Make version passable?
-	let searchRes = await fetchFunc(`${bcd_url}/v1/search?q=${address}&n=${network}&i=contract&f=manager`);
-	if (!searchRes.ok || searchRes.status !== 200) {
-		throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
-	}
-
-	let searchJSON = await searchRes.json();
+	let searchRes = await fetchFunc(`${bcd_url}/v1/search?q=${address}&n=${network}&i=contract`);
+	let searchJSON = await searchRes.json()
 	if (searchJSON.count == 0) {
 		return false;
 	}
@@ -224,8 +218,6 @@ export async function retrieve_tpp(bcd_url: string, address: string, network: st
 		if (item.type != "contract") {
 			continue
 		}
-
-		// TODO: Make this contract ID much more fool proof.
 		if (item.body.entrypoints.includes("addClaim") && item.body.entrypoints.includes("removeClaim")) {
 			return item.value;
 		}
@@ -233,53 +225,6 @@ export async function retrieve_tpp(bcd_url: string, address: string, network: st
 
 	return false;
 }
-
-// retrieve_tpp's set of claims for a given wallet address
-// returns an address if found, false if not, or throws and error if the network fails
-export async function retrieve_tpp_claims(bcd_url: string, address: string, network: string, fetchFunc: any) {
-
-	let contractAddress = await retrieve_tpp(bcd_url, address, network, fetchFunc);
-	if (!contractAddress) {
-		return false;
-	}
-
-	// TODO: Make version passable?
-	let storageRes = await fetchFunc(`${bcd_url}/v1/contract/${network}/${contractAddress}/storage`);
-	let storageJSON = await storageRes.json();
-
-	if (!validateStorage(storageJSON)) {
-		throw new Error("Invalid storage, could not find list of triples");
-	}
-
-	let claimList = storageJSON.children[0].children;
-	let tripleList = [];
-	for (let i = 0, n = claimList.length; i < n; i++) {
-		let claim = claimList[i];
-		if (claim.children.length !== 3) {
-			throw new Error("Invalid claim, was not a triple");
-		}
-
-		// TODO: Check hash here?
-		let [urlWrapper, hashWrapper, typeWrapper] = claim.children;
-		let nextTriple = [urlWrapper.value, hashWrapper.value, typeWrapper.value];
-		tripleList.push(nextTriple);
-	}
-
-	return tripleList;
-}
-
-function validateStorage(s) {
-	return (
-		s && 
-		s.children && 
-		s.children.length && 
-		s.children.length > 0 && 
-		s.children[0].name === "claims" &&
-		// TODO: Check if this will report an empty TPP contract as not existing?
-		s.children[0]?.children
-	)
-}
-
 
 // read_all lists all entries in the contract metadata
 // export async function read_all(contract_address: string) {

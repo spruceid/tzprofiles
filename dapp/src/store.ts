@@ -66,6 +66,7 @@ export const loadCoreProfile = async ({
     coreLogo.set(logo);
   } else {
     coreAlias.set('');
+    coreWebsite.set('');
     coreDescription.set('');
     coreLogo.set('');
   }
@@ -203,8 +204,7 @@ export const originate = async (): Promise<void> => {
 
   let claimsKeys = Object.keys(localClaimsStream);
 
-  let urlList: [string] = ['Make the type checker happy'];
-  urlList.pop();
+  let urlList: string[] = [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
