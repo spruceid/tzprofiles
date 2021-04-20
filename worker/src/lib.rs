@@ -7,7 +7,7 @@ mod twitter;
 mod utils;
 
 use anyhow::{anyhow, Result};
-use chrono::Utc;
+use chrono::{SecondsFormat, Utc};
 use js_sys::Promise;
 use serde_json::json;
 use ssi::{
@@ -19,6 +19,7 @@ use ssi::{
     vc::{Credential, Evidence, LinkedDataProofOptions},
 };
 use std::collections::HashMap;
+use uuid::Uuid;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
@@ -57,7 +58,8 @@ fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
               }
           }
       ],
-      // "id": "urn:uuid:61974235-3f95-4f44-9f20-7c163bab8764",
+      "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
+      "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
       "type": ["VerifiableCredential", "TwitterVerification"],
       "credentialSubject": {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
@@ -131,7 +133,7 @@ pub async fn witness_tweet(
         );
         evidence_map.insert(
             "timestamp".to_string(),
-            serde_json::Value::String(Utc::now().to_string()),
+            serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
         );
         evidence_map.insert("tweetId".to_string(), serde_json::Value::String(tweet_id));
         let evidence = Evidence {

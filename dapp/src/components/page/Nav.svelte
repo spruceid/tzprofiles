@@ -5,19 +5,27 @@
 
   let navigate = useNavigate();
 
-  if ($userData === null) navigate('/');
+  const unprotected = [
+    '/faq',
+    '/terms-of-service',
+    '/privacy-policy',
+    '/deploy',
+  ];
+  const path = window.location.pathname;
+
+  if ($userData === null && !unprotected.includes(path)) navigate('/');
 </script>
 
-<nav class="justify-between text-white flex sm:px-12 pb-4 px-8 xl:pt-14 pt-8">
+<nav class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14">
   <div>
-    {#if window.location.pathname !== '/'}
+    {#if path !== '/'}
       <BackButton />
     {/if}
   </div>
   <div>
-    {#if window.location.pathname === '/' && !$wallet}
+    {#if path !== '/faq' && !$wallet}
       <Link to="/faq">FAQ</Link>
-    {:else}
+    {:else if $wallet}
       <FlatButton
         onClick={() =>
           $wallet.disconnect().then(() => {

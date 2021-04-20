@@ -1,61 +1,56 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { IconLink, DownloadIcon } from 'components';
-  import { claimsStream, loadingContracts, localKepler } from 'src/store';
+  import {
+    claimsStream,
+    loadingContracts,
+    localKepler,
+    loadJsonBlob,
+  } from 'src/store';
 
-  const makeDownloadable = (obj: object): string => {
+  const makeDownloadable = (obj: any): string => {
     let stringify = JSON.stringify(obj, null, 2);
     let encoded = encodeURIComponent(stringify);
     return `data:application/json;charset=utf-8,${encoded}`;
   };
 
-  let loading: boolean = false;
   let data: any[] = [];
 
   onMount(async () => {
     try {
-      if ($loadingContracts) {
-        loading = true;
+      if (Object.values($claimsStream).every((claim) => !claim.url)) {
         data = [];
       } else {
-        loading = false;
-        if (Object.values($claimsStream).every((claim) => !claim.url)) {
-          data = [];
-        } else {
-          data = await Promise.all(
-            Object.values($claimsStream)
-              .filter((claim) => claim.url)
-              .map(async (claim) => {
-                let { url } = claim;
+        data = await Promise.all(
+          Object.values($claimsStream)
+            .filter((claim) => claim.url)
+            .map(async (claim) => {
+              console.log(claim);
+              let { url } = claim;
+              let jsonRes = await loadJsonBlob(url);
 
-                // Set auth to false to not prompt the user for 3 signings in a row
-                // That hits the Beacon Wallet rate limit
-                let jsonRes = await localKepler.resolve(url, false); 
+              if (!jsonRes.ok || jsonRes.status !== 200) {
+                throw new Error(
+                  `Error in claims retrieval: ${jsonRes.statusText}`
+                );
+              }
 
-                if (!jsonRes.ok || jsonRes.status !== 200) {
-                  throw new Error(`Error in claims retrieval: ${jsonRes.statusText}`);
-                }
-
-                let jsonObj = await jsonRes.json();
-                let json = makeDownloadable(jsonObj);
-                return { ...claim, json };
-              })
-          );
-
-          console.log("Data:", data);
-        }
+              let jsonObj = await jsonRes.json();
+              if (typeof jsonObj === 'string') jsonObj = JSON.parse(jsonObj);
+              let json = makeDownloadable(jsonObj);
+              return { ...claim, json };
+            })
+        );
       }
-
     } catch (err) {
-      console.error(`Died in MyCredentials OnMount ${err.message}`)
+      console.error(`Died in MyCredentials OnMount ${err.message}`);
     }
-    
   });
 </script>
 
 <div class="flex flex-col my-8">
   <h3 class="mb-4 text-xl">{'My Credentials'}</h3>
-  {#if loading}
+  {#if $loadingContracts}
     <h4>{'Loading...'}</h4>
   {:else if data.length === 0}
     <h4>{'None Currently Available'}</h4>

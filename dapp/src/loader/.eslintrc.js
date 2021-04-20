@@ -5,10 +5,10 @@ module.exports = {
   },
   parserOptions: {
     ecmaVersion: 12,
-    sourceType: "module",
+    sourceType: 'module',
   },
-  plugins: ["prettier"],
+  plugins: ['prettier'],
   rules: {
-    "prettier/prettier": "error",
+    'prettier/prettier': 'error',
   },
 };

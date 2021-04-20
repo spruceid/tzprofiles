@@ -2,7 +2,7 @@
   import { SvelteComponent, onMount } from 'svelte';
   import { ClipboardIcon } from 'components';
 
-  export let icon: SvelteComponent;
+  export let icon: typeof SvelteComponent;
   export let title: string = '';
   export let color: string = 'white';
   export let href: string;

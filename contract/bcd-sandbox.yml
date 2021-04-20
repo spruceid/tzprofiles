@@ -43,6 +43,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
       - SANDBOX_NODE_URI=http://sandbox:20000
       - SANDBOX_IPFS_GATEWAY=https://ipfs.io
+      - SANDBOX_API_CORSENABLED=false
     depends_on:
       - elastic
       - db
