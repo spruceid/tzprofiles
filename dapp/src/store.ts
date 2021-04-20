@@ -334,6 +334,8 @@ wallet.subscribe((wallet) => {
                 }
               claimsStream.set(localClaims);
             }
+          } else {
+            console.warn("No contract detected, starting new one")
           }
         } catch (e) {
           console.error(`store::load_contracts:: ${e}`);
