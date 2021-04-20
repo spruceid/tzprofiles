@@ -11,9 +11,16 @@ import * as contractLib from '../../contract/lib/lib';
 // import * as contractLib from 'tezospublicprofiles';
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
+// TODO fix export in kepler :facepalm:
+import { Kepler, authenticator } from 'kepler-client/dist';
 
 // TODO: Change this to kepler, then remove.
-export const createJsonBlobUrl = (object) => {
+export const createJsonBlobUrl = async (obj) => {
+  const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
+  if (localKepler) {
+    return await localKepler.put(dummyOrbit, obj)
+  }
+
   const blob = new Blob([JSON.stringify(object)], {
     type: 'application/json',
   });
@@ -138,6 +145,7 @@ let localContractAddress: string;
 let localDIDKit: any;
 let localNetworkStr: string;
 let localWallet: BeaconWallet;
+let localKepler: Kepler;
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
@@ -369,6 +377,8 @@ export const initWallet: () => Promise<void> = async () => {
   wallet.set(newWallet);
   try {
     await newWallet.requestPermissions(requestPermissionsInput);
+    // TODO parameterise kepler URL
+    localKepler = new Kepler('https://faad7ca90d6c.ngrok.io', await authenticator(newWallet.client));
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
     Tezos.setWalletProvider(newWallet);
