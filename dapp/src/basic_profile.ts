@@ -3,7 +3,7 @@ import { alert } from 'src/store';
 import { signClaim } from 'src/utils';
 import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-sdk';
 
-export const signCoreProfile = async (
+export const signBasicProfile = async (
   userData,
   wallet,
   networkStr,
@@ -11,7 +11,7 @@ export const signCoreProfile = async (
   profile
 ) => {
   try {
-    const { alias, description, logo } = profile;
+    const { alias, description, website, logo } = profile;
     const did = `did:pkh:tz:${userData.account.address}`;
     const credential = {
       '@context': [
@@ -19,18 +19,20 @@ export const signCoreProfile = async (
         {
           alias: 'https://schema.org/name',
           description: 'https://schema.org/description',
+          website: 'https://schema.org/url',
           logo: 'https://schema.org/logo',
-          CoreProfile: 'https://tzprofiles.me/CoreProfile',
+          BasicProfile: 'https://tzprofiles.me/BasicProfile',
         },
       ],
       id: 'urn:uuid:' + uuid(),
       issuer: did,
       issuanceDate: new Date().toISOString(),
-      type: ['VerifiableCredential', 'CoreProfile'],
+      type: ['VerifiableCredential', 'BasicProfile'],
       credentialSubject: {
         id: did,
         alias,
         description,
+        website,
         logo,
       },
     };
@@ -82,7 +84,7 @@ export const signCoreProfile = async (
     }
 
     alert.set({
-      message: "You've completed your Core Profile successfully!",
+      message: "You've completed your Basic Profile successfully!",
       variant: 'success',
     });
 

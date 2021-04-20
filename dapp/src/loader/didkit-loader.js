@@ -1,10 +1,10 @@
 /* global window */
-"use strict";
+'use strict';
 
-import init, * as DIDKit from "./didkit_wasm.js";
+import init, * as DIDKit from './didkit_wasm.js';
 
 let loaded;
-export async function loadDIDKit(url = "/didkit/didkit_wasm_bg.wasm") {
+export async function loadDIDKit(url = '/didkit/didkit_wasm_bg.wasm') {
   if (loaded) return DIDKit;
   loaded = true;
   await init(url);

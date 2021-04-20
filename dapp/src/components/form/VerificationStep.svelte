@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { CheckIcon } from 'components';
+  import { CheckIcon, SpinnerIcon } from 'components';
   export let step: number;
   export let currentStep: number;
   export let title: string;
-  export let description: string;
+  export let description: string = '';
+  export let loading: boolean = false;
 
   $: isFilled = step <= currentStep;
   $: isDone = step < currentStep;
@@ -14,18 +15,22 @@
   class:opacity-50={!isFilled}
 >
   <div
-    class="inline-table w-8 h-8 rounded-full border-2 border-green-550 text-bold mr-4"
+    class="w-8 h-8 mr-4 border-2 rounded-full inline-table border-green-550 text-bold"
     class:bg-green-550={isFilled}
   >
-    {#if isDone}
-      <CheckIcon class="text-center" />
+    {#if loading}
+      <SpinnerIcon class="w-8 h-8 text-center animate-spin" />
+    {:else if isDone}
+      <CheckIcon class="w-8 h-8 text-center" />
     {:else}
-      <p class="text-sm my-1 mx-2 text-center font-bold">{step}</p>
+      <span class="w-8 h-8 p-2 text-sm font-bold text-center">{step}</span>
     {/if}
   </div>
-  <div class="flex flex-col overflow-hidden w-full">
-    <h3 class="text-2xl text-left mb-2">{title}</h3>
-    <p class="font-inter">{description}</p>
+  <div class="flex flex-col w-full overflow-hidden">
+    <h3 class="mb-2 text-2xl text-left">{title}</h3>
+    {#if description}
+      <p class="font-inter">{description}</p>
+    {/if}
     <slot />
   </div>
 </div>

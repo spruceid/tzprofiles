@@ -64,11 +64,22 @@
 
 <script lang="ts">
   import { Router, Route } from 'svelte-navigator';
-  import { Home, Faq, Twitter, CoreProfile } from 'routes';
+  import {
+    Home,
+    Faq,
+    Twitter,
+    BasicProfile,
+    TermsOfService,
+    PrivacyPolicy,
+    Deploy,
+  } from 'routes';
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =
-    'py-4 py-1 opacity-50 cursor-not-allowed text-gray-350 text-gray-500 italic pl-6 bg-green-550 text-gray-370 opacity-0 opacity-60';
+    'py-4 py-1 opacity-0 opacity-60 opacity-50 cursor-not-allowed text-gray-350\
+     text-gray-500 hidden w-full w-80 italic pl-6 bg-green-550 text-gray-370 \
+     opacity-100 translate-y-0 scale-100 translate-y-4 sm:translate-y-0 \
+     sm:scale-95';
 
   //Loads UserSnap when not in production
   if (BUILD_MODE_DEV) {
@@ -93,7 +104,16 @@
   <Route path="twitter">
     <Twitter />
   </Route>
-  <Route path="core-profile">
-    <CoreProfile />
+  <Route path="basic-profile">
+    <BasicProfile />
+  </Route>
+  <Route path="terms-of-service">
+    <TermsOfService />
+  </Route>
+  <Route path="privacy-policy">
+    <PrivacyPolicy />
+  </Route>
+  <Route path="deploy">
+    <Deploy />
   </Route>
 </Router>
