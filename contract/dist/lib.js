@@ -225,9 +225,10 @@ function retrieve_tpp_claims(bcd_url, address, network, fetchFunc) {
             if (claim.children.length !== 3) {
                 throw new Error("Invalid claim, was not a triple");
             }
+            // TODO: Check hash here?
             let [urlWrapper, hashWrapper, typeWrapper] = claim.children;
             let nextTriple = [urlWrapper.value, hashWrapper.value, typeWrapper.value];
-            tripleList = nextTriple;
+            tripleList.push(nextTriple);
         }
         return tripleList;
     });
