@@ -8,14 +8,13 @@
     VerificationStep,
   } from 'components';
 
+  import { createJsonBlobUrl, claimsStream, wallet, userData } from 'src/store';
   import {
-    createJsonBlobUrl,
-    claimsStream,
-    wallet,
-    userData,
-    alert,
-  } from 'src/store';
-  import { signTwitterClaim, getTwitterClaim, verifyTweet } from 'src/twitter';
+    signTwitterClaim,
+    getTwitterClaim,
+    verifyTweet,
+    getTweetMessage,
+  } from 'src/twitter';
 
   import type { ClaimMap } from 'src/store';
 
@@ -27,9 +26,9 @@
   let currentStep: number = 1;
   let twitterHandle: string = '';
   let lock: boolean = false;
-  let signature: string = '';
   let tweetURL: string = '';
   let twitterClaim: string = '';
+  let tweetMessage: string = '';
 
   const next = (func: () => Promise<any> = async () => '') => {
     return new Promise<any>((resolve, _) => {
@@ -73,6 +72,7 @@
               next(() => getTwitterClaim($userData, twitterHandle)).then(
                 (res) => {
                   twitterClaim = res;
+                  tweetMessage = getTweetMessage($userData, twitterHandle);
                 }
               );
             }}
@@ -93,11 +93,11 @@
         <div class="flex py-2 items-center w-full">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
-            bind:value={twitterClaim}
+            bind:value={tweetMessage}
             readonly
             disabled
           />
-          <CopyButton text={twitterClaim} />
+          <CopyButton text={tweetMessage} />
         </div>
       {/if}
       {#if currentStep === 2}
@@ -106,7 +106,8 @@
           class="mt-8 lg:w-48"
           onClick={() => {
             next(() => signTwitterClaim($userData, twitterClaim, $wallet)).then(
-              (sig) => (signature = sig)
+              (sig) =>
+                (tweetMessage = getTweetMessage($userData, twitterHandle) + sig)
             );
           }}
           disabled={lock}
@@ -123,11 +124,11 @@
         <div class="flex py-2 items-center w-full">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
-            bind:value={signature}
+            bind:value={tweetMessage}
             readonly
             disabled
           />
-          <CopyButton text={signature} />
+          <CopyButton text={tweetMessage} />
         </div>
       {/if}
       {#if currentStep === 3}
@@ -136,7 +137,11 @@
             text="Tweet"
             class="mt-8 lg:w-48 lg:mr-8 bg-blue-350"
             onClick={() => {
-              window.open(`https://twitter.com/intent/tweet?text=${signature}`);
+              window.open(
+                `https://twitter.com/intent/tweet?text=${encodeURI(
+                  tweetMessage
+                )}`
+              );
             }}
           />
 
