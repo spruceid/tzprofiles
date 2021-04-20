@@ -183,7 +183,7 @@ function url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc) {
 function retrieve_tpp(bcd_url, address, network, fetchFunc) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: Make version passable?
-        let searchRes = yield fetchFunc(`${bcd_url}/v1/search?q=${address}&n=${network}&i=contract&f=manager`);
+        let searchRes = yield fetchFunc(`${bcd_url}/v1/search?q=${address}&n=${network}&i=contract`);
         if (!searchRes.ok || searchRes.status !== 200) {
             throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
         }
@@ -225,10 +225,9 @@ function retrieve_tpp_claims(bcd_url, address, network, fetchFunc) {
             if (claim.children.length !== 3) {
                 throw new Error("Invalid claim, was not a triple");
             }
-            // TODO: Check hash here?
             let [urlWrapper, hashWrapper, typeWrapper] = claim.children;
             let nextTriple = [urlWrapper.value, hashWrapper.value, typeWrapper.value];
-            tripleList.push(nextTriple);
+            tripleList = nextTriple;
         }
         return tripleList;
     });

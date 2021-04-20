@@ -254,6 +254,7 @@ export async function retrieve_tpp(
   network: string,
   fetchFunc: any
 ) {
+  // TODO: Make version passable?
   let searchRes = await fetchFunc(
     `${bcd_url}/v1/search?q=${address}&n=${network}&i=contract`
   );
@@ -281,6 +282,63 @@ export async function retrieve_tpp(
   }
 
   return false;
+}
+
+// retrieve_tpp's set of claims for a given wallet address
+// returns an address if found, false if not, or throws and error if the network fails
+export async function retrieve_tpp_claims(
+  bcd_url: string,
+  address: string,
+  network: string,
+  fetchFunc: any
+) {
+  let contractAddress = await retrieve_tpp(
+    bcd_url,
+    address,
+    network,
+    fetchFunc
+  );
+  if (!contractAddress) {
+    return false;
+  }
+
+  // TODO: Make version passable?
+  let storageRes = await fetchFunc(
+    `${bcd_url}/v1/contract/${network}/${contractAddress}/storage`
+  );
+  let storageJSON = await storageRes.json();
+
+  if (!validateStorage(storageJSON)) {
+    throw new Error("Invalid storage, could not find list of triples");
+  }
+
+  let claimList = storageJSON.children[0].children;
+  let tripleList = [];
+  for (let i = 0, n = claimList.length; i < n; i++) {
+    let claim = claimList[i];
+    if (claim.children.length !== 3) {
+      throw new Error("Invalid claim, was not a triple");
+    }
+
+    // TODO: Check hash here?
+    let [urlWrapper, hashWrapper, typeWrapper] = claim.children;
+    let nextTriple = [urlWrapper.value, hashWrapper.value, typeWrapper.value];
+    tripleList.push(nextTriple);
+  }
+
+  return tripleList;
+}
+
+function validateStorage(s) {
+  return (
+    s &&
+    s.children &&
+    s.children.length &&
+    s.children.length > 0 &&
+    s.children[0].name === "claims" &&
+    // TODO: Check if this will report an empty TPP contract as not existing?
+    s.children[0]?.children
+  );
 }
 
 // read_all lists all entries in the contract metadata
