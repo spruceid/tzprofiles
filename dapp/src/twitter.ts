@@ -1,20 +1,16 @@
-import { witnessUrl, dappUrl, alert } from 'src/store';
+import { witnessUrl, dappUrl, alert, userData } from 'src/store';
 import { BeaconWallet } from '@taquito/beacon-wallet';
 import { signClaim } from 'src/utils';
 
+export const getTweetMessage = (userData, twitterHandle) => {
+return `I am attesting that this Twitter handle @${twitterHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.\n\n`;
+}
+
 export const getTwitterClaim = async (userData, twitterHandle) => {
   try {
-    const sig_target = await (
-      await fetch(
-        `${witnessUrl}/tweet_sig_target?pk=${userData.account.publicKey}&handle=${twitterHandle}`
-      )
-    ).text();
-    console.log(`Signature target: ${sig_target}`);
-
+    const sig_target = getTweetMessage(userData, twitterHandle);
     return [
-      'Tezos Signed Message: ',
-      dappUrl,
-      new Date().toISOString(),
+      'Tezos Signed Message:',
       sig_target,
     ].join(' ');
   } catch (e) {
@@ -56,7 +52,7 @@ const urlToTweetId = (url: string): string => {
 
 export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
   console.log(
-    `Would've exchanged ${tweetURL} and ${userData.account.address} for VC`
+    `Exchanging ${tweetURL} and ${userData.account.address} for VC`
   );
   let tweetID = urlToTweetId(tweetURL);
   try {
