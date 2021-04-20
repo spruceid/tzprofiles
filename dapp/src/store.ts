@@ -185,9 +185,7 @@ export const originate = async (): Promise<void> => {
   console.log('Passed error handling');
   let claimsKeys = Object.keys(localClaimsStream);
 
-  // There msut be a less ridiculous way to do this.
-  let urlList: [string] = ['make the typechecker happy'];
-  urlList.pop();
+  let urlList: string[] = []
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
