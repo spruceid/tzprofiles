@@ -52,10 +52,11 @@
           signCoreProfile($userData, $wallet, $networkStr, $DIDKit, profile)
             .then((vc) => {
               let nextClaimMap = verification;
-              let url = createJsonBlobUrl(vc);
-              nextClaimMap.TezosControl.url = url;
-              claimsStream.set(nextClaimMap);
-              next();
+              createJsonBlobUrl(vc).then(url => {
+                nextClaimMap.TezosControl.url = url;
+                claimsStream.set(nextClaimMap);
+                next();
+              });
             })
             .catch(console.error)
             .finally(() => (lock = false));
