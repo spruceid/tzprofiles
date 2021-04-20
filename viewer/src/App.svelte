@@ -8,6 +8,9 @@
 		TwitterProfile: false,
 	};
 
+	// TODO: REMOVE
+	$: debugClaims = [];
+
 	let wallet: string;
 
 	const getBetterCallDevPrefix = () => {
@@ -39,6 +42,8 @@
 
 			if (found) {
 				let tripleClaims = found;
+				debugClaims = tripleClaims;
+
 				let nextClaims = {};
 				for (let i = 0, n = tripleClaims.length; i < n; i++) {
 					let [url, hash, key] = tripleClaims[i];
@@ -46,8 +51,8 @@
 						url,
 						hash,
 						content: null,
-						errorMessage: ''
-					}
+						errorMessage: "",
+					};
 					// TODO: follow URL, test hash, display results.
 				}
 
@@ -83,6 +88,9 @@
 	{#if showResults}
 		<div>
 			<h3>{wallet} had the following claims</h3>
+			<!-- TODO: REMOVE -->
+			<p>DEBUG:</p>
+			<p>{JSON.stringify(debugClaims)}</p>
 			<p>Core Profile</p>
 			{#if claims["CoreProfile"]}
 				<p>Will Be Core Profile Claims</p>

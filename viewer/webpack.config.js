@@ -7,6 +7,9 @@ const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
 
 module.exports = {
+	devServer: {
+		port: 9090,
+	},
 	entry: {
 		'build/bundle': ['./src/main.ts']
 	},
