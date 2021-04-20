@@ -91,7 +91,8 @@ export async function originate(
 
       originationOp = await opSender.send();
 
-      contractAddress = await originationOp.contract().address;
+      let c = await originationOp.contract();
+      contractAddress = await c.address;
     } else {
       originationOp = await Tezos.contract.originate({
         code: contract,
@@ -256,6 +257,10 @@ export async function retrieve_tpp(
   let searchRes = await fetchFunc(
     `${bcd_url}/v1/search?q=${address}&n=${network}&i=contract`
   );
+  if (!searchRes.ok || searchRes.status !== 200) {
+    throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+  }
+
   let searchJSON = await searchRes.json();
   if (searchJSON.count == 0) {
     return false;
@@ -265,6 +270,8 @@ export async function retrieve_tpp(
     if (item.type != "contract") {
       continue;
     }
+
+    // TODO: Make this contract ID much more fool proof.
     if (
       item.body.entrypoints.includes("addClaim") &&
       item.body.entrypoints.includes("removeClaim")

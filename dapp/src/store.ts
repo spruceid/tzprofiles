@@ -318,7 +318,7 @@ wallet.subscribe((wallet) => {
           let contractJSON = await contractLib.retrieve_tpp(
             urlBetterCallDev,
             await wallet.getPKH(),
-            strNetwork === 'custom' ? 'sandboxnet' : strNetwork,
+            strNetwork,
             fetch
           );
 
@@ -338,7 +338,7 @@ wallet.subscribe((wallet) => {
               claimsStream.set(localClaims);
             }
           } else {
-            console.warn('No contract detected, starting new one');
+            console.warn("No contract detected, starting new one")
           }
         } catch (e) {
           console.error(`store::load_contracts:: ${e}`);
