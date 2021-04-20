@@ -127,20 +127,6 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
 
-async function handler_tweet_sig_target(request) {
-  try {
-    const {searchParams} = new URL(request.url)
-    let pk = decodeURI(searchParams.get('pk'))
-    let handle = searchParams.get('handle')
-    const {build_vc} = wasm_bindgen;
-    await wasm_bindgen(wasm)
-    const sig_target = build_vc(pk, handle)
-    return new Response(sig_target, {status: 200, headers: headers})
-  } catch (error) {
-    return new Response(error, {status: 500, headers: headers})
-  }
-}
-
 async function handler_witness_tweet(request) {
   try {
     const {searchParams} = new URL(request.url)
@@ -158,7 +144,6 @@ async function handler_witness_tweet(request) {
 
 async function handleRequest(request) {
   const r = new Router()
-  r.get('/tweet_sig_target', request => handler_tweet_sig_target(request))
   r.get('/witness_tweet', request => handler_witness_tweet(request))
   const resp = await r.route(request)
   return resp

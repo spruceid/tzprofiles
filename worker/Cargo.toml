@@ -25,9 +25,9 @@ console_error_panic_hook = { version = "0.1" }
 # allocator, however.
 wee_alloc = { version = "0.4" }
 
-ssi = { path = "../../ssi", default-features = false, features = ["ed25519-dalek", "sha2", "rand", "rand"] } # , "libsecp256k1", "p256"] }
+ssi = { path = "../../ssi", default-features = false, features = ["ed25519-dalek", "sha", "secp256k1", "secp256r1"] }
 blake2b_simd = "0.5"
-did-pkh = { path = "../../ssi/did-pkh", default-features = false } #, features = ["secp256k1", "dalek", "p256"] }
+bs58 = { version = "0.4", features = ["check"] }
 
 anyhow = "1"
 serde = "1"
