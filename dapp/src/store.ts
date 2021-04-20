@@ -12,7 +12,7 @@ import * as contractLib from '../../contract/lib/lib';
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
 // TODO fix export in kepler :facepalm:
-import { Kepler, authenticator } from 'kepler-client/dist';
+import { Kepler, authenticator } from 'kepler-sdk';
 
 // TODO: Change this to kepler, then remove.
 export const createJsonBlobUrl = async (obj) => {
@@ -30,7 +30,7 @@ export const createJsonBlobUrl = async (obj) => {
 export const loadJsonBlob = async (url: string): Promise<any> => {
   if (localKepler) {
     const [orbit, cid] = url.split('/');
-    return await localKepler.get(orbit, cid)
+    return await localKepler.get(orbit, cid, false)
   }
   return await fetch(url)
     .then((r) => r.blob())
