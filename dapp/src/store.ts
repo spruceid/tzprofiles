@@ -18,7 +18,7 @@ import { Kepler, authenticator } from 'kepler-client/dist';
 export const createJsonBlobUrl = async (obj) => {
   const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
   if (localKepler) {
-    return await localKepler.put(dummyOrbit, obj)
+    return dummyOrbit + "/" + await localKepler.put(dummyOrbit, obj)
   }
 
   const blob = new Blob([JSON.stringify(object)], {
@@ -376,7 +376,7 @@ export const initWallet: () => Promise<void> = async () => {
   try {
     await newWallet.requestPermissions(requestPermissionsInput);
     // TODO parameterise kepler URL
-    localKepler = new Kepler('https://faad7ca90d6c.ngrok.io', await authenticator(newWallet.client));
+    localKepler = new Kepler('https://kepler.tzprofiles.com', await authenticator(newWallet.client));
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
     Tezos.setWalletProvider(newWallet);
