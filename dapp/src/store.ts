@@ -21,13 +21,17 @@ export const createJsonBlobUrl = async (obj) => {
     return dummyOrbit + "/" + await localKepler.put(dummyOrbit, obj)
   }
 
-  const blob = new Blob([JSON.stringify(object)], {
+  const blob = new Blob([JSON.stringify(obj)], {
     type: 'application/json',
   });
   return URL.createObjectURL(blob);
 };
 
 export const loadJsonBlob = async (url: string): Promise<any> => {
+  if (localKepler) {
+    const [orbit, cid] = url.split('/');
+    return await localKepler.get(orbit, cid)
+  }
   return await fetch(url)
     .then((r) => r.blob())
     .then((b) => b.text())
