@@ -3,7 +3,10 @@
 	$: showResults = false;
 	$: errorMessage = "";
 	$: nodeHost = "mainnet";
-	$: contractJSON = null;
+	$: claims = {
+		CoreProfile: false,
+		TwitterProfile: false,
+	};
 
 	let wallet: string;
 
@@ -17,9 +20,9 @@
 		errorMessage = "";
 
 		if (wallet) {
-			let found = false;
+			let found: false | [[string, string, string]] = false;
 			try {
-				found = await contractLib.retrieve_tpp(
+				found = await contractLib.retrieve_tpp_claims(
 					getBetterCallDevPrefix(),
 					wallet,
 					nodeHost,
@@ -27,15 +30,28 @@
 				);
 			} catch (err) {
 				if (err.message) {
-					errorMessage = err.message
+					errorMessage = err.message;
 				} else {
-					errorMessage = "Network error"
+					errorMessage = "Network error";
 				}
 				return;
 			}
 
 			if (found) {
-				contractJSON = found;
+				let tripleClaims = found;
+				let nextClaims = {};
+				for (let i = 0, n = tripleClaims.length; i < n; i++) {
+					let [url, hash, key] = tripleClaims[i];
+					nextClaims[key] = {
+						url,
+						hash,
+						content: null,
+						errorMessage: ''
+					}
+					// TODO: follow URL, test hash, display results.
+				}
+
+				claims = nextClaims;
 				showResults = true;
 				return;
 			}
@@ -64,9 +80,21 @@
 		<input bind:value={wallet} />
 		<button on:click={search}>Search</button>
 	</div>
-	{#if showResults && contractJSON}
+	{#if showResults}
 		<div>
-			<p>{JSON.stringify(contractJSON)}</p>
+			<h3>{wallet} had the following claims</h3>
+			<p>Core Profile</p>
+			{#if claims["CoreProfile"]}
+				<p>Will Be Core Profile Claims</p>
+			{:else}
+				<p>User is missing Core Profile Claims</p>
+			{/if}
+			<p>Twitter Profile</p>
+			{#if claims["TwitterProfile"]}
+				<p>Will Be Twitter Claims</p>
+			{:else}
+				<p>User is missing Twitter Claims</p>
+			{/if}
 		</div>
 	{/if}
 </main>
@@ -77,13 +105,6 @@
 		padding: 1em;
 		max-width: 240px;
 		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
 	}
 
 	@media (min-width: 640px) {
