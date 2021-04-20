@@ -12,18 +12,22 @@ import SvelteComponentDev from '*.svelte';
 import { Kepler, authenticator } from 'kepler-sdk';
 import { loadDIDKit } from './loader/didkit-loader';
 
-// TODO: Change this to kepler, then remove.
-export const saveToKepler = async (obj) => {
+export const saveToKepler = async (...obj) => {
   const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
   if (localKepler) {
     try {
-      const address = await localKepler.put(dummyOrbit, obj);
+      const [first, ...rest] = obj;
+      const addresses = await localKepler
+        .put(dummyOrbit, first, rest)
+        .then((r) => r.text());
       alert.set({
         message: 'Successfuly uploaded to Kepler',
         variant: 'success',
       });
 
-      return `kepler://${dummyOrbit}/${await address.text()}`;
+      return addresses
+        .split('\n')
+        .map((address) => `kepler://v0:${dummyOrbit}/${address}`);
     } catch (e) {
       alert.set({
         message: e.message || JSON.stringify(e),
@@ -33,41 +37,45 @@ export const saveToKepler = async (obj) => {
     }
   }
 
-  throw new Error("No Kepler integration found")
+  throw new Error('No Kepler integration found');
 };
 
 export const loadJsonBlob = async (url: string): Promise<any> => {
-  if (localKepler) {
-    // TODO this is rather fragile
-    const [orbit, cid] = url.split('/').slice(-2);
-    return await localKepler.get(orbit, cid, false);
+  if (!url.startsWith('blob:')) {
+    return await localKepler.resolve(url, false);
   }
-  return await fetch(url)
-    .then((r) => r.blob())
-    .then((b) => b.text())
-    .then((s) => JSON.parse(JSON.parse(s)));
+  return await fetch(url);
 };
 
-export const loadCoreProfile = async ({
+export const loadBasicProfile = async ({
   TezosControl: { url },
 }: ClaimMap): Promise<void> => {
   if (url) {
-    const res = await localKepler.resolve(url, false);
+    const res = await loadJsonBlob(url);
     if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
+      throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
     }
 
-    const innerJSON = await res.json();
-    const json = JSON.parse(innerJSON);
+    let json = await res.json();
+
+    // TODO: Make this consistant through different usage of Kepler:
+    if (Array.isArray(json)) {
+      json = json[0];
+    }
+
     const { credentialSubject } = json;
-    const { description, logo, alias } = credentialSubject;
-    coreAlias.set(alias);
-    coreDescription.set(description);
-    coreLogo.set(logo);
+    const { alias, description, website, logo } = credentialSubject;
+    basicAlias.set(alias);
+    basicWebsite.set(website);
+    basicDescription.set(description);
+    basicLogo.set(logo);
+    localBasicProfile.set(json);
   } else {
-    coreAlias.set('');
-    coreDescription.set('');
-    coreLogo.set('');
+    basicAlias.set('');
+    basicWebsite.set('');
+    basicDescription.set('');
+    basicLogo.set('');
+    localBasicProfile.set(null);
   }
 };
 
@@ -75,26 +83,31 @@ export const loadTwitterProfile = async ({
   TwitterControl: { url },
 }: ClaimMap): Promise<void> => {
   if (url) {
-    const res = await localKepler.resolve(url, false);
+    const res = await loadJsonBlob(url);
     if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
+      throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
     }
 
-    const innerJSON = await res.json();
-    const json = JSON.parse(innerJSON);
+    let json = await res.json();
+    // TODO: Make this consistant through different usage of Kepler:
+    if (Array.isArray(json)) {
+      json = json[0];
+    }
 
     const { credentialSubject } = json;
     const { sameAs } = credentialSubject;
     const handle = sameAs.replace('https://twitter.com/', '');
     twitterHandle.set(handle);
+    localTwitterProfile.set(json);
   } else {
     twitterHandle.set('');
+    localTwitterProfile.set(null);
   }
 };
 
 export let DIDKit = writable(null);
 
-loadDIDKit("/didkit_wasm_bg.wasm").then((x) => {
+loadDIDKit('/didkit_wasm_bg.wasm').then((x) => {
   DIDKit.set(x);
 });
 
@@ -109,7 +122,7 @@ export const wallet: Writable<BeaconWallet> = writable<BeaconWallet>(null);
 export const network: Writable<NetworkType> = writable<NetworkType>(
   NetworkType.MAINNET
 );
-export let betterCallDevUrl: Writable<string> = writable<string>(
+export const betterCallDevUrl: Writable<string> = writable<string>(
   'https://api.better-call.dev'
 );
 
@@ -123,7 +136,7 @@ export let alert: Writable<{
 
 export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
   TwitterControl: {
-    display: 'Twitter Account Control',
+    display: 'Twitter Account Verification',
     url: '',
     type: 'Social Media',
     proof: 'Tweet',
@@ -132,26 +145,32 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
       'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
     icon: () => TwitterIcon,
     route: '/twitter',
-    contractType: 'TwitterVerification',
+    contractType: 'VerifiableCredential',
   },
   TezosControl: {
-    display: 'Tezos Wallet Control',
+    display: 'Basic Profile Information',
     url: '',
-    type: 'Core Profile',
+    type: 'Basic Profile',
     proof: 'Self-Attestation',
-    title: 'Core Profile',
+    title: 'Basic Profile',
     description:
       'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
     icon: () => PersonOutlined,
-    route: '/core-profile',
-    contractType: 'CoreProfile',
+    route: '/basic-profile',
+    contractType: 'VerifiableCredential',
   },
 });
 
-export let coreAlias: Writable<string> = writable<string>(null);
-export let coreDescription: Writable<string> = writable<string>(null);
-export let coreLogo: Writable<string> = writable<string>(null);
-export let twitterHandle: Writable<string> = writable<string>(null);
+export const basicAlias: Writable<string> = writable<string>(null);
+export const basicDescription: Writable<string> = writable<string>(null);
+export const basicWebsite: Writable<string> = writable<string>(null);
+export const basicLogo: Writable<string> = writable<string>(null);
+export const twitterHandle: Writable<string> = writable<string>(null);
+export const profileUrl: Writable<string> = writable<string>(null);
+
+export const localBasicProfile: Writable<any> = writable(null);
+export const localTwitterProfile: Writable<any> = writable(null);
+const keplerResolve = async (url, _) => await localKepler.resolve(url, false);
 
 export interface ClaimMap {
   [index: string]: Claim;
@@ -173,9 +192,8 @@ let localClaimsStream: ClaimMap;
 let localContractAddress: string;
 let localDIDKit: any;
 let localWallet: BeaconWallet;
-
-// TODO: Change name, use subscriber methods?
 export let localKepler: Kepler<any>;
+export let viewerInstance: string = 'http://127.0.0.1:9090';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
@@ -206,14 +224,13 @@ export const originate = async (): Promise<void> => {
 
   let claimsKeys = Object.keys(localClaimsStream);
 
-  let urlList: [string] = ["Make the type checker happy"];
-  urlList.pop();
+  let urlList: string[] = [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
-    let claim = localClaimsStream[claimKey];
-    if (claim.url) {
-      urlList.push(claim.url);
+    let { url } = localClaimsStream[claimKey];
+    if (url) {
+      urlList.push(url);
     }
   }
 
@@ -226,21 +243,16 @@ export const originate = async (): Promise<void> => {
     wallet: localWallet,
   };
 
-  const fetchFunc = async (input: string): Promise<Response> => {
-    return await localKepler.resolve(input, false);
-  }
-
   let contractAddr = await contractLib.originate(
     opts,
     urlNode,
     urlList,
     localDIDKit.verifyCredential,
     hashFunc,
-    fetchFunc
+    keplerResolve
   );
 
   contractAddress.set(contractAddr);
-  console.log(`originated contract: ${contractAddr}`);
 };
 
 export const addClaim = async (claim: Claim): Promise<void> => {
@@ -268,7 +280,7 @@ export const addClaim = async (claim: Claim): Promise<void> => {
     urlNode,
     localDIDKit.verifyCredential,
     hashFunc,
-    fetch
+    keplerResolve
   );
 };
 
@@ -304,11 +316,6 @@ export const removeClaim = async (claim: Claim): Promise<void> => {
 let urlNode = '';
 let strNetwork = '';
 let urlBetterCallDev = '';
-let localClaims: any = {};
-
-claimsStream.subscribe((claims) => {
-  localClaims = claims;
-});
 
 wallet.subscribe((wallet) => {
   if (wallet) {
@@ -322,25 +329,32 @@ wallet.subscribe((wallet) => {
           let contractJSON = await contractLib.retrieve_tpp_claims(
             urlBetterCallDev,
             await wallet.getPKH(),
-            strNetwork === "custom" ? "sandboxnet" : strNetwork,
+            strNetwork,
             fetch
           );
 
           if (contractJSON) {
-            for (let i = 0, x = contractJSON.length; i < x; i++) {
-              let [url, _hash, contentType] = contractJSON[i];
-                // TODO: Line up contentType with claims keys to make this less ugly.
-                if (contentType === "CoreProfile") {
-                  localClaims.TezosControl.url = url;
-                  loadCoreProfile(localClaims)
-                }
-
-                if (contentType === "TwitterVerification") {
-                  localClaims.TwitterControl.url = url;
-                  loadTwitterProfile(localClaims)
-                }
-              claimsStream.set(localClaims);
+            let nextClaims = Object.assign({}, localClaimsStream);
+            // TODO: FIX THIS IN LIB UPDATE -- INDEX 0 IS USED TO A PLAIN CONTRACT ADDRESS:
+            if (contractJSON[0]) {
+              contractAddress.set(contractJSON[0])
             }
+            for (let i = 1, x = contractJSON.length; i < x; i++) {
+              let [url, _hash, contentType] = contractJSON[i];
+              // TODO: Stop using content type here, unravel the VC a bit.
+              if (contentType === 'BasicProfile') {
+                nextClaims.TezosControl.url = url;;
+                loadBasicProfile(nextClaims);
+              }
+
+              if (contentType === 'VerifiableCredential') {
+                nextClaims.TwitterControl.url = url;
+                loadTwitterProfile(nextClaims);
+              }
+              claimsStream.set(nextClaims);
+            }
+          } else {
+            console.warn('No contract detected, starting new one');
           }
         } catch (e) {
           console.error(`store::load_contracts:: ${e}`);
@@ -354,8 +368,8 @@ wallet.subscribe((wallet) => {
 
 network.subscribe((network) => {
   if (network === NetworkType.CUSTOM) {
-    networkStr.set('sandboxnet');
-    strNetwork = 'custom';
+    networkStr.set('localhost');
+    strNetwork = 'localhost';
 
     nodeUrl.set('http://localhost:8732');
     urlNode = 'http://localhost:8732';
