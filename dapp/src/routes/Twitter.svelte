@@ -173,7 +173,6 @@
               (vc) => {
                 let nextClaimMap = verification;
                 let url = createJsonBlobUrl(vc);
-                console.log(url);
                 nextClaimMap.TwitterControl.url = url;
                 claimsStream.set(nextClaimMap);
               }

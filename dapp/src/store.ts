@@ -88,7 +88,6 @@ export interface Claim {
 let localClaimsStream: ClaimMap;
 let localContractAddress: string;
 let localDIDKit: any;
-let localNetworkStr: string;
 let localWallet: BeaconWallet;
 
 claimsStream.subscribe((x) => {
@@ -100,9 +99,6 @@ contractAddress.subscribe((x) => {
 DIDKit.subscribe((x) => {
   localDIDKit = x;
 });
-networkStr.subscribe((x) => {
-  localNetworkStr = x;
-});
 wallet.subscribe((x) => {
   localWallet = x;
 });
@@ -113,20 +109,14 @@ const hashFunc = async (claimString: string): Promise<ArrayBuffer> => {
 };
 
 export const originate = async (): Promise<void> => {
-  console.log('In originate');
   if (!localWallet) {
     throw new Error('No wallet detected');
-  }
-
-  if (!localNetworkStr) {
-    throw new Error('No contractAddress detected');
   }
 
   if (!localDIDKit || !localDIDKit.verifyCredential) {
     throw new Error('No DIDKit detected');
   }
 
-  console.log('Passed error handling');
   let claimsKeys = Object.keys(localClaimsStream);
 
   // There msut be a less ridiculous way to do this.
@@ -141,21 +131,18 @@ export const originate = async (): Promise<void> => {
     }
   }
 
-  console.log('Passed URL Push');
   if (urlList.length < 1) {
     throw new Error('No claim urls found');
   }
 
-  console.log('URLS found:', urlList.join(', '));
   let opts = {
     useWallet: true,
     wallet: localWallet,
   };
 
-  console.log('about to originate....');
   let contractAddr = await contractLib.originate(
     opts,
-    localNetworkStr,
+    urlNode,
     urlList,
     localDIDKit.verifyCredential,
     hashFunc,
@@ -175,10 +162,6 @@ export const addClaim = async (claim: Claim): Promise<void> => {
     throw new Error('No contractAddress detected');
   }
 
-  if (!localNetworkStr) {
-    throw new Error('No contractAddress detected');
-  }
-
   if (!localDIDKit || !localDIDKit.verifyCredential) {
     throw new Error('No DIDKit detected');
   }
@@ -192,7 +175,7 @@ export const addClaim = async (claim: Claim): Promise<void> => {
     opts,
     localContractAddress,
     claim.url,
-    localNetworkStr,
+    urlNode,
     localDIDKit.verifyCredential,
     hashFunc,
     fetch
@@ -205,10 +188,6 @@ export const removeClaim = async (claim: Claim): Promise<void> => {
   }
 
   if (!localContractAddress) {
-    throw new Error('No contractAddress detected');
-  }
-
-  if (!localNetworkStr) {
     throw new Error('No contractAddress detected');
   }
 
@@ -225,7 +204,7 @@ export const removeClaim = async (claim: Claim): Promise<void> => {
     opts,
     localContractAddress,
     claim.url,
-    localNetworkStr,
+    urlNode,
     localDIDKit.verifyCredential,
     hashFunc,
     fetch
@@ -248,7 +227,6 @@ wallet.subscribe((wallet) => {
     wallet.client.subscribeToEvent(
       BeaconEvent.PERMISSION_REQUEST_SUCCESS,
       async (data) => {
-        console.log(data);
         userData.set(data);
 
         loadingContracts.set(true);
@@ -261,7 +239,6 @@ wallet.subscribe((wallet) => {
           );
 
           if (contractJSON) {
-            console.log('store::load_contracts::', contractJSON);
             for (let i = 0, x = contractJSON.length; i < x; i++) {
               let [url, _hash, contentType] = contractJSON[i];
               if (localClaims[contentType]) {

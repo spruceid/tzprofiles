@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { alert, dappUrl } from 'src/store';
 import { signClaim } from 'src/utils';
+import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-sdk';
 
 export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, profile) => {
   try {
@@ -12,7 +13,8 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
         {
           name: 'https://schema.org/name',
           description: 'https://schema.org/description',
-          logo: 'https://schema.org/logo'
+          logo: 'https://schema.org/logo',
+          CoreProfile: 'https://tzprofiles.me/CoreProfile'
         }
       ],
       id: 'urn:uuid:' + uuid(),
@@ -29,31 +31,30 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
 
     let credentialString = JSON.stringify(credential);
     const proofOptions = {
-      verificationMethod: did + '#blockchainAccountId',
+      verificationMethod: did + '#TezosMethod2021',
       proofPurpose: 'assertionMethod',
     };
 
-    const keyType = {
-      kty: 'OKP',
-      crv: 'Ed25519',
-      x: 'Y-JndzKMXwcbIY9h0snDhFQZG0Weci9zfXHgeZTaMjo',
-      d: 'tJ3uEI9_ymV3Yxk77ZKGcSOFO06j379ql8ZXJEuh6eM',
-    };
-
+    const publicKey = userData.account.publicKey;
+    const publicKeyJwkString = await DIDKit.JWKFromTezos(publicKey);
     let prepStr = await DIDKit.prepareIssueCredential(
       credentialString,
       JSON.stringify(proofOptions),
-      JSON.stringify(keyType)
+      publicKeyJwkString
     );
+    const preparation = JSON.parse(prepStr);
+    const {signingInput} = preparation;
+    const micheline = signingInput && signingInput.micheline;
+    if (!micheline) {
+      throw new Error('Expected micheline signing input');
+    }
 
-    const fmtInput = [
-      'Tezos Signed Message: ',
-      dappUrl,
-      new Date().toISOString(),
-      prepStr,
-    ].join(' ');
-
-    const signature = await signClaim(userData, fmtInput, wallet);
+    const payload: RequestSignPayloadInput = {
+      signingType: SigningType.MICHELINE,
+      payload: micheline,
+      sourceAddress: userData.account.address,
+    };
+    const { signature } = await wallet.client.requestSignPayload(payload);
 
     let vcStr = await DIDKit.completeIssueCredential(
       credentialString,
@@ -61,6 +62,16 @@ export const signCoreProfile = async (userData, wallet, networkStr, DIDKit, prof
       signature
     );
 
+    const verifyOptionsString = '{}';
+    const verifyResult = JSON.parse(await DIDKit.verifyCredential(
+      vcStr,
+      verifyOptionsString
+    ));
+    if (verifyResult.errors.length > 0) {
+      throw new Error("Unable to verify credential: " + verifyResult);
+    }
+
+    console.log(vcStr);
     return vcStr;
   } catch (e) {
     alert.set({
