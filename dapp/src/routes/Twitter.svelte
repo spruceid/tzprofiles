@@ -178,7 +178,7 @@
             next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
                 let nextClaimMap = verification;
-                createJsonBlobUrl(vc).then(url => {
+                createJsonBlobUrl(vc).then((url) => {
                   console.log(url);
                   nextClaimMap.TwitterControl.url = url;
                   claimsStream.set(nextClaimMap);

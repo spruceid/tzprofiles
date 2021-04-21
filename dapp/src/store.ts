@@ -6,9 +6,7 @@ import { Tzip16Module } from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
 import { loadDIDKit } from 'didkit-wasm/didkit-loader';
-import * as contractLib from '../../contract/lib/lib';
-// TODO: get this style of import working
-// import * as contractLib from 'tezospublicprofiles';
+import * as contractLib from 'tezospublicprofiles';
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
 // TODO fix export in kepler :facepalm:
@@ -18,7 +16,8 @@ import { Kepler, authenticator } from 'kepler-sdk';
 export const createJsonBlobUrl = async (obj) => {
   const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
   if (localKepler) {
-    return dummyOrbit + "/" + await localKepler.put(dummyOrbit, obj)
+    const address = await localKepler.put(dummyOrbit, obj);
+    return `${dummyOrbit}/${address}`;
   }
 
   const blob = new Blob([JSON.stringify(obj)], {
@@ -30,7 +29,7 @@ export const createJsonBlobUrl = async (obj) => {
 export const loadJsonBlob = async (url: string): Promise<any> => {
   if (localKepler) {
     const [orbit, cid] = url.split('/');
-    return await localKepler.get(orbit, cid, false)
+    return await localKepler.get(orbit, cid, false);
   }
   return await fetch(url)
     .then((r) => r.blob())
@@ -150,6 +149,7 @@ let localDIDKit: any;
 let localNetworkStr: string;
 let localWallet: BeaconWallet;
 let localKepler: Kepler;
+let keplerInstance: string = 'https://kepler.tzprofiles.com';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
@@ -189,7 +189,7 @@ export const originate = async (): Promise<void> => {
   console.log('Passed error handling');
   let claimsKeys = Object.keys(localClaimsStream);
 
-  let urlList: string[] = []
+  let urlList: string[] = [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
@@ -379,8 +379,10 @@ export const initWallet: () => Promise<void> = async () => {
   wallet.set(newWallet);
   try {
     await newWallet.requestPermissions(requestPermissionsInput);
-    // TODO parameterise kepler URL
-    localKepler = new Kepler('https://kepler.tzprofiles.com', await authenticator(newWallet.client));
+    localKepler = new Kepler(
+      keplerInstance,
+      await authenticator(newWallet.client)
+    );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
     Tezos.setWalletProvider(newWallet);
