@@ -3,16 +3,13 @@ import { BeaconWallet } from '@taquito/beacon-wallet';
 import { signClaim } from 'src/utils';
 
 export const getTweetMessage = (userData, twitterHandle) => {
-return `I am attesting that this Twitter handle @${twitterHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.\n\n`;
-}
+  return `I am attesting that this Twitter handle @${twitterHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.`;
+};
 
 export const getTwitterClaim = async (userData, twitterHandle) => {
   try {
     const sig_target = getTweetMessage(userData, twitterHandle);
-    return [
-      'Tezos Signed Message:',
-      sig_target,
-    ].join(' ');
+    return `Tezos Signed Message: ${sig_target}`;
   } catch (e) {
     alert.set({
       message: e.message,
@@ -51,9 +48,7 @@ const urlToTweetId = (url: string): string => {
 };
 
 export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
-  console.log(
-    `Exchanging ${tweetURL} and ${userData.account.address} for VC`
-  );
+  console.log(`Exchanging ${tweetURL} and ${userData.account.address} for VC`);
   let tweetID = urlToTweetId(tweetURL);
   try {
     let res = await fetch(
@@ -64,7 +59,7 @@ export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
 
     if (res.ok) {
       alert.set({
-        message: 'Success!',
+        message: "You've completed your Twitter Profile successfully!",
         variant: 'success',
       });
 
