@@ -64,7 +64,7 @@
 
 <script lang="ts">
   import { Router, Route } from 'svelte-navigator';
-  import { Home, Faq, Twitter, CoreProfile } from 'routes';
+  import { Home, Faq, Twitter, CoreProfile, TermsOfService } from 'routes';
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =
@@ -95,5 +95,8 @@
   </Route>
   <Route path="core-profile">
     <CoreProfile />
+  </Route>
+  <Route path="terms-of-service">
+    <TermsOfService />
   </Route>
 </Router>

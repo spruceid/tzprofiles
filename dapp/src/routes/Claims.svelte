@@ -1,9 +1,9 @@
 <script type="ts">
   import { AvailableCredentials, Profile, MyCredentials } from 'components';
   import { claimsStream, loadingContracts } from 'src/store';
-  import type { Claim } from 'src/store';
+  import type { ClaimMap } from 'src/store';
 
-  let claims: Claim = {};
+  let claims: ClaimMap;
 
   claimsStream.subscribe((allClaims) => {
     claims = allClaims;
