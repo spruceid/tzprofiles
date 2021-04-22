@@ -23,7 +23,7 @@ export const saveToKepler = async (obj) => {
         variant: 'success',
       });
 
-      return  `${keplerInstance}/${dummyOrbit}/${address}` 
+      return `kepler://${dummyOrbit}/${address}`;
     } catch (e) {
       alert.set({
         message: e.message || JSON.stringify(e),
@@ -38,7 +38,8 @@ export const saveToKepler = async (obj) => {
 
 export const loadJsonBlob = async (url: string): Promise<any> => {
   if (localKepler) {
-    const [orbit, cid] = url.split('/');
+    // TODO this is rather fragile
+    const [orbit, cid] = url.split('/').slice(-2);
     return await localKepler.get(orbit, cid, false);
   }
   return await fetch(url)
