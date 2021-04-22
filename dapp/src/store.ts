@@ -39,7 +39,8 @@ export const saveToKepler = async (obj) => {
 
 export const loadJsonBlob = async (url: string): Promise<any> => {
   if (localKepler) {
-    const [orbit, cid] = url.split('/');
+    const [orbit, cid] = url.split('/').slice(-2);
+    console.log(url, url.split('/').slice(-2));
     return await localKepler.get(orbit, cid, false);
   }
   return await fetch(url)
@@ -57,6 +58,7 @@ export const loadCoreProfile = async ({
 }> => {
   if (url) {
     const { credentialSubject } = await loadJsonBlob(url).then(JSON.parse);
+    console.log('sub', credentialSubject);
     const { alias, description, logo } = credentialSubject;
     return {
       alias,

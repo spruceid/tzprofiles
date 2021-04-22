@@ -34,7 +34,6 @@
     });
 
     loadTwitterProfile($claimsStream).then((res) => {
-      console.log(res);
       let { handle } = res;
       twitterHandle = handle || '';
     });
