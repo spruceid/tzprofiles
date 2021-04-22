@@ -3,6 +3,13 @@
 This smart-contract is a registry of personal claims (meaning every user has to
 originate it).
 
+## Local Environment
+For development purposes, a full-fledged local environment is provided. It
+contains a sandbox Tezos node, better-call.dev API, and the likes. To use it:
+```bash
+docker-compose -f bcd-sandbox.yml up -d
+```
+
 ## CLI
 
 ### Installation
@@ -53,4 +60,5 @@ Import the contract interactions as JS functions
 (TODO: Add examples)
 
 ## Smart Contract Code
-The literal smart-contract code written in LIGO, compiled to Michelson for use by `cli`/`lib`
+The literal smart-contract code written in LIGO, compiled to Michelson for use
+by `cli`/`lib`
