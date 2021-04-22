@@ -56,19 +56,8 @@ export const loadCoreProfile = async ({
   logo: string;
 }> => {
   if (url) {
-     const res = await fetch(url);
-     if (!res.ok || res.status !== 200) {
-       throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
-     }
-
-     const innerJSON = await res.json();
-     const json = JSON.parse(innerJSON);
-     console.log(json);
-     console.log(json.credentialSubject);
-     console.log(Object.keys(json));
-     const { credentialSubject } = json;
-     console.log(credentialSubject);
-     const { description, logo, alias } = credentialSubject;
+    const { credentialSubject } = await loadJsonBlob(url).then(JSON.parse);
+    const { alias, description, logo } = credentialSubject;
     return {
       alias,
       description,
@@ -89,15 +78,7 @@ export const loadTwitterProfile = async ({
   handle: string;
 }> => {
   if (url) {
-    const res = await fetch(url);
-    if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
-    }
-
-    const innerJSON = await res.json();
-    const json = JSON.parse(innerJSON);
-
-    const { credentialSubject } = json;
+    const { credentialSubject } = await loadJsonBlob(url).then(JSON.parse);
     const { sameAs } = credentialSubject;
     const handle = sameAs.replace('https://twitter.com/', '');
     return { handle };
