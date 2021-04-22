@@ -1,10 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { IconLink, DownloadIcon } from 'components';
-  import { claimsStream, loadingContracts } from 'src/store';
+  import { claimsStream, loadingContracts, loadJsonBlob } from 'src/store';
 
-  const makeDownloadable = (obj: object): string => {
-    let stringify = JSON.stringify(obj, null, 2);
+  const makeDownloadable = async (url: string): Promise<string> => {
+    let obj = await loadJsonBlob(url);
+    let stringify = JSON.stringify(JSON.parse(obj), null, 2);
     let encoded = encodeURIComponent(stringify);
     return `data:application/json;charset=utf-8,${encoded}`;
   };
@@ -30,7 +31,9 @@
                 let jsonRes = await fetch(url);
 
                 if (!jsonRes.ok || jsonRes.status !== 200) {
-                  throw new Error(`Error in claims retrieval: ${jsonRes.statusText}`);
+                  throw new Error(
+                    `Error in claims retrieval: ${jsonRes.statusText}`
+                  );
                 }
 
                 let jsonObj = await jsonRes.json();
@@ -39,14 +42,12 @@
               })
           );
 
-          console.log("Data:", data);
+          console.log('Data:', data);
         }
       }
-
     } catch (err) {
-      console.error(`Died in MyCredentials OnMount ${err.message}`)
+      console.error(`Died in MyCredentials OnMount ${err.message}`);
     }
-    
   });
 </script>
 
