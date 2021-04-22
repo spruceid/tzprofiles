@@ -25,7 +25,11 @@ module.exports = {
         },
       },
       maxWidth: {
-        '2/3': '66.67%'
+        '2/3': '66.67%',
+      },
+      maxHeight: {
+        '2/3': '66.67%',
+        '5/6': '83.33%'
       },
       minWidth: {
         '72': '18rem'
@@ -43,6 +47,11 @@ module.exports = {
        },
     },
   },
-  variants: {},
+  variants: {
+    extend: {
+      backgroundColor: ['checked'],
+      borderColor: ['checked'],
+    }
+  },
   plugins: [],
 };
