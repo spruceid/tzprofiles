@@ -17,6 +17,7 @@
 
 <div
   class="relative transition-all ease-in-out duration-500"
+  class:w-full={fluid}
   class:opacity-60={disabled}
   class:cursor-not-allowed={disabled}
 >

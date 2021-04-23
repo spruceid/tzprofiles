@@ -9,6 +9,8 @@
     PrimaryButton,
     Spacer,
     CopyButton,
+    TextBody1,
+    CircleCheckIcon,
   } from 'components';
 
   import {
@@ -19,11 +21,12 @@
     loadTwitterProfile,
     coreAlias,
     coreDescription,
+    coreWebsite,
     coreLogo,
-    twitterHandle
+    twitterHandle,
+    contractAddress,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
-
 
   onMount(() => {
     loadCoreProfile($claimsStream);
@@ -61,49 +64,92 @@
 
   <Label class="mt-4" fieldName="core-alias" value="Alias" />
   {#if $coreAlias}
-    <Input fluid name="core-alias" value={$coreAlias} disabled />
+    <div class="flex items-center">
+      <Input
+        fluid
+        class="font-bold"
+        name="core-alias"
+        value={$coreAlias}
+        disabled
+      />
+      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+    </div>
   {:else}
     <LinkInput href="/core-profile" source="Core Profile Information" />
   {/if}
 
   <Label class="mt-4" fieldName="core-description" value="Description" />
   {#if $coreDescription}
-    <Input fluid name="core-description" value={$coreDescription} disabled />
+    <div class="flex items-center">
+      <Input
+        fluid
+        class="font-bold"
+        name="core-description"
+        value={$coreDescription}
+        disabled
+      />
+      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+    </div>
+  {:else}
+    <LinkInput href="/core-profile" source="Core Profile Information" />
+  {/if}
+
+  <Label class="mt-4" fieldName="core-website" value="Website" />
+  {#if $coreWebsite}
+    <div class="flex items-center">
+      <Input
+        fluid
+        class="font-bold"
+        name="core-website"
+        value={$coreWebsite}
+        disabled
+      />
+      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+    </div>
   {:else}
     <LinkInput href="/core-profile" source="Core Profile Information" />
   {/if}
 
   <Label class="mt-4" fieldName="core-logo" value="Logo" />
-  <div
-    class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
-    class:opacity-60={true}
-  >
+  <div class="flex items-center justify-between">
+    <div
+      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
+      class:opacity-60={true}
+    >
+      {#if $coreLogo}
+        <img
+          name="core-logo"
+          class="object-contain"
+          src={$coreLogo}
+          alt="Core profile logo"
+        />
+      {:else}
+        <p class="m-2 italic break-words select-none">
+          {'Available in '}
+          <a href="/core-profile" class="underline">
+            {'Core Profile Information'}
+          </a>
+        </p>
+      {/if}
+    </div>
     {#if $coreLogo}
-      <img
-        name="core-logo"
-        class="object-contain"
-        src={$coreLogo}
-        alt="Core profile logo"
-      />
-    {:else}
-      <p class="m-2 italic break-words select-none">
-        {'Available in '}
-        <a href="/core-profile" class="underline">
-          {'Core Profile Information'}
-        </a>
-      </p>
+      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     {/if}
   </div>
 
   <Label class="mt-4" fieldName="core-twitter-handle" value="Twitter Handle" />
   {#if $twitterHandle}
-    <Input
-      prefix="@"
-      fluid
-      name="core-twitter-handle"
-      value={$twitterHandle}
-      disabled
-    />
+    <div class="flex items-center">
+      <Input
+        prefix="@"
+        fluid
+        class="font-bold"
+        name="core-twitter-handle"
+        value={$twitterHandle}
+        disabled
+      />
+      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+    </div>
   {:else}
     <LinkInput href="/twitter" source="Twitter Account Information" />
   {/if}
@@ -111,13 +157,22 @@
   <Spacer />
 
   {#if hasUrl($claimsStream)}
-    <PrimaryButton
-      text="Deploy Profile"
-      class="mx-auto mt-4 bottom-6"
-      onClick={async () => {
-        await originate();
-      }}
-    />
+    {#if $contractAddress !== null}
+      <!-- TODO: Stylize -->
+      <span class="">
+        {'Profile Deployed at '}
+        <a href={`https://tzkt.io/${$contractAddress}`}>{'tzkt.io'}</a>
+      </span>
+    {:else}
+      <!-- TODO: Add Checkbox -->
+      <PrimaryButton
+        text="Deploy Profile"
+        class="mx-auto mt-4 bottom-6"
+        onClick={async () => {
+          await originate();
+        }}
+      />
+    {/if}
   {:else}
     <PrimaryButton
       text="Deploy Profile"

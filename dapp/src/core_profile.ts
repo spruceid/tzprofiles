@@ -11,7 +11,7 @@ export const signCoreProfile = async (
   profile
 ) => {
   try {
-    const { alias, description, logo } = profile;
+    const { alias, description, website, logo } = profile;
     const did = `did:pkh:tz:${userData.account.address}`;
     const credential = {
       '@context': [
@@ -19,9 +19,10 @@ export const signCoreProfile = async (
         {
           alias: 'https://schema.org/name',
           description: 'https://schema.org/description',
+          website: 'https://schema.org/url',
           logo: 'https://schema.org/logo',
-          CoreProfile: 'https://tzprofiles.me/CoreProfile'
-        }
+          CoreProfile: 'https://tzprofiles.me/CoreProfile',
+        },
       ],
       id: 'urn:uuid:' + uuid(),
       issuer: did,
@@ -31,6 +32,7 @@ export const signCoreProfile = async (
         id: did,
         alias,
         description,
+        website,
         logo,
       },
     };

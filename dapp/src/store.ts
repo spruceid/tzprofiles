@@ -23,7 +23,7 @@ export const saveToKepler = async (obj) => {
         variant: 'success',
       });
 
-      return  `${keplerInstance}/${dummyOrbit}/${address}` 
+      return `${keplerInstance}/${dummyOrbit}/${address}`;
     } catch (e) {
       alert.set({
         message: e.message || JSON.stringify(e),
@@ -33,7 +33,7 @@ export const saveToKepler = async (obj) => {
     }
   }
 
-  throw new Error("No Kepler integration found")
+  throw new Error('No Kepler integration found');
 };
 
 export const loadJsonBlob = async (url: string): Promise<any> => {
@@ -53,14 +53,15 @@ export const loadCoreProfile = async ({
   if (url) {
     const res = await fetch(url);
     if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
+      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`);
     }
 
     const innerJSON = await res.json();
     const json = JSON.parse(innerJSON);
     const { credentialSubject } = json;
-    const { description, logo, alias } = credentialSubject;
+    const { alias, description, website, logo } = credentialSubject;
     coreAlias.set(alias);
+    coreWebsite.set(website);
     coreDescription.set(description);
     coreLogo.set(logo);
   } else {
@@ -76,7 +77,7 @@ export const loadTwitterProfile = async ({
   if (url) {
     const res = await fetch(url);
     if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
+      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`);
     }
 
     const innerJSON = await res.json();
@@ -118,7 +119,7 @@ export let alert: Writable<{
 
 export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
   TwitterControl: {
-    display: 'Twitter Account Control',
+    display: 'Twitter Account Verification',
     url: '',
     type: 'Social Media',
     proof: 'Tweet',
@@ -130,7 +131,7 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
     contractType: 'TwitterVerification',
   },
   TezosControl: {
-    display: 'Tezos Wallet Control',
+    display: 'Basic Profile Information',
     url: '',
     type: 'Core Profile',
     proof: 'Self-Attestation',
@@ -145,8 +146,10 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
 
 export let coreAlias: Writable<string> = writable<string>(null);
 export let coreDescription: Writable<string> = writable<string>(null);
+export let coreWebsite: Writable<string> = writable<string>(null);
 export let coreLogo: Writable<string> = writable<string>(null);
 export let twitterHandle: Writable<string> = writable<string>(null);
+export let profileUrl: Writable<string> = writable<string>(null);
 
 export interface ClaimMap {
   [index: string]: Claim;
@@ -200,7 +203,7 @@ export const originate = async (): Promise<void> => {
 
   let claimsKeys = Object.keys(localClaimsStream);
 
-  let urlList: [string] = ["Make the type checker happy"];
+  let urlList: [string] = ['Make the type checker happy'];
   urlList.pop();
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
@@ -298,7 +301,6 @@ let strNetwork = '';
 let urlBetterCallDev = '';
 let localClaims: any = {};
 
-
 claimsStream.subscribe((claims) => {
   localClaims = claims;
 });
@@ -315,27 +317,27 @@ wallet.subscribe((wallet) => {
           let contractJSON = await contractLib.retrieve_tpp_claims(
             urlBetterCallDev,
             await wallet.getPKH(),
-            strNetwork === "custom" ? "sandboxnet" : strNetwork,
+            strNetwork === 'custom' ? 'sandboxnet' : strNetwork,
             fetch
           );
 
           if (contractJSON) {
             for (let i = 0, x = contractJSON.length; i < x; i++) {
               let [url, _hash, contentType] = contractJSON[i];
-                // TODO: Line up contentType with claims keys to make this less ugly.
-                if (contentType === "CoreProfile") {
-                  localClaims.TezosControl.url = url;
-                  loadCoreProfile(localClaims)
-                }
+              // TODO: Line up contentType with claims keys to make this less ugly.
+              if (contentType === 'CoreProfile') {
+                localClaims.TezosControl.url = url;
+                loadCoreProfile(localClaims);
+              }
 
-                if (contentType === "TwitterVerification") {
-                  localClaims.TwitterControl.url = url;
-                  loadTwitterProfile(localClaims)
-                }
+              if (contentType === 'TwitterVerification') {
+                localClaims.TwitterControl.url = url;
+                loadTwitterProfile(localClaims);
+              }
               claimsStream.set(localClaims);
             }
           } else {
-            console.warn("No contract detected, starting new one")
+            console.warn('No contract detected, starting new one');
           }
         } catch (e) {
           console.error(`store::load_contracts:: ${e}`);

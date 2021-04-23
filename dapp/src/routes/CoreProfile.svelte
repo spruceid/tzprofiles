@@ -26,6 +26,7 @@
   let lock: boolean = false;
   let alias: string = '';
   let description: string = '';
+  let website: string = '';
   let logo: string = '';
   let currentStep: number = 1;
 
@@ -47,6 +48,7 @@
           let profile = {
             alias,
             description,
+            website,
             logo,
           };
           signCoreProfile($userData, $wallet, $networkStr, $DIDKit, profile)
@@ -95,6 +97,14 @@
         bind:value={description}
         name="description"
         placeholder="Enter a description"
+        disabled={currentStep !== 1}
+      />
+
+      <Label fieldName="website" value="Website" class="mt-2 text-white" />
+      <Input
+        bind:value={website}
+        name="website"
+        placeholder="Enter your website"
         disabled={currentStep !== 1}
       />
 
