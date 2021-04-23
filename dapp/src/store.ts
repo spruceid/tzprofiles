@@ -5,12 +5,12 @@ import { TezosToolkit } from '@taquito/taquito';
 import { Tzip16Module } from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import { loadDIDKit } from 'didkit-wasm/didkit-loader';
 import * as contractLib from 'tezospublicprofiles';
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
 // TODO fix export in kepler :facepalm:
 import { Kepler, authenticator } from 'kepler-sdk';
+import { loadDIDKit } from './loader/didkit-loader';
 
 // TODO: Change this to kepler, then remove.
 export const saveToKepler = async (obj) => {
@@ -93,11 +93,15 @@ export const loadTwitterProfile = async ({
 };
 
 export let DIDKit = writable(null);
+
+loadDIDKit("/didkit_wasm_bg.wasm").then((x) => {
+  DIDKit.set(x);
+});
+
 export const userData = writable(null);
 export const contractAddress: Writable<string> = writable<string>(null);
-export const dappUrl = 'http://localhost:8080';
-export const witnessUrl = 'http://localhost:8787';
-// export const witnessUrl = 'https://tzprofiles_witness.krhoda-spruce.workers.dev';
+export const keplerInstance = process.env.KEPLER_URL;
+export const witnessUrl = process.env.WITNESS_URL;
 export let nodeUrl: Writable<string> = writable<string>(null);
 export let loadingContracts: Writable<boolean> = writable(true);
 export let networkStr: Writable<string> = writable<string>(null);
@@ -170,7 +174,6 @@ let localContractAddress: string;
 let localDIDKit: any;
 let localWallet: BeaconWallet;
 let localKepler: Kepler;
-let keplerInstance: string = 'http://127.0.0.1:8000';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
@@ -292,13 +295,10 @@ export const removeClaim = async (claim: Claim): Promise<void> => {
   );
 };
 
-loadDIDKit('/didkit_wasm_bg.wasm').then(DIDKit.set);
-
 let urlNode = '';
 let strNetwork = '';
 let urlBetterCallDev = '';
 let localClaims: any = {};
-
 
 claimsStream.subscribe((claims) => {
   localClaims = claims;

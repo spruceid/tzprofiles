@@ -2,14 +2,15 @@
 
 ## Installation
 
-Compile DIDKit to WASM for browser use. Under `didkit/lib/web`, run:
+For local deployment, install and run Kepler:
 ```bash
-wasm-pack build --target web --out-dir pkg/wasm
-npm --prefix loader/wasm install
-npm --prefix loader/wasm run build
+git clone https://github.com/spruceid/kepler
+cd kepler
+cargo build
+cargo run
 ```
 
-Then:
+To run:
 ```bash
 npm install
 npm run build

@@ -4,7 +4,10 @@ A Cloudflare Worker to witness a tweet claiming ownership of a Tezos account.
 
 ## Deploy
 
-You need a Cloudflare account, and the ID needs to go in the `wrangler.toml`.
+Requires [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/install-update#additional-installation-instructions).
+
+You need a Cloudflare account, and the Account ID needs to go in 
+the `wrangler.toml`.
 
 The worker needs two things: the private key to issue the VC after verifying the
 tweet, and an API token for the Twitter API. You can add these as secrets with:
