@@ -32,7 +32,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack serve --content-base public",
+    "dev": "webpack serve --content-base public --port 9090",
     "validate": "svelte-check"
   }
 }
