@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { alert, dappUrl } from 'src/store';
+import { alert } from 'src/store';
 import { signClaim } from 'src/utils';
 import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-sdk';
 

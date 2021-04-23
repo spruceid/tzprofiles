@@ -17,7 +17,6 @@ module.exports = {
 			components: path.resolve(__dirname, 'src/components'),
 			routes: path.resolve(__dirname, 'src/routes'),
 			enums: path.resolve(__dirname, 'src/enums'),
-			tezospublicprofiles: path.resolve(__dirname, '../contract/lib/lib'),
 			process: "process/browser",
 			src: path.resolve(__dirname, 'src/'),
 		},
@@ -59,7 +58,7 @@ module.exports = {
 						hotReload: !prod,
 						preprocess: sveltePreprocess({
 							sourceMap: !prod,
-							postcss:true
+							postcss: true
 						})
 					}
 				}
@@ -99,7 +98,11 @@ module.exports = {
 		}),
 		new webpack.DefinePlugin({
 			'BUILD_MODE_DEV': !prod,
-		}),		  
+		}),
+		new webpack.EnvironmentPlugin({
+			WITNESS_URL: "http://localhost:8787",
+			KEPLER_URL: "http://localhost:8000"
+		})
 	],
 	devtool: prod ? false : 'source-map',
 	devServer: {
