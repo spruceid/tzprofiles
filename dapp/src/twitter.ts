@@ -1,4 +1,4 @@
-import { witnessUrl, dappUrl, alert, userData } from 'src/store';
+import { witnessUrl, alert, userData } from 'src/store';
 import { BeaconWallet } from '@taquito/beacon-wallet';
 import { signClaim } from 'src/utils';
 
