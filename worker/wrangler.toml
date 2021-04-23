@@ -1,6 +1,6 @@
 name = "tzprofiles_witness"
 type = "rust"
-account_id = ""
+account_id = "95337cc807b7a526567d2d469d864755"
 workers_dev = true
 route = ""
 zone_id = ""

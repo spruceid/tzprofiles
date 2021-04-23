@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "tezos-profiles",
   "version": "1.0.0",
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",

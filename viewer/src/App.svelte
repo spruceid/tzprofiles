@@ -1,123 +1,78 @@
 <script lang="ts">
-  import * as contractLib from "tezospublicprofiles";
-  $: showResults = false;
-  $: errorMessage = "";
-  $: nodeHost = "mainnet";
-  $: claims = {
-    CoreProfile: false,
-    TwitterProfile: false,
-  };
+  import { Router, Route } from "svelte-navigator";
+  import { Home } from "pages";
 
-  // TODO: REMOVE
-  $: debugClaims = [];
-
-  let wallet: string;
-
-  const getBetterCallDevPrefix = () => {
-    return nodeHost === "mainnet"
-      ? "https://api.better-call.dev"
-      : "http://localhost:14000";
-  };
-
-  const search = async () => {
-    errorMessage = "";
-
-    if (wallet) {
-      let found: false | [[string, string, string]] = false;
-      try {
-        found = await contractLib.retrieve_tpp_claims(
-          getBetterCallDevPrefix(),
-          wallet,
-          nodeHost,
-          fetch
-        );
-      } catch (err) {
-        if (err.message) {
-          errorMessage = err.message;
-        } else {
-          errorMessage = "Network error";
-        }
-        return;
-      }
-
-      if (found) {
-        let tripleClaims = found;
-        debugClaims = tripleClaims;
-
-        let nextClaims = {};
-        for (let i = 0, n = tripleClaims.length; i < n; i++) {
-          let [url, hash, key] = tripleClaims[i];
-          nextClaims[key] = {
-            url,
-            hash,
-            content: null,
-            errorMessage: "",
-          };
-          // TODO: follow URL, test hash, display results.
-        }
-
-        claims = nextClaims;
-        showResults = true;
-        return;
-      }
-    }
-
-    errorMessage = `No contract found for ${wallet}`;
-  };
+  //This avoids PurgeCSS from deleting classes from production build
+  const classes: string =
+    "py-4 py-1 opacity-50 cursor-not-allowed text-gray-350 text-gray-500 italic pl-6 bg-green-550 text-gray-370 opacity-0 opacity-60";
 </script>
 
-<main>
-  <h2>Tezos Public Profile</h2>
-  {#if errorMessage}
-    <div>
-      <p style="color:red;">{errorMessage}</p>
-    </div>
-  {/if}
-  <div>
-    <label for="network">Mainnet or Local?</label>
-    <select bind:value={nodeHost}>
-      <option value="mainnet" default>mainnet</option>
-      <option value="sandboxnet">sandboxnet</option>
-    </select>
-  </div>
-  <div>
-    <label for="search">Find by address: </label>
-    <input bind:value={wallet} />
-    <button on:click={search}>Search</button>
-  </div>
-  {#if showResults}
-    <div>
-      <h3>{wallet} had the following claims</h3>
-      <!-- TODO: REMOVE -->
-      <p>DEBUG:</p>
-      <p>{JSON.stringify(debugClaims)}</p>
-      <p>Core Profile</p>
-      {#if claims["CoreProfile"]}
-        <p>Will Be Core Profile Claims</p>
-      {:else}
-        <p>User is missing Core Profile Claims</p>
-      {/if}
-      <p>Twitter Profile</p>
-      {#if claims["TwitterProfile"]}
-        <p>Will Be Twitter Claims</p>
-      {:else}
-        <p>User is missing Twitter Claims</p>
-      {/if}
-    </div>
-  {/if}
-</main>
+<Router>
+  <Route path="/">
+    <Home />
+  </Route>
+</Router>
 
-<style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
+<style global lang="postcss">
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+  html,
+  body {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0px;
+    padding: 0px;
+    font-size: 16px;
+    font-family: "Inter";
+    background: linear-gradient(151.67deg, #3a83a3 42.84%, #429383 103.49%);
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
   }
 
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: "Poppins";
+    text-transform: capitalize;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  td,
+  th {
+    font-family: "Poppins";
+    font-weight: 400;
+  }
+
+  pre {
+    white-space: pre-wrap; /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+  }
+
+  /**
+  Custom scrollbar settings
+  */
+  ::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background-color: #ccc;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background-color: #888;
+  }
+  ::-webkit-scrollbar {
+    height: 6px;
+    border-radius: 8px;
+    width: 6px;
+    background-color: #ccc;
   }
 </style>
