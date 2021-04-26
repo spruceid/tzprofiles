@@ -156,6 +156,8 @@
 
   <Spacer />
 
+  <!-- TODO: Add Checkbox -->
+
   {#if hasUrl($claimsStream)}
     {#if $contractAddress !== null}
       <!-- TODO: Stylize -->
@@ -164,7 +166,6 @@
         <a href={`https://tzkt.io/${$contractAddress}`}>{'tzkt.io'}</a>
       </span>
     {:else}
-      <!-- TODO: Add Checkbox -->
       <PrimaryButton
         text="Deploy Profile"
         class="mx-auto mt-4 bottom-6"
