@@ -17,19 +17,19 @@
     claimsStream,
     originate,
     userData,
-    loadCoreProfile,
+    loadBasicProfile,
     loadTwitterProfile,
-    coreAlias,
-    coreDescription,
-    coreWebsite,
-    coreLogo,
+    basicAlias,
+    basicDescription,
+    basicWebsite,
+    basicLogo,
     twitterHandle,
     contractAddress,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
 
   onMount(() => {
-    loadCoreProfile($claimsStream);
+    loadBasicProfile($claimsStream);
     loadTwitterProfile($claimsStream);
   });
 
@@ -72,89 +72,89 @@
     />
   </div>
 
-  <Label class="mt-4" fieldName="core-alias" value="Alias" />
-  {#if $coreAlias}
+  <Label class="mt-4" fieldName="basic-alias" value="Alias" />
+  {#if $basicAlias}
     <div class="flex items-center">
       <Input
         fluid
         class="font-bold"
-        name="core-alias"
-        value={$coreAlias}
+        name="basic-alias"
+        value={$basicAlias}
         disabled
       />
       <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     </div>
   {:else}
-    <LinkInput href="/core-profile" source="Core Profile Information" />
+    <LinkInput href="/basic-profile" source="Basic Profile Information" />
   {/if}
 
-  <Label class="mt-4" fieldName="core-description" value="Description" />
-  {#if $coreDescription}
+  <Label class="mt-4" fieldName="basic-description" value="Description" />
+  {#if $basicDescription}
     <div class="flex items-center">
       <Input
         fluid
         class="font-bold"
-        name="core-description"
-        value={$coreDescription}
+        name="basic-description"
+        value={$basicDescription}
         disabled
       />
       <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     </div>
   {:else}
-    <LinkInput href="/core-profile" source="Core Profile Information" />
+    <LinkInput href="/basic-profile" source="Basic Profile Information" />
   {/if}
 
-  <Label class="mt-4" fieldName="core-website" value="Website" />
-  {#if $coreWebsite}
+  <Label class="mt-4" fieldName="basic-website" value="Website" />
+  {#if $basicWebsite}
     <div class="flex items-center">
       <Input
         fluid
         class="font-bold"
-        name="core-website"
-        value={$coreWebsite}
+        name="basic-website"
+        value={$basicWebsite}
         disabled
       />
       <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     </div>
   {:else}
-    <LinkInput href="/core-profile" source="Core Profile Information" />
+    <LinkInput href="/basic-profile" source="Basic Profile Information" />
   {/if}
 
-  <Label class="mt-4" fieldName="core-logo" value="Logo" />
+  <Label class="mt-4" fieldName="basic-logo" value="Logo" />
   <div class="flex items-center justify-between">
     <div
       class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
       class:opacity-60={true}
     >
-      {#if $coreLogo}
+      {#if $basicLogo}
         <img
-          name="core-logo"
+          name="basic-logo"
           class="object-contain"
-          src={$coreLogo}
-          alt="Core profile logo"
+          src={$basicLogo}
+          alt="Basic profile logo"
         />
       {:else}
         <p class="m-2 italic break-words select-none">
           {'Available in '}
-          <a href="/core-profile" class="underline">
-            {'Core Profile Information'}
+          <a href="/basic-profile" class="underline">
+            {'Basic profile Information'}
           </a>
         </p>
       {/if}
     </div>
-    {#if $coreLogo}
+    {#if $basicLogo}
       <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     {/if}
   </div>
 
-  <Label class="mt-4" fieldName="core-twitter-handle" value="Twitter Handle" />
+  <Label class="mt-4" fieldName="basic-twitter-handle" value="Twitter Handle" />
   {#if $twitterHandle}
     <div class="flex items-center">
       <Input
         prefix="@"
         fluid
         class="font-bold"
-        name="core-twitter-handle"
+        name="basic-twitter-handle"
         value={$twitterHandle}
         disabled
       />

@@ -7,12 +7,12 @@
     Option,
     Input,
     Label,
-  } from 'components';
+  } from "components";
 
-  import { search, selectedNetwork, claims } from 'src/store';
-  import { onMount } from 'svelte';
+  import { search, selectedNetwork, claims } from "src/store";
+  import { onMount } from "svelte";
 
-  let address: string = '';
+  let address: string = "";
   let network: string;
 
   onMount(() => {
@@ -60,17 +60,17 @@
     </div>
   </div>
 
-  {#if claims['CoreProfile'] || claims['TwitterProfile']}
+  {#if claims["BasicProfile"] || claims["TwitterProfile"]}
     <div>
       <h3>{address} had the following claims</h3>
-      <p>Core Profile</p>
-      {#if claims['CoreProfile']}
-        <p>Will Be Core Profile Claims</p>
+      <p>Basic Profile</p>
+      {#if claims["BasicProfile"]}
+        <p>Will Be Basic Profile Claims</p>
       {:else}
-        <p>User is missing Core Profile Claims</p>
+        <p>User is missing Basic Profile Claims</p>
       {/if}
       <p>Twitter Profile</p>
-      {#if claims['TwitterProfile']}
+      {#if claims["TwitterProfile"]}
         <p>Will Be Twitter Claims</p>
       {:else}
         <p>User is missing Twitter Claims</p>

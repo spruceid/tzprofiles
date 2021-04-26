@@ -9,14 +9,14 @@
   } from 'components';
   import {
     claimsStream,
-    saveToKepler,
     userData,
     wallet,
     networkStr,
     DIDKit,
+    createJsonBlobUrl,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
-  import { signCoreProfile } from 'src/core_profile';
+  import { signBasicProfile } from 'src/basic_profile';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
@@ -51,14 +51,12 @@
             website,
             logo,
           };
-          signCoreProfile($userData, $wallet, $networkStr, $DIDKit, profile)
+          signBasicProfile($userData, $wallet, $networkStr, $DIDKit, profile)
             .then((vc) => {
               let nextClaimMap = verification;
-              saveToKepler(vc).then((url) => {
-                nextClaimMap.TezosControl.url = url;
-                claimsStream.set(nextClaimMap);
-                next();
-              });
+              nextClaimMap.TezosControl.url = createJsonBlobUrl(vc);
+              claimsStream.set(nextClaimMap);
+              next();
             })
             .catch(console.error)
             .finally(() => (lock = false));

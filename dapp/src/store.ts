@@ -12,12 +12,16 @@ import SvelteComponentDev from '*.svelte';
 // TODO fix export in kepler :facepalm:
 import { Kepler, authenticator } from 'kepler-sdk';
 
-// TODO: Change this to kepler, then remove.
-export const saveToKepler = async (obj) => {
+export const createJsonBlobUrl = (object) => {
+  const blob = new Blob([JSON.stringify(object, null, 2)]);
+  return URL.createObjectURL(blob);
+};
+
+export const saveToKepler = async ([obj]) => {
   const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
   if (localKepler) {
     try {
-      const address = await localKepler.put(dummyOrbit, obj);
+      const address = await localKepler.put(dummyOrbit, ...obj);
       alert.set({
         message: 'Successfuly uploaded to Kepler',
         variant: 'success',
@@ -37,39 +41,35 @@ export const saveToKepler = async (obj) => {
 };
 
 export const loadJsonBlob = async (url: string): Promise<any> => {
-  if (localKepler) {
+  if (!url.startsWith('blob:')) {
     const [orbit, cid] = url.split('/').slice(-2);
-    console.log(url, url.split('/').slice(-2));
     return await localKepler.get(orbit, cid, false);
   }
   return await fetch(url)
-    .then((r) => r.blob())
-    .then((b) => b.text())
-    .then((s) => JSON.parse(JSON.parse(s)));
 };
 
-export const loadCoreProfile = async ({
+export const loadBasicProfile = async ({
   TezosControl: { url },
 }: ClaimMap): Promise<void> => {
   if (url) {
-    const res = await fetch(url);
+    const res = await loadJsonBlob(url);
     if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`);
+      throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
     }
 
     const innerJSON = await res.json();
     const json = JSON.parse(innerJSON);
     const { credentialSubject } = json;
     const { alias, description, website, logo } = credentialSubject;
-    coreAlias.set(alias);
-    coreWebsite.set(website);
-    coreDescription.set(description);
-    coreLogo.set(logo);
+    basicAlias.set(alias);
+    basicWebsite.set(website);
+    basicDescription.set(description);
+    basicLogo.set(logo);
   } else {
-    coreAlias.set('');
-    coreWebsite.set('');
-    coreDescription.set('');
-    coreLogo.set('');
+    basicAlias.set('');
+    basicWebsite.set('');
+    basicDescription.set('');
+    basicLogo.set('');
   }
 };
 
@@ -77,9 +77,9 @@ export const loadTwitterProfile = async ({
   TwitterControl: { url },
 }: ClaimMap): Promise<void> => {
   if (url) {
-    const res = await fetch(url);
+    const res = await loadJsonBlob(url);
     if (!res.ok || res.status !== 200) {
-      throw new Error(`Failed in Core Profile Fetch ${res.statusText}`);
+      throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
     }
 
     const innerJSON = await res.json();
@@ -135,21 +135,21 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
   TezosControl: {
     display: 'Basic Profile Information',
     url: '',
-    type: 'Core Profile',
+    type: 'Basic Profile',
     proof: 'Self-Attestation',
-    title: 'Core Profile',
+    title: 'Basic Profile',
     description:
       'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
     icon: () => PersonOutlined,
-    route: '/core-profile',
-    contractType: 'CoreProfile',
+    route: '/basic-profile',
+    contractType: 'BasicProfile',
   },
 });
 
-export let coreAlias: Writable<string> = writable<string>(null);
-export let coreDescription: Writable<string> = writable<string>(null);
-export let coreWebsite: Writable<string> = writable<string>(null);
-export let coreLogo: Writable<string> = writable<string>(null);
+export let basicAlias: Writable<string> = writable<string>(null);
+export let basicDescription: Writable<string> = writable<string>(null);
+export let basicWebsite: Writable<string> = writable<string>(null);
+export let basicLogo: Writable<string> = writable<string>(null);
 export let twitterHandle: Writable<string> = writable<string>(null);
 export let profileUrl: Writable<string> = writable<string>(null);
 
@@ -234,7 +234,6 @@ export const originate = async (): Promise<void> => {
   );
 
   contractAddress.set(contractAddr);
-  console.log(`originated contract: ${contractAddr}`);
 };
 
 export const addClaim = async (claim: Claim): Promise<void> => {
@@ -326,9 +325,9 @@ wallet.subscribe((wallet) => {
             for (let i = 0, x = contractJSON.length; i < x; i++) {
               let [url, _hash, contentType] = contractJSON[i];
               // TODO: Line up contentType with claims keys to make this less ugly.
-              if (contentType === 'CoreProfile') {
+              if (contentType === 'BasicProfile') {
                 localClaims.TezosControl.url = url;
-                loadCoreProfile(localClaims);
+                loadBasicProfile(localClaims);
               }
 
               if (contentType === 'TwitterVerification') {

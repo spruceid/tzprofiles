@@ -10,7 +10,7 @@ export let alert: Writable<{
 }>(null);
 
 export let claims: Writable<any> = writable({
-  CoreProfile: false,
+  BasicProfile: false,
   TwitterProfile: false,
 });
 

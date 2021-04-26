@@ -8,7 +8,7 @@
     VerificationStep,
   } from 'components';
 
-  import { saveToKepler, claimsStream, wallet, userData } from 'src/store';
+  import { claimsStream, wallet, userData, createJsonBlobUrl } from 'src/store';
   import {
     signTwitterClaim,
     getTwitterClaim,
@@ -188,10 +188,10 @@
             next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
                 let nextClaimMap = verification;
-                saveToKepler(vc).then((url) => {
-                  nextClaimMap.TwitterControl.url = url;
-                  claimsStream.set(nextClaimMap);
-                });
+
+                nextClaimMap.TwitterControl.url = createJsonBlobUrl(vc);
+                claimsStream.set(nextClaimMap);
+                next();
               }
             );
           }}

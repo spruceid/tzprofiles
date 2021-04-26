@@ -68,7 +68,7 @@
     Home,
     Faq,
     Twitter,
-    CoreProfile,
+    BasicProfile,
     TermsOfService,
     PrivacyPolicy,
   } from 'routes';
@@ -100,8 +100,8 @@
   <Route path="twitter">
     <Twitter />
   </Route>
-  <Route path="core-profile">
-    <CoreProfile />
+  <Route path="basic-profile">
+    <BasicProfile />
   </Route>
   <Route path="terms-of-service">
     <TermsOfService />
