@@ -167,12 +167,7 @@
   <Spacer class="min-h-8" />
 
   <div class="flex items-center w-full text-gray-650">
-    <input
-      id="agreement"
-      on:change={toggle}
-      type="checkbox"
-      bind:value={agreement}
-    />
+    <input id="agreement" on:change={toggle} type="checkbox" />
     <label for="agreement" class="flex-grow ml-4 text-xs text-left md:text-sm">
       {'I have '}
       <span class="font-bold">{'read'}</span>
@@ -205,7 +200,7 @@
       <PrimaryButton
         text="Deploy Profile"
         class="mx-auto mt-4 bottom-6"
-        disabled={agreement}
+        disabled={!agreement}
         onClick={deploy}
       />
     {/if}

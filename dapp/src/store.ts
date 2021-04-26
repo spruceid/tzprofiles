@@ -17,11 +17,13 @@ export const createJsonBlobUrl = (object) => {
   return URL.createObjectURL(blob);
 };
 
-export const saveToKepler = async ([obj]) => {
+export const saveToKepler = async (...obj) => {
   const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
   if (localKepler) {
     try {
+      console.log('start kepler', ...obj);
       const address = await localKepler.put(dummyOrbit, ...obj);
+      console.log('got kepler', address);
       alert.set({
         message: 'Successfuly uploaded to Kepler',
         variant: 'success',
@@ -45,7 +47,7 @@ export const loadJsonBlob = async (url: string): Promise<any> => {
     const [orbit, cid] = url.split('/').slice(-2);
     return await localKepler.get(orbit, cid, false);
   }
-  return await fetch(url)
+  return await fetch(url);
 };
 
 export const loadBasicProfile = async ({
@@ -65,11 +67,13 @@ export const loadBasicProfile = async ({
     basicWebsite.set(website);
     basicDescription.set(description);
     basicLogo.set(logo);
+    basicProfileLocalObject.set(json);
   } else {
     basicAlias.set('');
     basicWebsite.set('');
     basicDescription.set('');
     basicLogo.set('');
+    basicProfileLocalObject.set(null);
   }
 };
 
@@ -89,8 +93,10 @@ export const loadTwitterProfile = async ({
     const { sameAs } = credentialSubject;
     const handle = sameAs.replace('https://twitter.com/', '');
     twitterHandle.set(handle);
+    twitterLocalObject.set(json);
   } else {
     twitterHandle.set('');
+    twitterLocalObject.set(null);
   }
 };
 
@@ -100,16 +106,19 @@ export const contractAddress: Writable<string> = writable<string>(null);
 export const dappUrl = 'http://localhost:8080';
 export const witnessUrl = 'http://localhost:8787';
 // export const witnessUrl = 'https://tzprofiles_witness.krhoda-spruce.workers.dev';
-export let nodeUrl: Writable<string> = writable<string>(null);
-export let loadingContracts: Writable<boolean> = writable(true);
-export let networkStr: Writable<string> = writable<string>(null);
+export const nodeUrl: Writable<string> = writable<string>(null);
+export const loadingContracts: Writable<boolean> = writable(true);
+export const networkStr: Writable<string> = writable<string>(null);
 export const wallet: Writable<BeaconWallet> = writable<BeaconWallet>(null);
 export const network: Writable<NetworkType> = writable<NetworkType>(
   NetworkType.MAINNET
 );
-export let betterCallDevUrl: Writable<string> = writable<string>(
+export const betterCallDevUrl: Writable<string> = writable<string>(
   'https://api.better-call.dev'
 );
+
+export const twitterLocalObject: Writable<any> = writable(null);
+export const basicProfileLocalObject: Writable<any> = writable(null);
 
 export let alert: Writable<{
   message: string;
@@ -209,9 +218,9 @@ export const originate = async (): Promise<void> => {
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
-    let claim = localClaimsStream[claimKey];
-    if (claim.url) {
-      urlList.push(claim.url);
+    let { url } = localClaimsStream[claimKey];
+    if (url) {
+      urlList.push(url);
     }
   }
 
@@ -219,6 +228,16 @@ export const originate = async (): Promise<void> => {
     throw new Error('No claim urls found');
   }
 
+  const blobList = await Promise.all(
+    urlList.map((url) =>
+      loadJsonBlob(url)
+        .then((r) => r.json())
+        .then(JSON.parse)
+    )
+  );
+
+  await saveToKepler(...blobList).then(console.log);
+  return;
   let opts = {
     useWallet: true,
     wallet: localWallet,
@@ -337,7 +356,7 @@ wallet.subscribe((wallet) => {
               claimsStream.set(localClaims);
             }
           } else {
-            console.warn("No contract detected, starting new one")
+            console.warn('No contract detected, starting new one');
           }
         } catch (e) {
           console.error(`store::load_contracts:: ${e}`);
