@@ -44,6 +44,16 @@
 
     return true;
   };
+
+  let agreement: boolean = false;
+
+  const toggle = () => {
+    agreement = !agreement;
+  };
+
+  const deploy = async () => {
+    await originate();
+  };
 </script>
 
 <Card
@@ -154,9 +164,35 @@
     <LinkInput href="/twitter" source="Twitter Account Information" />
   {/if}
 
-  <Spacer />
+  <Spacer class="min-h-8" />
 
-  <!-- TODO: Add Checkbox -->
+  <div class="flex items-center w-full text-gray-650">
+    <input
+      id="agreement"
+      on:change={toggle}
+      type="checkbox"
+      bind:value={agreement}
+    />
+    <label for="agreement" class="flex-grow ml-4 text-xs text-left md:text-sm">
+      {'I have '}
+      <span class="font-bold">{'read'}</span>
+      {' and '}
+      <span class="font-bold">{'agree'}</span>
+      {' with the '}
+      <a class="underline text-blue-550" target="_blank" href="/privacy-policy">
+        {'Privacy Policy'}
+      </a>
+      {' and the '}
+      <a
+        class="underline text-blue-550"
+        target="_blank"
+        href="/terms-of-service"
+      >
+        {'Terms of Service'}
+      </a>
+      {'.'}
+    </label>
+  </div>
 
   {#if hasUrl($claimsStream)}
     {#if $contractAddress !== null}
@@ -169,9 +205,8 @@
       <PrimaryButton
         text="Deploy Profile"
         class="mx-auto mt-4 bottom-6"
-        onClick={async () => {
-          await originate();
-        }}
+        disabled={agreement}
+        onClick={deploy}
       />
     {/if}
   {:else}

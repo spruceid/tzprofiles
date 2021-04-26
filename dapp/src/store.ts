@@ -315,7 +315,7 @@ wallet.subscribe((wallet) => {
 
         loadingContracts.set(true);
         try {
-          let contractJSON = await contractLib.retrieve_tpp_claims(
+          let contractJSON = await contractLib.retrieve_tpp(
             urlBetterCallDev,
             await wallet.getPKH(),
             strNetwork === 'custom' ? 'sandboxnet' : strNetwork,
