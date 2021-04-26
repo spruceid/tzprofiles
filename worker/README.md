@@ -1,39 +1,26 @@
-# 👷‍♀️🦀🕸️ `rustwasm-worker-template`
+# Tezos Public Profiles Witness
 
-A template for kick starting a Cloudflare worker project using
-[`wasm-pack`](https://github.com/rustwasm/wasm-pack).
+A Cloudflare Worker to witness a tweet claiming ownership of a Tezos account.
 
-This template is designed for compiling Rust libraries into WebAssembly and
-publishing the resulting worker to Cloudflare's worker infrastructure.
+## Deploy
 
-## 🔋 Batteries Included
+You need a Cloudflare account, and the ID needs to go in the `wrangler.toml`.
 
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-* [`console_error_panic_hook`](https://github.com/rustwasm/console_error_panic_hook)
-  for logging panic messages to the developer console.
-* [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
-  for small code size.
-
-## 🚴 Usage
-
-### 🐑 Use `wrangler generate` to Clone this Template
-
-[Learn more about `wrangler generate` here.](https://github.com/cloudflare/wrangler)
-
+The worker needs two things: the private key to issue the VC after verifying the
+tweet, and an API token for the Twitter API. You can add these as secrets with:
+```bash
+wrangler secret put TZPROFILES_ME_PRIVATE_KEY
+wrangler secret put TWITTER_BEARER_TOKEN
 ```
-wrangler generate wasm-worker  https://github.com/cloudflare/rustwasm-worker-template.git
-cd wasm-worker
-```
+> The private key is expected to be a JWK. You can generate one with
+> `didkit generate-ed25519-key`.
 
-### 🛠️ Build with `wasm-pack build`
-
+```bash
+wrangler publish
 ```
-wasm-pack build
-```
+> For development, you should use `wrangler dev`.
 
-### 🔬 Test in Headless Browsers with `wasm-pack test`
-
-```
-wasm-pack test --headless --firefox
+## Test
+```bash
+cargo test
 ```

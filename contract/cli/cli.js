@@ -16,6 +16,7 @@ const argv = yargs
 			description: 'Comma seperated list of urls to claims',
 			type: 'array',
 			demand: false,
+			default: [],
 		}
 	})
 	.command('add-claim', 'Add a claim.',
