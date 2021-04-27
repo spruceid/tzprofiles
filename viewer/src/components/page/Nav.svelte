@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { Link, useNavigate } from 'svelte-navigator';
   import { BackButton } from 'components';
-
-  let navigate = useNavigate();
 
   const path = window.location.pathname;
 </script>
