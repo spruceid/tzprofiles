@@ -12,6 +12,10 @@
   import { search, selectedNetwork, claims } from 'src/store';
   import { onMount } from 'svelte';
 
+  import { useNavigate } from 'svelte-navigator';
+
+  const navigate = useNavigate();
+
   let address: string = '';
   let network: string;
 
@@ -55,7 +59,8 @@
       <Input placeholder="Enter a Tezos address" bind:value={address} />
       <PrimaryButton
         class="m-4"
-        onClick={() => search(address)}
+        onClick={() =>
+          search(address).then(() => navigate(`/view/${network}/${address}`))}
         text="Find"
         small
       />

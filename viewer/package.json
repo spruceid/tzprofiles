@@ -41,6 +41,7 @@
     "stream-http": "^3.1.1"
   },
   "dependencies": {
+    "kepler-sdk": "^0.1.0",
     "buffer": "^6.0.3",
     "tezospublicprofiles": "file:../contract"
   },

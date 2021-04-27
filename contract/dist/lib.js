@@ -36,18 +36,23 @@ function originate(opts, node_url, claim_urls, verifyCredential, hashFunc, fetch
             }
             else if (opts.useSecret) {
                 Tezos.setProvider({
-                    signer: new signer_1.InMemorySigner(opts.secret)
+                    signer: new signer_1.InMemorySigner(opts.secret),
                 });
                 pkHash = yield Tezos.signer.publicKeyHash();
             }
             else if (opts.useKeyFile) {
-                yield signer_1.importKey(Tezos, opts.key.email, opts.key.password, opts.key.mnemonic.join(' '), opts.key.secret);
+                yield signer_1.importKey(Tezos, opts.key.email, opts.key.password, opts.key.mnemonic.join(" "), opts.key.secret);
                 pkHash = yield Tezos.signer.publicKeyHash();
             }
             else {
                 throw new Error("No signing method found in opts");
             }
-            let claims = yield Promise.all(claim_urls.map(claim_url => url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc)));
+            let claims = [];
+            for (let i = 0, x = claim_urls.length; i < x; i++) {
+                let claim_url = claim_urls[i];
+                let nextClaim = yield url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc);
+                claims.push(nextClaim);
+            }
             const metadataBigMap = new taquito.MichelsonMap();
             metadataBigMap.set("", tzip16.char2Bytes("https://gist.githubusercontent.com/sbihel/a9273df118862acba2b4d15a8778e3dd/raw/0debf54a941fdda9cfde4d34866535d302856885/tpp-metadata.json"));
             let originationOp, contractAddress;
@@ -98,18 +103,17 @@ function add_claim(opts, contract_address, claim_url, node_url, verifyCredential
             }
             else if (opts.useSecret) {
                 Tezos.setProvider({
-                    signer: new signer_1.InMemorySigner(opts.secret)
+                    signer: new signer_1.InMemorySigner(opts.secret),
                 });
             }
             else if (opts.useKeyFile) {
-                yield signer_1.importKey(Tezos, opts.key.email, opts.key.password, opts.key.mnemonic.join(' '), opts.key.secret);
+                yield signer_1.importKey(Tezos, opts.key.email, opts.key.password, opts.key.mnemonic.join(" "), opts.key.secret);
             }
             else {
                 throw new Error("No signing method found in opts");
             }
             let entry = yield url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc);
-            let contract = yield Tezos.contract
-                .at(contract_address);
+            let contract = yield Tezos.contract.at(contract_address);
             let op = yield contract.methods.addClaim(entry).send();
             yield op.confirmation(CONFIRMATION_CHECKS);
             let hash = op.hash;
@@ -131,18 +135,17 @@ function remove_claim(opts, contract_address, claim_url, node_url, verifyCredent
             }
             else if (opts.useSecret) {
                 Tezos.setProvider({
-                    signer: new signer_1.InMemorySigner(opts.secret)
+                    signer: new signer_1.InMemorySigner(opts.secret),
                 });
             }
             else if (opts.useKeyFile) {
-                yield signer_1.importKey(Tezos, opts.key.email, opts.key.password, opts.key.mnemonic.join(' '), opts.key.secret);
+                yield signer_1.importKey(Tezos, opts.key.email, opts.key.password, opts.key.mnemonic.join(" "), opts.key.secret);
             }
             else {
                 throw new Error("No signing method found in opts");
             }
             let entry = yield url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc);
-            let contract = yield Tezos.contract
-                .at(contract_address);
+            let contract = yield Tezos.contract.at(contract_address);
             let op = yield contract.methods.removeClaim(entry).send();
             yield op.confirmation(CONFIRMATION_CHECKS);
             let hash = op.hash;
@@ -166,11 +169,10 @@ function url_to_entry(claim_url, verifyCredential, hashFunc, fetchFunc) {
         // Hash VC
         let vcHash = yield hashFunc(claimBody);
         // let vcHash = await crypto.subtle.digest('SHA-256', encodedBody);
-        let vcHashHex = Array
-            .from(new Uint8Array(vcHash))
-            .map(b => ('00' + b.toString(16)).slice(-2))
-            .join('');
-        let claimJSON = JSON.parse(JSON.parse(claimBody));
+        let vcHashHex = Array.from(new Uint8Array(vcHash))
+            .map((b) => ("00" + b.toString(16)).slice(-2))
+            .join("");
+        let claimJSON = JSON.parse(claimBody);
         let t = "VerifiableCredential";
         if (claimJSON.type && claimJSON.type.length && claimJSON.type.length > 0) {
             t = claimJSON.type[claimJSON.type.length - 1];
@@ -196,7 +198,8 @@ function retrieve_tpp(bcd_url, address, network, fetchFunc) {
                 continue;
             }
             // TODO: Make this contract ID much more fool proof.
-            if (item.body.entrypoints.includes("addClaim") && item.body.entrypoints.includes("removeClaim")) {
+            if (item.body.entrypoints.includes("addClaim") &&
+                item.body.entrypoints.includes("removeClaim")) {
                 return item.value;
             }
         }
@@ -215,11 +218,12 @@ function retrieve_tpp_claims(bcd_url, address, network, fetchFunc) {
         // TODO: Make version passable?
         let storageRes = yield fetchFunc(`${bcd_url}/v1/contract/${network}/${contractAddress}/storage`);
         let storageJSON = yield storageRes.json();
+        storageJSON = storageJSON[0];
         if (!validateStorage(storageJSON)) {
             throw new Error("Invalid storage, could not find list of triples");
         }
         let claimList = storageJSON.children[0].children;
-        let tripleList = [];
+        let tripleList = [contractAddress];
         for (let i = 0, n = claimList.length; i < n; i++) {
             let claim = claimList[i];
             if (claim.children.length !== 3) {
@@ -240,9 +244,10 @@ function validateStorage(s) {
         s.children &&
         s.children.length &&
         s.children.length > 0 &&
-        s.children[0].name === "claims" && ((_a = 
-    // TODO: Check if this will report an empty TPP contract as not existing?
-    s.children[0]) === null || _a === void 0 ? void 0 : _a.children));
+        s.children[0].name === "claims" &&
+        (
+        // TODO: Check if this will report an empty TPP contract as not existing?
+        (_a = s.children[0]) === null || _a === void 0 ? void 0 : _a.children));
 }
 // read_all lists all entries in the contract metadata
 // export async function read_all(contract_address: string) {

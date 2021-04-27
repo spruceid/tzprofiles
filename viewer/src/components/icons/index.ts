@@ -6,3 +6,4 @@ export { default as PersonOutlined } from './PersonOutlined.svelte';
 export { default as CheckIcon } from './CheckIcon.svelte';
 export { default as CloseIcon } from './CloseIcon.svelte';
 export { default as ClipboardIcon } from './ClipboardIcon.svelte';
+export { default as CircleCheckIcon } from './CircleCheckIcon.svelte';

@@ -307,13 +307,14 @@ export async function retrieve_tpp_claims(
     `${bcd_url}/v1/contract/${network}/${contractAddress}/storage`
   );
   let storageJSON = await storageRes.json();
+  storageJSON = storageJSON[0];
 
   if (!validateStorage(storageJSON)) {
     throw new Error("Invalid storage, could not find list of triples");
   }
 
   let claimList = storageJSON.children[0].children;
-  let tripleList = [];
+  let tripleList = [contractAddress];
   for (let i = 0, n = claimList.length; i < n; i++) {
     let claim = claimList[i];
     if (claim.children.length !== 3) {

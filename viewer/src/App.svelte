@@ -1,18 +1,3 @@
-<script lang="ts">
-  import { Router, Route } from "svelte-navigator";
-  import { Home } from "pages";
-
-  //This avoids PurgeCSS from deleting classes from production build
-  const classes: string =
-    "py-4 py-1 opacity-50 cursor-not-allowed text-gray-350 text-gray-500 italic pl-6 bg-green-550 text-gray-370 opacity-0 opacity-60";
-</script>
-
-<Router>
-  <Route path="/">
-    <Home />
-  </Route>
-</Router>
-
 <style global lang="postcss">
   @tailwind base;
   @tailwind components;
@@ -25,7 +10,7 @@
     margin: 0px;
     padding: 0px;
     font-size: 16px;
-    font-family: "Inter";
+    font-family: 'Inter';
     background: linear-gradient(151.67deg, #3a83a3 42.84%, #429383 103.49%);
     display: flex;
     flex-direction: column;
@@ -37,7 +22,7 @@
   h3,
   h4,
   h5 {
-    font-family: "Poppins";
+    font-family: 'Poppins';
     text-transform: capitalize;
     font-weight: 700;
     text-align: center;
@@ -45,7 +30,7 @@
 
   td,
   th {
-    font-family: "Poppins";
+    font-family: 'Poppins';
     font-weight: 400;
   }
 
@@ -76,3 +61,24 @@
     background-color: #ccc;
   }
 </style>
+
+<script lang="ts">
+  import { Router, Route } from 'svelte-navigator';
+  import { Home, View } from 'pages';
+
+  //This avoids PurgeCSS from deleting classes from production build
+  const classes: string =
+    'py-4 py-1 opacity-50 cursor-not-allowed text-gray-350 text-gray-500 italic pl-6 bg-green-550 text-gray-370 opacity-0 opacity-60';
+</script>
+
+<Router>
+  <Route path="/">
+    <Home />
+  </Route>
+  <Route path="/view/:network/:address">
+    <View />
+  </Route>
+  <Route path="/view/:address">
+    <View />
+  </Route>
+</Router>
