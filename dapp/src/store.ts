@@ -5,7 +5,8 @@ import { TezosToolkit } from '@taquito/taquito';
 import { Tzip16Module } from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from 'tezospublicprofiles';
+import * as contractLib from 'tzprofiles';
+
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
 // TODO fix export in kepler :facepalm:
@@ -18,7 +19,7 @@ export const saveToKepler = async (...obj) => {
     try {
       const [first, ...rest] = obj;
       const addresses = await localKepler
-        .put(dummyOrbit, first, rest)
+        .put(dummyOrbit, first, ...rest)
         .then((r) => r.text());
       alert.set({
         message: 'Successfuly uploaded to Kepler',
@@ -47,6 +48,7 @@ export const loadJsonBlob = async (url: string): Promise<any> => {
   return await fetch(url);
 };
 
+// TODO: Change to not deref the URL, since the client already is
 export const loadBasicProfile = async ({
   TezosControl: { url },
 }: ClaimMap): Promise<void> => {
@@ -59,6 +61,7 @@ export const loadBasicProfile = async ({
     let json = await res.json();
 
     // TODO: Make this consistant through different usage of Kepler:
+    // AUTHOR'S HACK: This would fail with more than 2 claim!
     if (Array.isArray(json)) {
       json = json[0];
     }
@@ -79,6 +82,7 @@ export const loadBasicProfile = async ({
   }
 };
 
+// TODO: Change to not deref the URL, since the client already is
 export const loadTwitterProfile = async ({
   TwitterControl: { url },
 }: ClaimMap): Promise<void> => {
@@ -90,6 +94,7 @@ export const loadTwitterProfile = async ({
 
     let json = await res.json();
     // TODO: Make this consistant through different usage of Kepler:
+    // AUTHOR'S HACK: This would fail with more than 2 claim!
     if (Array.isArray(json)) {
       json = json[0];
     }
@@ -165,12 +170,12 @@ export const basicAlias: Writable<string> = writable<string>(null);
 export const basicDescription: Writable<string> = writable<string>(null);
 export const basicWebsite: Writable<string> = writable<string>(null);
 export const basicLogo: Writable<string> = writable<string>(null);
+export const contractClient: Writable<contractLib.TZProfilesClient> = writable<contractLib.TZProfilesClient>(null);
 export const twitterHandle: Writable<string> = writable<string>(null);
 export const profileUrl: Writable<string> = writable<string>(null);
 
 export const localBasicProfile: Writable<any> = writable(null);
 export const localTwitterProfile: Writable<any> = writable(null);
-const keplerResolve = async (url, _) => await localKepler.resolve(url, false);
 
 export interface ClaimMap {
   [index: string]: Claim;
@@ -189,6 +194,7 @@ export interface Claim {
 }
 
 let localClaimsStream: ClaimMap;
+let localClient: contractLib.TZProfilesClient;
 let localContractAddress: string;
 let localDIDKit: any;
 let localWallet: BeaconWallet;
@@ -201,6 +207,9 @@ claimsStream.subscribe((x) => {
 contractAddress.subscribe((x) => {
   localContractAddress = x;
 });
+contractClient.subscribe((x) => {
+  localClient = x;
+});
 DIDKit.subscribe((x) => {
   localDIDKit = x;
 });
@@ -208,55 +217,48 @@ wallet.subscribe((x) => {
   localWallet = x;
 });
 
-const hashFunc = async (claimString: string): Promise<ArrayBuffer> => {
+const hashFunc = async (claimString: string): Promise<string> => {
   let encodedString = new TextEncoder().encode(claimString);
-  return await crypto.subtle.digest('SHA-256', encodedString);
+  let buf = await crypto.subtle.digest('SHA-256', encodedString);
+  return [...new Uint8Array (buf)]
+        .map (b => b.toString (16).padStart (2, "0"))
+        .join ("");
 };
 
 export const originate = async (): Promise<void> => {
-  if (!localWallet) {
+  if (!localClient) {
     throw new Error('No wallet detected');
-  }
-
-  if (!localDIDKit || !localDIDKit.verifyCredential) {
-    throw new Error('No DIDKit detected');
   }
 
   let claimsKeys = Object.keys(localClaimsStream);
 
-  let urlList: string[] = [];
+  // TODO: Specifically type?
+  let claimsList: Array<[
+    contractLib.ClaimType, 
+    contractLib.ClaimReference
+  ]> = [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
     let { url } = localClaimsStream[claimKey];
     if (url) {
-      urlList.push(url);
+      claimsList.push([ 
+        "VerifiableCredential",
+        url
+      ]);
     }
   }
 
-  if (urlList.length < 1) {
+  if (claimsList.length < 1) {
     throw new Error('No claim urls found');
   }
 
-  let opts = {
-    useWallet: true,
-    wallet: localWallet,
-  };
-
-  let contractAddr = await contractLib.originate(
-    opts,
-    urlNode,
-    urlList,
-    localDIDKit.verifyCredential,
-    hashFunc,
-    keplerResolve
-  );
-
+  let contractAddr = await localClient.originate(claimsList);
   contractAddress.set(contractAddr);
 };
 
-export const addClaim = async (claim: Claim): Promise<void> => {
-  if (!localWallet) {
+export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
+  if (!localClient) {
     throw new Error('No wallet detected');
   }
 
@@ -264,58 +266,59 @@ export const addClaim = async (claim: Claim): Promise<void> => {
     throw new Error('No contractAddress detected');
   }
 
-  if (!localDIDKit || !localDIDKit.verifyCredential) {
-    throw new Error('No DIDKit detected');
-  }
+  let claimsArgsList: Array<
+    [
+      contractLib.ClaimType, 
+      contractLib.ClaimReference
+    ]
+  > = claimsList.map((claim) => {
+    return ["VerifiableCredential", claim.url];
+  });
 
-  let opts = {
-    useWallet: true,
-    wallet: localWallet,
-  };
-
-  await contractLib.add_claim(
-    opts,
-    localContractAddress,
-    claim.url,
-    urlNode,
-    localDIDKit.verifyCredential,
-    hashFunc,
-    keplerResolve
-  );
+  return await localClient.addClaims(localContractAddress, claimsArgsList);
 };
 
-export const removeClaim = async (claim: Claim): Promise<void> => {
-  if (!localWallet) {
-    throw new Error('No wallet detected');
+export const removeClaims = async (claimsList: Array<Claim>): Promise<string> => {
+  if (!localClient) {
+    throw new Error('No smart contract client detected');
   }
 
   if (!localContractAddress) {
     throw new Error('No contractAddress detected');
   }
 
-  if (!localDIDKit || !localDIDKit.verifyCredential) {
-    throw new Error('No DIDKit detected');
-  }
+  let claimsArgsList: Array<
+    [
+      contractLib.ClaimType, 
+      contractLib.ClaimReference
+    ]
+  > = claimsList.map((claim) => {
+    return ["VerifiableCredential", claim.url];
+  });
 
-  let opts = {
-    useWallet: true,
-    wallet: localWallet,
-  };
-
-  await contractLib.remove_claim(
-    opts,
-    localContractAddress,
-    claim.url,
-    urlNode,
-    localDIDKit.verifyCredential,
-    hashFunc,
-    fetch
-  );
+  return await localClient.removeClaims(localContractAddress, claimsArgsList)
 };
 
 let urlNode = '';
 let strNetwork = '';
 let urlBetterCallDev = '';
+
+// TODO: Specifically type?
+function getVCType(vc: any): string {
+  let nextVC = vc;
+  if (typeof nextVC === 'string') {
+    nextVC = JSON.parse(vc)
+  }
+  if (!nextVC || !nextVC?.type) {
+    throw new Error('Could not find property "type" in vc');
+  }
+
+  if (!Array.isArray(nextVC.type) || nextVC.type.length < 1) {
+    throw new Error('VC "type" property must be an array');
+  }
+
+  return nextVC.type[nextVC.type.length - 1];
+}
 
 wallet.subscribe((wallet) => {
   if (wallet) {
@@ -323,33 +326,75 @@ wallet.subscribe((wallet) => {
       BeaconEvent.PERMISSION_REQUEST_SUCCESS,
       async (data) => {
         userData.set(data);
+        localKepler = new Kepler(
+          keplerInstance,
+          // NOTE: Ran into a typing err w/o any
+          // Consider correcting?
+          await authenticator<any>(wallet.client)
+        );
+
+        let bcdOpts: contractLib.BetterCallDevOpts = {
+          base: urlBetterCallDev,
+          network: strNetwork as contractLib.BetterCallDevNetworks,
+          version: 1 as contractLib.BetterCallDevVersions
+        };
+
+        let signerOpts: contractLib.WalletSigner = {
+          type: "wallet",
+          wallet
+        }
+
+        let clientOpts: contractLib.TZProfilesClientOpts = {
+          betterCallDevConfig: bcdOpts,
+          keplerClient: localKepler,
+          hashContent: hashFunc,
+          nodeURL: urlNode,
+          signer: signerOpts,
+          validateType: async () => {}
+          // TODO: RESTORE
+          // validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+          //     // Validate VC
+          //     switch (t){
+          //       case "VerifiableCredential": {
+          //         let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+          //         let verifyJSON = JSON.parse(verifyResult);
+          //         if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
+          //         break;
+          //       }
+          //       default: 
+          //         throw new Error(`Unknown ClaimType: ${t}`);
+          //     }
+          // }
+        };
+
+        let nextClient = new contractLib.TZProfilesClient(clientOpts);
+        contractClient.set(nextClient);
 
         loadingContracts.set(true);
         try {
-          let contractJSON = await contractLib.retrieve_tpp_claims(
-            urlBetterCallDev,
-            await wallet.getPKH(),
-            strNetwork,
-            fetch
-          );
-
-          if (contractJSON) {
+          let result = await nextClient.retrieve(await wallet.getPKH());
+          if (result) {
+            contractAddress.set(result.address);
             let nextClaims = Object.assign({}, localClaimsStream);
-            // TODO: FIX THIS IN LIB UPDATE -- INDEX 0 IS USED TO A PLAIN CONTRACT ADDRESS:
-            if (contractJSON[0]) {
-              contractAddress.set(contractJSON[0])
-            }
-            for (let i = 1, x = contractJSON.length; i < x; i++) {
-              let [url, _hash, contentType] = contractJSON[i];
-              // TODO: Stop using content type here, unravel the VC a bit.
-              if (contentType === 'BasicProfile') {
-                nextClaims.TezosControl.url = url;;
-                loadBasicProfile(nextClaims);
-              }
-
+            for (let i = 0, x = result.valid.length; i < x; i++) {
+              let [url, content, contentType] = result.valid[i];
+              // TODO: Handle other types?
               if (contentType === 'VerifiableCredential') {
-                nextClaims.TwitterControl.url = url;
-                loadTwitterProfile(nextClaims);
+                let vcType = getVCType(content);
+
+                switch (vcType) {
+                  case "TwitterVerification":
+                    nextClaims.TwitterControl.url = url;
+                    loadTwitterProfile(nextClaims);
+                    break;
+                  case "BasicProfile":
+                    nextClaims.TezosControl.url = url;
+                    loadBasicProfile(nextClaims);
+                    break;
+                  default:
+                    throw new Error(`Unknown VC Type: ${vcType}`)
+                }
+
               }
               claimsStream.set(nextClaims);
             }
@@ -409,7 +454,9 @@ export const initWallet: () => Promise<void> = async () => {
     await newWallet.requestPermissions(requestPermissionsInput);
     localKepler = new Kepler(
       keplerInstance,
-      await authenticator(newWallet.client)
+      // NOTE: Ran into a typing err w/o any
+      // Consider correcting?
+      await authenticator<any>(newWallet.client)
     );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());

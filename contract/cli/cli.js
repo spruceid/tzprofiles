@@ -2,8 +2,7 @@ const lib = require('../dist/lib');
 const crypto = require('crypto');
 const fs = require('fs');
 const yargs = require('yargs');
-const fetch = require('node-fetch');
-
+const kepler = require('kepler-sdk');
 const DIDKit = require('../../../didkit/lib/web/pkg/node/didkit_wasm');
 
 const hashFunc = async (claimBody) => {
@@ -19,32 +18,30 @@ const argv = yargs
 			default: [],
 		}
 	})
-	.command('add-claim', 'Add a claim.',
+	.command('add-claims', 'Add a claim.',
 		{
 			contract: {
-				description: 'TPP address.',
+				description: 'TZP address.',
 				type: 'string',
 				demand: true,
 			},
-			claim_url: {
-				description: 'URL of the VC.',
-				alias: 'claim',
-				type: 'string',
+			claims: {
+				description: 'Comma seperated list of urls to claims',
+				type: 'array',
 				demand: true,
 			}
 		}
 	)
-	.command('remove-claim', 'Remove a claim.',
+	.command('remove-claims', 'Remove a claim.',
 		{
 			contract: {
-				description: 'TPP address.',
+				description: 'TZP address.',
 				type: 'string',
 				demand: true,
 			},
-			claim_url: {
-				description: 'URL of the claim.',
-				alias: 'claim',
-				type: 'string',
+			claims: {
+				description: 'Comma seperated list of urls to claims',
+				type: 'array',
 				demand: true,
 			}
 		}
@@ -72,7 +69,16 @@ const argv = yargs
 			}
 		}
 	)
-	.command('resolve-tpp', 'Get the TPP for a Tezos address.',
+	.command('resolve-tzp', 'Get the TZP address for a Tezos Wallet address.',
+		{
+			address: {
+				description: 'Tezos account address.',
+				type: 'string',
+				demand: true,
+			}
+		}
+	)
+	.command('resolve-claims', 'Get the TZP claims for a Tezos Wallet address.',
 		{
 			address: {
 				description: 'Tezos account address.',
@@ -103,49 +109,135 @@ const argv = yargs
 		description: 'Secret key.',
 		type: 'string',
 	})
-	.option('bcd_url', {
+	.option('bcd_base', {
 		alias: 'b',
-		description: 'better-call.dev API endpoint',
+		description: 'Base url for better-call.dev API endpoints',
 		type: 'string',
-		default: 'https://api.better-call.dev/'
+		default: 'https://api.better-call.dev'
+	})
+	.option('kepler_base', {
+		alias: 'k',
+		description: 'Base url for kepler API server',
+		type: 'string',
+		default: 'https://localhost:8000'
 	})
 	.strict()
 	.help()
 	.alias('help', 'h')
 	.argv;
 
-async function resolve_tpp() {
+async function resolveClaim(url) {
+	let res =  await fetch(url);
+	if (!res.ok || res.status !== 200) {
+		throw new Error(`Error resolving claim url: ${url}, status text: ${res.statusText}`)
+	}
+
+	return await res.text();
+};
+
+function getClient() {
+	let signerOpts = {};
+	if (argv.faucet_key_file) {
+		signerOpts.type = "key";
+		signerOpts.key = JSON.parse(fs.readFileSync(argv.faucet_key_file, 'utf8'));
+	} else if (argv.secret) {
+		signerOpts.type = "secret";
+		signerOpts.secret = argv.secret
+	} else {
+		signerOpts = false;
+	}
+
+	let clientOpts = {
+		betterCallDevConfig: getBCDOpts(),
+		keplerClient: new kepler.Kepler(
+			argv.kepler_base
+		),
+		hashContent: hashFunc,
+		nodeURL: argv.url || "https://mainnet-tezos.giganode.io",
+		signer: signerOpts,
+		validateType: async (c, t) => {
+              // Validate VC
+              switch (t){
+                case "VerifiableCredential": {
+                  let verifyResult = await DIDKit.verifyCredential(c, '{}');
+                  let verifyJSON = JSON.parse(verifyResult);
+                  if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
+                  break;
+                }
+                default: 
+                  throw new Error(`Unknown ClaimType: ${t}`);
+              }
+          }
+	};
+
+	return new lib.TZProfilesClient(clientOpts);
+}
+
+function getBCDOpts() {
+	return {
+		base: argv.bcd_base || "https://api.better-call.dev",
+		network: argv.network || "mainnet",
+		version: 1,
+	};
+}
+
+async function retrieve_tzp() {
+	let client = getClient();
+	return await client.retrieve(argv.address);
+}
+
+async function originate() {
+	let client = getClient();
+
+	let claimsList = argv.claims.map((claim) => {
+		return {
+			url: claim,
+			type: "VerifiableCredential"
+		};
+	});
+
+	return await client.originate(claimsList);
+}
+
+async function add_claims() {
+	let client = getContractClient();
+	let claimsList = argv.claims.map((claim) => {
+		return ["VerifiableCredential", claim.url];
+	});
+
+	return await client.addClaims(argv.contract, claimsList)
+}
+
+async function remove_claims(){
+	let client = getContractClient();
+	let claimsList = argv.claims.map((claim) => {
+		return ["VerifiableCredential", claim.url];
+	});
+
+	return await client.removeClaims(argv.contract, claimsList)
+}
+
+async function run() {
 	try {
-		let tpp = await lib.retrieve_tpp(argv.bcd_url, argv.address, argv.network, fetch);
-		console.log(tpp);
-	} catch (error) {
-		console.error(error);
-		throw error;
+		if (argv._.includes('originate')) {
+			let contractAddress = await originate();
+			console.log(`Originated contract at address: ${contractAddress}`);
+		} else if (argv._.includes('add-claims')) {
+			let transaction = await add_claims();
+			console.log(`Add claims concluded in transaction: ${transaction}`);
+		} else if (argv._.includes('remove-claims')) {
+			let transaction = await remove_claims();
+			console.log(`Remove claims concluded in transaction: ${transaction}`);
+		} else if (argv._.includes('resolve-tzp')) {
+			let tzp = await retrieve_tzp();
+			console.log(`Wallet ${argv.address} owns contract:`);
+			console.log(tzp);
+		} else {
+			throw new Error(`Unknown command`);
+		}
+	} catch (e) {
+		console.error(`Failed in operation: ${e.message}`);
 	}
 }
 
-if (argv._.includes('originate')) {
-	let opts = {};
-	if (argv.faucet_key_file) {
-		opts.useKeyFile = true;
-		opts.key = JSON.parse(fs.readFileSync(argv.faucet_key_file, 'utf8'));
-	} else if (argv.secret) {
-		opts.useSecret = true;
-		opts.secret = argv.secret
-	}
-	lib.originate(opts, argv.url, argv.claims, DIDKit.verifyCredential, hashFunc, fetch)
-} else if (argv._.includes('add-claim')) {
-	let opts = {};
-	if (argv.faucet_key_file) {
-		opts.useKeyFile = true;
-		opts.key = JSON.parse(fs.readFileSync(argv.faucet_key_file, 'utf8'));
-	} else if (argv.secret) {
-		opts.useSecret = true;
-		opts.secret = argv.secret
-	}
-	lib.add_claim(opts, argv.contract, argv.claim_url, argv.url, DIDKit.verifyCredential, hashFunc, fetch)
-} else if (argv._.includes('remove-claim')) {
-	lib.remove_claim(opts, argv.contract, argv.claim_url, argv.url, DIDKit.verifyCredential, hashFunc, fetch);
-} else if (argv._.includes('resolve-tpp')) {
-	resolve_tpp();
-}
+run().then(() => {console.log("Exiting")});
