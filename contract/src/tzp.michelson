@@ -1,4 +1,4 @@
-const contract = `{ parameter
+{ parameter
     (or (set %addClaims (pair (pair string bytes) string))
         (set %removeClaims (pair (pair string bytes) string))) ;
   storage
@@ -56,6 +56,5 @@ const contract = `{ parameter
              PAIR ;
              PAIR ;
              NIL operation ;
-             PAIR } } }`;
+             PAIR } } }
 
-module.exports.contract = contract;

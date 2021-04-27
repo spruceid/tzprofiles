@@ -1,5 +1,5 @@
 import { Writable, writable } from 'svelte/store';
-import * as contractLib from 'tezospublicprofiles';
+import * as contractLib from 'tzprofiles';
 import { Kepler } from 'kepler-sdk';
 
 export let alert: Writable<{
@@ -41,21 +41,54 @@ selectedNetwork.subscribe((newNode) => {
   node = newNode;
 });
 
+const hashFunc = async (claimString: string): Promise<string> => {
+  let encodedString = new TextEncoder().encode(claimString);
+  let buf = await crypto.subtle.digest('SHA-256', encodedString);
+  return [...new Uint8Array (buf)]
+        .map (b => b.toString (16).padStart (2, "0"))
+        .join ("");
+};
 export const search = async (wallet) => {
   if (wallet) {
-    let found: any = false;
     try {
-      found = await contractLib.retrieve_tpp_claims(
-        bcdAddress,
-        wallet,
-        node,
-        fetch
-      );
+      let bcdOpts: contractLib.BetterCallDevOpts = {
+        base: bcdAddress,
+        network: node as contractLib.BetterCallDevNetworks,
+        version: 1 as contractLib.BetterCallDevVersions
+      };
+
+      let clientOpts: contractLib.TZProfilesClientOpts = {
+        betterCallDevConfig: bcdOpts,
+        keplerClient: localKepler,
+        hashContent: hashFunc,
+        nodeURL: "undefined",
+        signer: false,
+        validateType: async () => {}
+        // TODO: RESTORE
+        // validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+        //     // Validate VC
+        //     switch (t){
+        //       case "VerifiableCredential": {
+        //         let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+        //         let verifyJSON = JSON.parse(verifyResult);
+        //         if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
+        //         break;
+        //       }
+        //       default: 
+        //         throw new Error(`Unknown ClaimType: ${t}`);
+        //     }
+        // }
+      }
+
+      let contractClient = new contractLib.TZProfilesClient(clientOpts);
+
+      let found = await contractClient.retrieve(wallet);
       if (found) {
-        const [claimContract, ...profiles] = found;
-        contract.set(claimContract);
+        contract.set(found.address);
+        // NOTE: We are not dealing with invalid claims in the UI
+        // TODO: Handle invalid claims
         const resolvedClaims: any = await Promise.all(
-          profiles.map((profile) =>
+          found.valid.map((profile) =>
             localKepler
               .resolve(profile[0], false)
               .then((r) => r.json())

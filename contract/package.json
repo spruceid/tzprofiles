@@ -1,9 +1,9 @@
 {
-  "name": "tezospublicprofiles",
-  "version": "1.0.2",
+  "name": "tzprofiles",
+  "version": "1.0.1",
   "description": "",
-  "main": "dist/lib.js",
-  "types": "dist/lib.d.ts",
+  "main": "dist/tzprofiles.js",
+  "types": "dist/tzprofiles.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,8 +15,9 @@
     "@taquito/signer": "^8.1.0",
     "@taquito/taquito": "^8.1.0",
     "@taquito/tzip16": "^8.1.0",
+    "axios": "^0.21.1",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
+    "kepler-sdk": "^0.2.0",
     "process": "^0.11.10",
     "yargs": "^16.2.0"
   }

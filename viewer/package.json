@@ -43,7 +43,7 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "kepler-sdk": "^0.2.0",
-    "tezospublicprofiles": "1.0.2"
+    "tzprofiles": "^1.0.1"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
