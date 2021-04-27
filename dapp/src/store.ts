@@ -136,7 +136,7 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
       'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
     icon: () => TwitterIcon,
     route: '/twitter',
-    contractType: 'TwitterVerification',
+    contractType: 'VerifiableCredential',
   },
   TezosControl: {
     display: 'Basic Profile Information',
@@ -148,7 +148,7 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
       'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
     icon: () => PersonOutlined,
     route: '/basic-profile',
-    contractType: 'BasicProfile',
+    contractType: 'VerifiableCredential',
   },
 });
 
