@@ -684,6 +684,7 @@
   import { BasePage } from 'components';
 </script>
 
+/* eslint-disable */
 <BasePage class="flex flex-col c22"
   ><p class="c4"><span class="c25 c8 c30">Privacy Policy</span></p>
   <p class="c4">

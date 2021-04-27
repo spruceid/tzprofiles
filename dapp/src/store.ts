@@ -67,13 +67,13 @@ export const loadBasicProfile = async ({
     basicWebsite.set(website);
     basicDescription.set(description);
     basicLogo.set(logo);
-    basicProfileLocalObject.set(json);
+    localBasicProfile.set(json);
   } else {
     basicAlias.set('');
     basicWebsite.set('');
     basicDescription.set('');
     basicLogo.set('');
-    basicProfileLocalObject.set(null);
+    localBasicProfile.set(null);
   }
 };
 
@@ -93,10 +93,10 @@ export const loadTwitterProfile = async ({
     const { sameAs } = credentialSubject;
     const handle = sameAs.replace('https://twitter.com/', '');
     twitterHandle.set(handle);
-    twitterLocalObject.set(json);
+    localTwitterProfile.set(json);
   } else {
     twitterHandle.set('');
-    twitterLocalObject.set(null);
+    localTwitterProfile.set(null);
   }
 };
 
@@ -116,9 +116,6 @@ export const network: Writable<NetworkType> = writable<NetworkType>(
 export const betterCallDevUrl: Writable<string> = writable<string>(
   'https://api.better-call.dev'
 );
-
-export const twitterLocalObject: Writable<any> = writable(null);
-export const basicProfileLocalObject: Writable<any> = writable(null);
 
 export let alert: Writable<{
   message: string;
@@ -155,12 +152,15 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
   },
 });
 
-export let basicAlias: Writable<string> = writable<string>(null);
-export let basicDescription: Writable<string> = writable<string>(null);
-export let basicWebsite: Writable<string> = writable<string>(null);
-export let basicLogo: Writable<string> = writable<string>(null);
-export let twitterHandle: Writable<string> = writable<string>(null);
-export let profileUrl: Writable<string> = writable<string>(null);
+export const basicAlias: Writable<string> = writable<string>(null);
+export const basicDescription: Writable<string> = writable<string>(null);
+export const basicWebsite: Writable<string> = writable<string>(null);
+export const basicLogo: Writable<string> = writable<string>(null);
+export const twitterHandle: Writable<string> = writable<string>(null);
+export const profileUrl: Writable<string> = writable<string>(null);
+
+export const localBasicProfile: Writable<any> = writable(null);
+export const localTwitterProfile: Writable<any> = writable(null);
 
 export interface ClaimMap {
   [index: string]: Claim;
@@ -228,16 +228,6 @@ export const originate = async (): Promise<void> => {
     throw new Error('No claim urls found');
   }
 
-  const blobList = await Promise.all(
-    urlList.map((url) =>
-      loadJsonBlob(url)
-        .then((r) => r.json())
-        .then(JSON.parse)
-    )
-  );
-
-  await saveToKepler(...blobList).then(console.log);
-  return;
   let opts = {
     useWallet: true,
     wallet: localWallet,

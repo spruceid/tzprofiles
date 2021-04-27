@@ -17,6 +17,7 @@
     claimsStream,
     originate,
     userData,
+    networkStr,
     loadBasicProfile,
     loadTwitterProfile,
     basicAlias,
@@ -27,6 +28,9 @@
     contractAddress,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
+
+  import { useNavigate } from 'svelte-navigator';
+  let navigate = useNavigate();
 
   onMount(() => {
     loadBasicProfile($claimsStream);
@@ -54,6 +58,8 @@
   const deploy = async () => {
     await originate();
   };
+
+  let network = $networkStr === 'edonet' ? 'edo2net' : $networkStr;
 </script>
 
 <Card
@@ -166,51 +172,64 @@
 
   <Spacer class="min-h-8" />
 
-  <div class="flex items-center w-full text-gray-650">
-    <input id="agreement" on:change={toggle} type="checkbox" />
-    <label for="agreement" class="flex-grow ml-4 text-xs text-left md:text-sm">
-      {'I have '}
-      <span class="font-bold">{'read'}</span>
-      {' and '}
-      <span class="font-bold">{'agree'}</span>
-      {' with the '}
-      <a class="underline text-blue-550" target="_blank" href="/privacy-policy">
-        {'Privacy Policy'}
-      </a>
-      {' and the '}
-      <a
-        class="underline text-blue-550"
-        target="_blank"
-        href="/terms-of-service"
+  {#if $contractAddress === null}
+    <div class="flex items-center w-full text-gray-650">
+      <input id="agreement" on:change={toggle} type="checkbox" />
+      <label
+        for="agreement"
+        class="flex-grow ml-4 text-xs text-left md:text-sm"
       >
-        {'Terms of Service'}
-      </a>
-      {'.'}
-    </label>
-  </div>
+        {'I have '}
+        <span class="font-bold">{'read'}</span>
+        {' and '}
+        <span class="font-bold">{'agree'}</span>
+        {' with the '}
+        <a
+          class="underline text-blue-550"
+          target="_blank"
+          href="/privacy-policy"
+        >
+          {'Privacy Policy'}
+        </a>
+        {' and the '}
+        <a
+          class="underline text-blue-550"
+          target="_blank"
+          href="/terms-of-service"
+        >
+          {'Terms of Service'}
+        </a>
+        {'.'}
+      </label>
+    </div>
+  {/if}
 
   {#if hasUrl($claimsStream)}
     {#if $contractAddress !== null}
       <!-- TODO: Stylize -->
-      <span class="">
-        {'Profile Deployed at '}
-        <a href={`https://tzkt.io/${$contractAddress}`}>{'tzkt.io'}</a>
+      <span class="py-2 text-white rounded bg-green-550">
+        {'Tezos Profile deployed at '}
+        <a
+          class="text-green-900 underline"
+          target="_blank"
+          href={`https://${network}.tzkt.io/${$contractAddress}`}
+        >
+          {'tzkt.io'}
+        </a>
       </span>
     {:else}
       <PrimaryButton
         text="Deploy Profile"
         class="mx-auto mt-4 bottom-6"
         disabled={!agreement}
-        onClick={deploy}
+        onClick={() => navigate('deploy')}
       />
     {/if}
   {:else}
     <PrimaryButton
       text="Deploy Profile"
-      class="bottom-6 mx-auto"
-      onClick={async () => {
-        await originate();
-      }}
+      class="mx-auto mt-4 bottom-6"
+      disabled
     />
   {/if}
 </Card>

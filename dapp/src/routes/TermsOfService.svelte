@@ -684,7 +684,8 @@
   import { BasePage } from 'components';
 </script>
 
-<BasePage class="c22 flex flex-col"
+/* eslint-disable */
+<BasePage class="flex flex-col c22"
   ><p class="c4"><span class="c25 c8 c30">Terms &amp; Conditions</span></p>
   <p class="c4">
     <span class="c3 c24">Last Modified: [</span><span class="c1 c24">Date</span

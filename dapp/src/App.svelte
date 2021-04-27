@@ -71,6 +71,7 @@
     BasicProfile,
     TermsOfService,
     PrivacyPolicy,
+    Deploy,
   } from 'routes';
 
   //This avoids PurgeCSS from deleting classes from production build
@@ -108,5 +109,8 @@
   </Route>
   <Route path="privacy-policy">
     <PrivacyPolicy />
+  </Route>
+  <Route path="deploy">
+    <Deploy />
   </Route>
 </Router>

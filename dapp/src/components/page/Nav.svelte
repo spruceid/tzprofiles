@@ -5,7 +5,12 @@
 
   let navigate = useNavigate();
 
-  const unprotected = ['/faq', '/terms-of-service', '/privacy-policy'];
+  const unprotected = [
+    '/faq',
+    '/terms-of-service',
+    '/privacy-policy',
+    '/deploy',
+  ];
   const path = window.location.pathname;
 
   if ($userData === null && !unprotected.includes(path)) navigate('/');

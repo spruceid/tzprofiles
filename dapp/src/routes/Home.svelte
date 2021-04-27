@@ -28,21 +28,17 @@
   };
 </script>
 
-<svelte:head>
-  <title>tzprofiles</title>
-</svelte:head>
-
 {#if errorMessage}
   <p>{errorMessage}</p>
 {/if}
-<BasePage class="items-center justify-center flex-wrap flex-col">
+<BasePage class="flex-col flex-wrap items-center justify-center">
   {#if !$userData}
-    <h1 class="lg:text-8xl sm:text-7xl text-6xl">Tezos Public Profiles</h1>
+    <h1 class="text-6xl lg:text-8xl sm:text-7xl">Tezos Profiles</h1>
 
     <TextBody2
-      value="Tezos Public Profiles enables you to associate your online identity with
+      value="Tezos Profiles enables you to associate your online identity with
   your Tezos account"
-      class="text-center my-8"
+      class="my-8 text-center"
     />
     <div class="flex flex-col items-center">
       <p>
