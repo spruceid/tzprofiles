@@ -18,6 +18,7 @@
     localBasicProfile,
     localTwitterProfile,
     saveToKepler,
+    viewerInstance,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
 
@@ -92,15 +93,8 @@
       {#if currentStep > 2}
         <p class="inline font-poppins">
           {'View on '}
-          <a href={`https://${network}.tzkt.io/${$contractAddress}`}>
-            {'tzpviewer'}
-            {$userData.account.address}
-          </a>
-        </p>
-        <p>
-          {'View on '}
-          <a href={`https://${network}.tzkt.io/${$contractAddress}`}>
-            {'tzkt.io'}
+          <a href={`${viewerInstance}/${network}/${$userData.account.address}`}>
+            {'Tezos Profiles Viewer'}
           </a>
         </p>
       {/if}

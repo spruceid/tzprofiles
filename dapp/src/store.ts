@@ -184,6 +184,7 @@ let localDIDKit: any;
 let localWallet: BeaconWallet;
 let localKepler: Kepler;
 let keplerInstance: string = 'http://127.0.0.1:8000';
+export let viewerInstance: string = 'http://127.0.0.1:9090';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
