@@ -20,7 +20,7 @@ let node: string = 'mainnet';
 export const selectedNetwork: Writable<string> = writable(node);
 selectedNetwork.subscribe((newNode) => {
   bcdAddress =
-    newNode === 'mainnet'
+    newNode !== 'sandboxnet'
       ? 'https://api.better-call.dev'
       : 'http://localhost:14000';
 
@@ -42,6 +42,7 @@ export const search = async (wallet) => {
         message: err.message || 'Network error',
         variant: 'error',
       });
+      console.error(err);
       return;
     }
 

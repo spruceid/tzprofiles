@@ -7,12 +7,12 @@
     Option,
     Input,
     Label,
-  } from "components";
+  } from 'components';
 
-  import { search, selectedNetwork, claims } from "src/store";
-  import { onMount } from "svelte";
+  import { search, selectedNetwork, claims } from 'src/store';
+  import { onMount } from 'svelte';
 
-  let address: string = "";
+  let address: string = '';
   let network: string;
 
   onMount(() => {
@@ -27,15 +27,15 @@
 </script>
 
 <svelte:head>
-  <title>tzp viewer</title>
+  <title>Tezos Profiles Viewer</title>
 </svelte:head>
 
 <BasePage class="items-center justify-center flex-wrap flex-col">
-  <h1 class="lg:text-8xl sm:text-7xl text-6xl">Tezos Public Profiles Viewer</h1>
+  <h1 class="lg:text-8xl sm:text-7xl text-6xl">Tezos Profiles Viewer</h1>
 
   <TextBody2
-    value="Tezos Public Profiles Viewer enables you to search for a Tezos Public
-    Profile using a Tezos Address"
+    value="Tezos Profiles Viewer enables you to search for a Tezos Profile using
+     a Tezos Address"
     class="text-center my-8"
   />
   <div class="flex flex-col items-center">
@@ -47,6 +47,8 @@
       onChange={setSelectedNetwork}
     >
       <Option value="mainnet" text="mainnet" selected />
+      <Option value="delphinet" text="delphinet" />
+      <Option value="edo2net" text="edo2net" />
       <Option value="sandboxnet" text="sandboxnet" />
     </Select>
     <div class="flex items-center mt-8">
@@ -60,17 +62,17 @@
     </div>
   </div>
 
-  {#if claims["BasicProfile"] || claims["TwitterProfile"]}
+  {#if claims['BasicProfile'] || claims['TwitterProfile']}
     <div>
       <h3>{address} had the following claims</h3>
       <p>Basic Profile</p>
-      {#if claims["BasicProfile"]}
+      {#if claims['BasicProfile']}
         <p>Will Be Basic Profile Claims</p>
       {:else}
         <p>User is missing Basic Profile Claims</p>
       {/if}
       <p>Twitter Profile</p>
-      {#if claims["TwitterProfile"]}
+      {#if claims['TwitterProfile']}
         <p>Will Be Twitter Claims</p>
       {:else}
         <p>User is missing Twitter Claims</p>

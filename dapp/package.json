@@ -54,7 +54,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack serve --content-base public --port 3000",
+    "dev": "webpack serve --content-base public --port 9080",
     "validate": "svelte-check",
     "format": "prettier --write ./src/**/*.{js,svelte,html,ts}",
     "lint": "eslint './src/**/*.{js,ts,svelte}'",
