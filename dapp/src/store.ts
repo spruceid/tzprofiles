@@ -310,10 +310,6 @@ let strNetwork = '';
 let urlBetterCallDev = '';
 let localClaims: any = {};
 
-claimsStream.subscribe((claims) => {
-  localClaims = claims;
-});
-
 wallet.subscribe((wallet) => {
   if (wallet) {
     wallet.client.subscribeToEvent(
@@ -329,6 +325,7 @@ wallet.subscribe((wallet) => {
             strNetwork,
             fetch
           );
+          console.log(contractJSON);
 
           if (contractJSON) {
             for (let i = 0, x = contractJSON.length; i < x; i++) {

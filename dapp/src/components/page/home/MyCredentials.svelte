@@ -20,6 +20,7 @@
           Object.values($claimsStream)
             .filter((claim) => claim.url)
             .map(async (claim) => {
+              console.log(claim);
               let { url } = claim;
               let jsonRes = await fetch(url);
 
@@ -29,7 +30,8 @@
                 );
               }
 
-              let jsonObj = await jsonRes.json().then(JSON.parse);
+              let jsonObj = await jsonRes.json();
+              if (typeof jsonObj === 'string') jsonObj = JSON.parse(jsonObj);
               let json = makeDownloadable(jsonObj);
               return { ...claim, json };
             })

@@ -33,12 +33,14 @@
     basicProfileUpdate.TezosControl.url = basicProfileUrl;
     claimsStream.set(basicProfileUpdate);
     nextUpload();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const twitterProfileUpdate = $claimsStream;
     const twitterProfileUrl = await saveToKepler($localTwitterProfile);
     twitterProfileUpdate.TwitterControl.url = twitterProfileUrl;
     claimsStream.set(twitterProfileUpdate);
     nextUpload();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     next();
 
