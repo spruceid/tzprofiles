@@ -5,7 +5,12 @@ originate it).
 
 ## Local Environment
 For development purposes, a full-fledged local environment is provided. It
-contains a sandbox Tezos node, better-call.dev API, and the likes. To use it:
+contains a sandbox Tezos node, better-call.dev API, and the likes. 
+
+To run a local environment, [docker](https://www.docker.com/get-started) 
+is required. 
+
+To use it:
 ```bash
 docker-compose -f bcd-sandbox.yml up -d
 ```
