@@ -46,15 +46,21 @@ fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
       "@context": [
           "https://www.w3.org/2018/credentials/v1",
-          "https://schema.org/",
           {
-              "TwitterVerification": {
-
-              },
+              "sameAs": "http://schema.org/sameAs",
+              "TwitterVerification": "https://tzprofiles.com/TwitterVerification",
               "TwitterVerificationPublicTweet": {
-                  // "handle": "https://schema.org/Text",
-                  // "timestamp": "https://schema.org/DateTime",
-                  // "tweetId": "https://schema.org/Text"
+                  "@id": "https://tzprofiles.com/TwitterVerificationPublicTweet",
+                  "@context": {
+                      "@version": 1.1,
+                      "@protected": true,
+                      "handle": "https://tzprofiles.com/handle",
+                      "timestamp": {
+                          "@id": "https://tzprofiles.com/timestamp",
+                          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                      },
+                      "tweetId": "https://tzprofiles.com/tweetId"
+                  }
               }
           }
       ],
