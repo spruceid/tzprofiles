@@ -2,7 +2,7 @@
 
 ## Installation
 
-For local deployment, Kepler must be installed and running:
+For local deployment, install and run Kepler:
 ```bash
 git clone https://github.com/spruceid/kepler
 cd kepler

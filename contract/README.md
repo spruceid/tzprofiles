@@ -4,11 +4,10 @@ This smart-contract is a registry of personal claims (meaning every user has to
 originate it).
 
 ## Local Environment
+Requires [docker](https://www.docker.com/get-started).
+
 For development purposes, a full-fledged local environment is provided. It
 contains a sandbox Tezos node, better-call.dev API, and the likes. 
-
-To run a local environment, [docker](https://www.docker.com/get-started) 
-is required. 
 
 To use it:
 ```bash
