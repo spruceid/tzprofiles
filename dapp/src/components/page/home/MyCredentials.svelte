@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { IconLink, DownloadIcon } from 'components';
-  import { claimsStream, loadingContracts } from 'src/store';
+  import { claimsStream, loadingContracts, localKepler } from 'src/store';
 
   const makeDownloadable = (obj: object): string => {
     let stringify = JSON.stringify(obj, null, 2);
@@ -27,7 +27,10 @@
               .filter((claim) => claim.url)
               .map(async (claim) => {
                 let { url } = claim;
-                let jsonRes = await fetch(url);
+
+                // Set auth to false to not prompt the user for 3 signings in a row
+                // That hits the Beacon Wallet rate limit
+                let jsonRes = await localKepler.resolve(url, false); 
 
                 if (!jsonRes.ok || jsonRes.status !== 200) {
                   throw new Error(`Error in claims retrieval: ${jsonRes.statusText}`);

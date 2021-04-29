@@ -56,6 +56,7 @@
           <Option value="mainnet" text="mainnet" selected />
           <Option value="delphinet" text="delphinet" />
           <Option value="edonet" text="edonet" />
+          <Option value="florencenet" text="florencenet" />
           <Option value="custom" text="custom" />
         </Select>
       </p>
