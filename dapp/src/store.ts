@@ -23,7 +23,7 @@ export const saveToKepler = async (obj) => {
         variant: 'success',
       });
 
-      return `kepler://${dummyOrbit}/${address}`;
+      return `kepler://${dummyOrbit}/${await address.text()}`;
     } catch (e) {
       alert.set({
         message: e.message || JSON.stringify(e),
@@ -52,7 +52,7 @@ export const loadCoreProfile = async ({
   TezosControl: { url },
 }: ClaimMap): Promise<void> => {
   if (url) {
-    const res = await fetch(url);
+    const res = await localKepler.resolve(url, false);
     if (!res.ok || res.status !== 200) {
       throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
     }
@@ -75,7 +75,7 @@ export const loadTwitterProfile = async ({
   TwitterControl: { url },
 }: ClaimMap): Promise<void> => {
   if (url) {
-    const res = await fetch(url);
+    const res = await localKepler.resolve(url, false);
     if (!res.ok || res.status !== 200) {
       throw new Error(`Failed in Core Profile Fetch ${res.statusText}`)
     }
@@ -173,7 +173,9 @@ let localClaimsStream: ClaimMap;
 let localContractAddress: string;
 let localDIDKit: any;
 let localWallet: BeaconWallet;
-let localKepler: Kepler;
+
+// TODO: Change name, use subscriber methods?
+export let localKepler: Kepler<any>;
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
@@ -224,13 +226,17 @@ export const originate = async (): Promise<void> => {
     wallet: localWallet,
   };
 
+  const fetchFunc = async (input: string): Promise<Response> => {
+    return await localKepler.resolve(input, false);
+  }
+
   let contractAddr = await contractLib.originate(
     opts,
     urlNode,
     urlList,
     localDIDKit.verifyCredential,
     hashFunc,
-    fetch
+    fetchFunc
   );
 
   contractAddress.set(contractAddr);
