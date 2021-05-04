@@ -1,4 +1,4 @@
-# Tezos Public Profiles Smart Contract Registry
+# Tezos Profiles Smart Contract Registry
 
 This smart-contract is a registry of personal claims (meaning every user has to
 originate it).
