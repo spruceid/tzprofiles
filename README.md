@@ -2,9 +2,9 @@
 
 [![](https://img.shields.io/badge/License-Apache--2.0-green)](https://github.com/spruceid/didkit/blob/main/LICENSE) [![](https://img.shields.io/twitter/follow/sprucesystems?label=Follow&style=social)](https://twitter.com/sprucesystems)
 
-# Tezos Public Profiles
+# Tezos Profiles
 
-tzProfiles is a web application that helps users regain control 
+Tezos Profiles (TZP) is a web application that helps users regain control 
 of their digital identity for use across platforms. It allows users 
 to create portable verified profiles by demonstrating control over 
 their public social media and by self-attesting information. These 

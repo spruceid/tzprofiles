@@ -1,4 +1,4 @@
-# Tezos Public Profiles
+# Tezos Profiles
 
 ## Installation
 

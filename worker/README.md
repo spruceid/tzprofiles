@@ -1,4 +1,4 @@
-# Tezos Public Profiles Witness
+# Tezos Profiles Witness
 
 A Cloudflare Worker to witness a tweet claiming ownership of a Tezos account.
 
