@@ -369,7 +369,7 @@ wallet.subscribe((wallet) => {
 network.subscribe((network) => {
   if (network === NetworkType.CUSTOM) {
     networkStr.set('localhost');
-    strNetwork = 'localhost';
+    strNetwork = NetworkType.CUSTOM;
 
     nodeUrl.set('http://localhost:8732');
     urlNode = 'http://localhost:8732';
@@ -394,11 +394,16 @@ export const initWallet: () => Promise<void> = async () => {
     iconUrl: 'https://tezostaquito.io/img/favicon.png',
   };
 
+  console.log({
+    type: network,
+    rpcUrl: urlNode,
+    name: strNetwork,
+  })
   const requestPermissionsInput = {
     network: {
-      type: strNetwork as NetworkType,
+      type: (strNetwork === "localhost" ? NetworkType.CUSTOM : strNetwork) as NetworkType,
       rpcUrl: urlNode,
-      name: `${networkStr}`,
+      name: strNetwork,
     },
   };
 
