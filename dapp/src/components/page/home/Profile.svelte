@@ -9,7 +9,6 @@
     PrimaryButton,
     Spacer,
     CopyButton,
-    TextBody1,
     CircleCheckIcon,
   } from 'components';
 
@@ -28,6 +27,7 @@
     contractAddress,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
+  import { viewerInstance } from 'src/store';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
@@ -41,12 +41,12 @@
     let keys = Object.keys(cMap);
     for (let i = 0, n = keys.length; i < n; i++) {
       let claim = cMap[keys[i]];
-      if (!claim.url) {
-        return false;
+      if (claim.url) {
+        return true;
       }
     }
 
-    return true;
+    return false;
   };
 
   let agreement: boolean = false;
@@ -192,7 +192,7 @@
           {'Privacy Policy'}
         </a>
         {' and the '}
-        <br/>
+        <br />
         <a
           class="underline text-blue-550"
           target="_blank"
@@ -213,7 +213,7 @@
         <a
           class="text-green-900 underline"
           target="_blank"
-          href={`https://${network}.tzkt.io/${$contractAddress}`}
+          href={`${viewerInstance}/view/${network}/${$userData.account.address}`}
         >
           {'tzkt.io'}
         </a>
