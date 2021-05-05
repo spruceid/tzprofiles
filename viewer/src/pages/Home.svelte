@@ -53,7 +53,7 @@
       <Option value="mainnet" text="mainnet" selected />
       <Option value="edo2net" text="edo2net" />
       <Option value="florencenet" text="florencenet" />
-      <Option value="localhost" text="localhost" />
+      <Option value="sandboxnet" text="localhost" />
     </Select>
     <div class="flex items-center mt-8">
       <Input placeholder="Enter a Tezos address" bind:value={address} />

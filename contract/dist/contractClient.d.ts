@@ -18,7 +18,7 @@ export interface KeySigner {
 }
 export declare type Signer = WalletSigner | SecretSigner | KeySigner;
 export declare type BetterCallDevVersions = 1;
-export declare type BetterCallDevNetworks = 'mainnet' | 'delphinet' | 'edonet' | 'florencenet' | 'custom';
+export declare type BetterCallDevNetworks = 'mainnet' | 'delphinet' | 'edonet' | 'florencenet' | 'sandboxnet';
 export interface BetterCallDevOpts {
     base: string;
     network: BetterCallDevNetworks;
@@ -60,8 +60,6 @@ export declare class ContractClient<Content, ContentType, Hash, Reference> {
     private processTriple;
     private processContentList;
     private validateItem;
-    private validateStorage;
-    private hasContractType;
     private retrieveAndScreenContract;
     private contentListFromStorage;
     private referenceToTriple;

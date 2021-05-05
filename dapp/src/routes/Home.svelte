@@ -57,7 +57,7 @@
           <Option value="mainnet" text="mainnet" selected />
           <Option value="edonet" text="edonet" />
           <Option value="florencenet" text="florencenet" />
-          <Option value="localhost" text="localhost" />
+          <Option value="custom" text="localhost" />
         </Select>
       </p>
       <p>

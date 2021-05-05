@@ -1,4 +1,4 @@
-const lib = require('../dist/lib');
+const lib = require('../dist/tzprofiles');
 const crypto = require('crypto');
 const fs = require('fs');
 const yargs = require('yargs');
@@ -127,7 +127,7 @@ const argv = yargs
 	.argv;
 
 async function resolveClaim(url) {
-	let res =  await fetch(url);
+	let res = await fetch(url);
 	if (!res.ok || res.status !== 200) {
 		throw new Error(`Error resolving claim url: ${url}, status text: ${res.statusText}`)
 	}
@@ -156,18 +156,18 @@ function getClient() {
 		nodeURL: argv.url || "https://mainnet-tezos.giganode.io",
 		signer: signerOpts,
 		validateType: async (c, t) => {
-              // Validate VC
-              switch (t){
-                case "VerifiableCredential": {
-                  let verifyResult = await DIDKit.verifyCredential(c, '{}');
-                  let verifyJSON = JSON.parse(verifyResult);
-                  if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
-                  break;
-                }
-                default: 
-                  throw new Error(`Unknown ClaimType: ${t}`);
-              }
-          }
+			// Validate VC
+			switch (t) {
+				case "VerifiableCredential": {
+					let verifyResult = await DIDKit.verifyCredential(c, '{}');
+					let verifyJSON = JSON.parse(verifyResult);
+					if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
+					break;
+				}
+				default:
+					throw new Error(`Unknown ClaimType: ${t}`);
+			}
+		}
 	};
 
 	return new lib.TZProfilesClient(clientOpts);
@@ -208,7 +208,7 @@ async function add_claims() {
 	return await client.addClaims(argv.contract, claimsList)
 }
 
-async function remove_claims(){
+async function remove_claims() {
 	let client = getContractClient();
 	let claimsList = argv.claims.map((claim) => {
 		return ["VerifiableCredential", claim.url];

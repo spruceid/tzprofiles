@@ -298,6 +298,7 @@ export const removeClaims = async (claimsList: Array<Claim>): Promise<string> =>
 
 let urlNode = '';
 let strNetwork = '';
+let networkStrTemp = '';
 let urlBetterCallDev = '';
 
 // TODO: Specifically type?
@@ -332,7 +333,7 @@ wallet.subscribe((wallet) => {
 
         let bcdOpts: contractLib.BetterCallDevOpts = {
           base: urlBetterCallDev,
-          network: strNetwork as contractLib.BetterCallDevNetworks,
+          network: networkStrTemp as contractLib.BetterCallDevNetworks,
           version: 1 as contractLib.BetterCallDevVersions
         };
 
@@ -410,8 +411,10 @@ wallet.subscribe((wallet) => {
 
 network.subscribe((network) => {
   if (network === NetworkType.CUSTOM) {
-    networkStr.set('localhost');
-    strNetwork = 'localhost';
+    networkStr.set('sandboxnet');
+    // TODO can't read from writeable, but then I don't understand why others work.
+    networkStrTemp = 'sandboxnet';
+    strNetwork = 'custom';
 
     nodeUrl.set('http://localhost:8732');
     urlNode = 'http://localhost:8732';
