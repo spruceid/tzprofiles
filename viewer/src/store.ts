@@ -34,7 +34,7 @@ let node: string = 'mainnet';
 export const selectedNetwork: Writable<string> = writable(node);
 selectedNetwork.subscribe((newNode) => {
   bcdAddress =
-    newNode !== 'localhost'
+    newNode !== 'sandboxnet'
       ? 'https://api.better-call.dev'
       : 'http://localhost:14000';
 
