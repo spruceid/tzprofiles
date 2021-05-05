@@ -11,6 +11,7 @@ import SvelteComponentDev from '*.svelte';
 // TODO fix export in kepler :facepalm:
 import { Kepler, authenticator } from 'kepler-sdk';
 import { loadDIDKit } from './loader/didkit-loader';
+import ProfileDisplay from 'enums/ProfileDisplay';
 
 export const saveToKepler = async (...obj) => {
   const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
@@ -136,7 +137,7 @@ export let alert: Writable<{
 
 export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
   TwitterControl: {
-    display: 'Twitter Account Verification',
+    display: ProfileDisplay.TWITTER,
     url: '',
     type: 'Social Media',
     proof: 'Tweet',
@@ -148,7 +149,7 @@ export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
     contractType: 'VerifiableCredential',
   },
   TezosControl: {
-    display: 'Basic Profile Information',
+    display: ProfileDisplay.BASIC,
     url: '',
     type: 'Basic Profile',
     proof: 'Self-Attestation',
@@ -177,7 +178,7 @@ export interface ClaimMap {
 }
 
 export interface Claim {
-  display: string;
+  display: ProfileDisplay;
   url: string;
   type: string;
   proof: string;
