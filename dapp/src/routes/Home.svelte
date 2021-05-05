@@ -9,11 +9,12 @@
   } from 'components';
   import { initWallet, network, userData, wallet } from 'src/store';
   import NetworkType from 'enums/NetworkType';
+  import { onMount } from 'svelte';
 
   $: errorMessage = '';
   $: statusMessage = '';
   $: showWalletButton = true;
-  $: selectedNetwork = '';
+  let selectedNetwork: string = '';
 
   const resetWallet = () => {
     statusMessage = '';
@@ -26,6 +27,10 @@
       network.set(selectedNetwork as NetworkType);
     }
   };
+
+  onMount(() => {
+    selectedNetwork = $network;
+  });
 </script>
 
 {#if errorMessage}
