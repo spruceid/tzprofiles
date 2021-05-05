@@ -404,8 +404,8 @@ export const initWallet: () => Promise<void> = async () => {
 
   const newWallet = new BeaconWallet(options);
 
-  wallet.set(newWallet);
   try {
+    wallet.set(newWallet);
     await newWallet.requestPermissions(requestPermissionsInput);
     localKepler = new Kepler(
       keplerInstance,
@@ -415,6 +415,7 @@ export const initWallet: () => Promise<void> = async () => {
     Tezos.addExtension(new Tzip16Module());
     Tezos.setWalletProvider(newWallet);
   } catch (e) {
+    wallet.set(null);
     alert.set({
       message: e.message || JSON.stringify(e),
       variant: 'error',
