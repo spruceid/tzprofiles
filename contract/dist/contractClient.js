@@ -36,6 +36,7 @@ class ContractClient {
         this.nodeURL = opts.nodeURL;
         this.signer = opts.signer;
         this.tezos = new taquito.TezosToolkit(this.nodeURL);
+        this.tezos.addExtension(new tzip16.Tzip16Module());
         this.validateType = opts.validateType;
         // Lack of async constructor causes some special handling of setting the signer.
         if (this.signer) {
@@ -144,54 +145,33 @@ class ContractClient {
         });
     }
     validateItem(item) {
-        var _a;
-        return ((item === null || item === void 0 ? void 0 : item.type) &&
-            item.type === "contract" &&
-            Array.isArray((_a = item === null || item === void 0 ? void 0 : item.body) === null || _a === void 0 ? void 0 : _a.annotations) &&
-            item.body.annotations.includes("%addClaims") &&
-            item.body.annotations.includes("%removeClaims") &&
-            item.body.annotations.includes("%claims") &&
-            item.body.annotations.includes("%metadata") &&
-            item.body.annotations.includes("%owner"));
-    }
-    validateStorage(s) {
-        var _a;
-        let hasClaims = (s &&
-            Array.isArray(s) &&
-            s[0] &&
-            s[0].children &&
-            Array.isArray(s[0].children) &&
-            ((_a = s[0].children[0]) === null || _a === void 0 ? void 0 : _a.name) === "claims");
-        if (!hasClaims) {
-            throw new Error("No claims found in contract storage");
-        }
-        if (!this.hasContractType(s))
-            throw new Error("Contract type not found in metadata");
-    }
-    hasContractType(s) {
-        var _a, _b;
-        return ((_a = s[0].children[1]) === null || _a === void 0 ? void 0 : _a.name) === "contract_type" && ((_b = s[0].children[1]) === null || _b === void 0 ? void 0 : _b.value) === "tzprofiles";
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!((item === null || item === void 0 ? void 0 : item.type) &&
+                item.type === "contract" &&
+                (item === null || item === void 0 ? void 0 : item.value))) {
+                return false;
+            }
+            const contract = yield this.tezos.contract.at(item.value, tzip16.tzip16);
+            const metadata = yield contract.tzip16().getMetadata();
+            try {
+                if (metadata.metadata.interfaces.includes("TZIP-023")) {
+                    return true;
+                }
+            }
+            catch (_) {
+                return false;
+            }
+        });
     }
     // Retrieves the claimsList belonging to the given address, returns false if
     // if the contract storage does not have a claims list or expected metadata
     // throws an error in case of network issues.
     retrieveAndScreenContract(contractAddress) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            let prefix = this.bcdPrefix();
-            let storageRes = yield axios_1.default.get(`${prefix}contract/${this.bcd.network}/${contractAddress}/storage`);
-            if (storageRes.status !== 200) {
-                throw new Error(`Failed in explorer request: ${storageRes.statusText}`);
-            }
-            let { data } = storageRes;
-            try {
-                this.validateStorage(data);
-            }
-            catch (_e) {
-                return false;
-            }
-            let contractStorageList = ((_a = data[0].children[0]) === null || _a === void 0 ? void 0 : _a.children) || [];
-            return contractStorageList;
+            let contract = yield this.tezos.contract.at(contractAddress, tzip16.tzip16);
+            let views = yield contract.tzip16().metadataViews();
+            let claims = yield views.GetClaims().executeView();
+            return claims;
         });
     }
     // contentListFromStorage returns a set of claims for a given contract address
@@ -236,7 +216,7 @@ class ContractClient {
             let possibleAddresses = [];
             for (let i = 0, n = items.length; i < n; i++) {
                 let item = items[i];
-                if (this.validateItem(item)) {
+                if (yield this.validateItem(item)) {
                     possibleAddresses.push(item.value);
                 }
             }
@@ -278,7 +258,7 @@ class ContractClient {
                 contentList.push(triple);
             }
             const metadataBigMap = new taquito.MichelsonMap();
-            metadataBigMap.set("", tzip16.char2Bytes("https://gist.githubusercontent.com/sbihel/a9273df118862acba2b4d15a8778e3dd/raw/0debf54a941fdda9cfde4d34866535d302856885/tpp-metadata.json"));
+            metadataBigMap.set("", tzip16.char2Bytes("https://beta.tzprofiles.com/tzip016_metadata.json"));
             let originationOp, contractAddress;
             let args = {
                 code: common_1.contract,

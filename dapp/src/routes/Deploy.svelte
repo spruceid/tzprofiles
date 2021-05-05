@@ -147,7 +147,7 @@
         <p class="inline font-poppins">
           {'View on '}
           <a
-            href={`${viewerInstance}/view/${network}/${$userData.account.address}`}
+            href={`${viewerInstance}/view/${networkStr}/${$userData.account.address}`}
           >
             {'Tezos Profiles Viewer'}
           </a>

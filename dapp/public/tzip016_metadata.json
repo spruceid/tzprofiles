@@ -1,0 +1,59 @@
+{
+  "name": "Tezos Public Profiles",
+  "interfaces":["TZIP-023"],
+  "views":[
+    {
+      "implementations":[
+        {
+          "michelsonStorageView":{
+            "annotations":[ ],
+            "returnType":{
+              "prim":"set",
+              "args":[
+                { "prim": "pair",
+                  "args": [
+                    {"prim": "pair", "args": [
+                      {"prim": "string"},
+                      {"prim": "bytes"}
+                    ]},
+                    {"prim": "string"}
+                  ]
+                }
+              ],
+              "annots": ["%claims"]
+            },
+            "code":[
+              {"prim": "CDR"},
+              {"prim": "CAR"},
+              {"prim": "CAR"}
+            ],
+            "parameter":{
+              "prim": "unit"
+            }
+          }
+        }
+      ],
+      "name":"GetClaims",
+      "pure":true
+    },
+    {
+      "implementations":[
+        {
+          "michelsonStorageView":{
+            "annotations":[],
+            "returnType":{"prim":"address"},
+            "code":[
+              {"prim": "CDR"},
+              {"prim": "CDR"}
+            ],
+            "parameter":{
+              "prim": "unit"
+            }
+          }
+        }
+      ],
+      "name":"GetSubject",
+      "pure":true
+    }
+  ]
+}
