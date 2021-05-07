@@ -17,7 +17,12 @@
     saveToKepler,
     viewerInstance,
     alert,
+    Claim,
+    profileUrl,
   } from 'src/store';
+
+  import type { ClaimMap } from 'src/store';
+  import ProfileDisplay from 'enums/ProfileDisplay';
 
   let currentStep: number = 1;
   let retry: boolean = false;
@@ -39,16 +44,55 @@
     }
   };
 
+  const signedClaims = (cMap: ClaimMap): Array<Claim> => {
+    let keys = Object.keys(cMap);
+    let res: Array<Claim> = [];
+    for (let i = 0, n = keys.length; i < n; i++) {
+      let claim = cMap[keys[i]];
+      if (claim.url) {
+        res.push(claim);
+      }
+    }
+
+    return res;
+  };
+
+  const vcsToUpload = (profiles: Array<Claim>): Array<any> => {
+    let vcs: Array<any> = [];
+
+    profiles.forEach((profile) => {
+      switch (profile.display) {
+        case ProfileDisplay.BASIC: {
+          vcs.push($localBasicProfile);
+          break;
+        }
+        case ProfileDisplay.TWITTER: {
+          vcs.push($localTwitterProfile);
+          break;
+        }
+      }
+    });
+    return vcs;
+  };
+
   const upload = async () => {
     retry = false;
     try {
       const profileStream = $claimsStream;
-      const [basicProfileUrl, twitterProfileUrl] = await saveToKepler(
-        $localBasicProfile,
-        $localTwitterProfile
-      );
-      profileStream.TezosControl.url = basicProfileUrl;
-      profileStream.TwitterControl.url = twitterProfileUrl;
+      const filledProfiles = signedClaims(profileStream);
+      const urls = await saveToKepler(...vcsToUpload(filledProfiles));
+      filledProfiles.reverse().forEach((profile) => {
+        switch (profile.display) {
+          case ProfileDisplay.BASIC: {
+            profileStream.TezosControl.url = urls.pop();
+            break;
+          }
+          case ProfileDisplay.TWITTER: {
+            profileStream.TwitterControl.url = urls.pop();
+            break;
+          }
+        }
+      });
       claimsStream.set(profileStream);
       await new Promise((resolve) => setTimeout(resolve, 500));
       next();
