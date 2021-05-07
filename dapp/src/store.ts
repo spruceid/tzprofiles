@@ -9,18 +9,15 @@ import * as contractLib from 'tzprofiles';
 
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
-// TODO fix export in kepler :facepalm:
 import { Kepler, authenticator } from 'kepler-sdk';
 import { loadDIDKit } from './loader/didkit-loader';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
 export const saveToKepler = async (...obj) => {
-  const dummyOrbit = 'uAYAEHiB_A0nLzANfXNkW5WCju51Td_INJ6UacFK7qY6zejzKoA';
   if (localKepler) {
     try {
-      const [first, ...rest] = obj;
       const addresses = await localKepler
-        .put(dummyOrbit, first, ...rest)
+        .createOrbit(...obj)
         .then((r) => r.text());
       alert.set({
         message: 'Successfuly uploaded to Kepler',
@@ -29,7 +26,6 @@ export const saveToKepler = async (...obj) => {
 
       return addresses
         .split('\n')
-        .map((address) => `kepler://v0:${dummyOrbit}/${address}`);
     } catch (e) {
       alert.set({
         message: e.message || JSON.stringify(e),
@@ -455,9 +451,7 @@ export const initWallet: () => Promise<void> = async () => {
     await newWallet.requestPermissions(requestPermissionsInput);
     localKepler = new Kepler(
       keplerInstance,
-      // NOTE: Ran into a typing err w/o any
-      // Consider correcting?
-      await authenticator<any>(newWallet.client)
+      await authenticator(newWallet.client, 'TZProfiles')
     );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
