@@ -325,7 +325,11 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		let contract = await this.tezos.contract.at(contractAddress, tzip16.tzip16);
 		let views = await contract.tzip16().metadataViews();
 		let claims: Array<ContentStorage> = await views.GetClaims().executeView()
-		return claims;
+		let contents: Array<ContentStorage> = [];
+		for (var claim in claims) {
+			contents.push({children: [{value: claims[claim]['0']}, {value: claims[claim]['1']}, {value: claims[claim]['2']}]});
+		}
+		return contents;
 	}
 
 	// contentListFromStorage returns a set of claims for a given contract address

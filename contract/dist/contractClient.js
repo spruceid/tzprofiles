@@ -171,7 +171,12 @@ class ContractClient {
             let contract = yield this.tezos.contract.at(contractAddress, tzip16.tzip16);
             let views = yield contract.tzip16().metadataViews();
             let claims = yield views.GetClaims().executeView();
-            return claims;
+            let contents = [];
+            for (var claim in claims) {
+                contents.push({ children: [{ value: claims[claim]['0'] }, { value: claims[claim]['1'] }, { value: claims[claim]['2'] }] });
+            }
+            console.log(`${JSON.stringify(contents)}`);
+            return contents;
         });
     }
     // contentListFromStorage returns a set of claims for a given contract address
@@ -206,7 +211,7 @@ class ContractClient {
             let prefix = this.bcdPrefix();
             let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
             if (searchRes.status !== 200) {
-                throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+                throw new Error(`Failed in explorer request: ${searchRes.statusText} `);
             }
             let { data } = searchRes;
             if (data.count == 0) {
