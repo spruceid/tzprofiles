@@ -80,8 +80,7 @@ module.exports = {
 			},
 			{
 				test: /\.wasm$/,
-				loader: 'base64-loader',
-				type: 'javascript/auto'
+				type: 'webassembly/async'
 			}
 		]
 	},
@@ -112,6 +111,6 @@ module.exports = {
 		},
 	},
 	experiments: {
-		syncWebAssembly: true
+		asyncWebAssembly: true
 	}
 };

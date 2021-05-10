@@ -1,16 +1,16 @@
-import { BeaconWallet } from '@taquito/beacon-wallet';
-import type { Writable } from 'svelte/store';
-import { writable } from 'svelte/store';
-import { TezosToolkit } from '@taquito/taquito';
-import { Tzip16Module } from '@taquito/tzip16';
+import {BeaconWallet} from '@taquito/beacon-wallet';
+import type {Writable} from 'svelte/store';
+import {writable} from 'svelte/store';
+import {TezosToolkit} from '@taquito/taquito';
+import {Tzip16Module} from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
 import * as contractLib from './vendored_tzprofiles/tzprofiles';
 
-import { PersonOutlined, TwitterIcon } from 'components';
+import {PersonOutlined, TwitterIcon} from 'components';
 import SvelteComponentDev from '*.svelte';
-import { Kepler, authenticator, Action } from 'kepler-sdk';
-import { loadDIDKit } from './loader/didkit-loader';
+import {Kepler, authenticator, Action} from 'kepler-sdk';
+import {verifyCredential} from 'didkit-wasm';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
 export const saveToKepler = async (...obj) => {
@@ -57,7 +57,7 @@ export const loadJsonBlob = async (url: string): Promise<any> => {
 
 // TODO: Change to not deref the URL, since the client already is
 export const loadBasicProfile = async ({
-  TezosControl: { url },
+  TezosControl: {url},
 }: ClaimMap): Promise<void> => {
   if (url) {
     const res = await loadJsonBlob(url);
@@ -77,8 +77,8 @@ export const loadBasicProfile = async ({
       json = json[0];
     }
 
-    const { credentialSubject } = json;
-    const { alias, description, website, logo } = credentialSubject;
+    const {credentialSubject} = json;
+    const {alias, description, website, logo} = credentialSubject;
     basicAlias.set(alias);
     basicWebsite.set(website);
     basicDescription.set(description);
@@ -95,7 +95,7 @@ export const loadBasicProfile = async ({
 
 // TODO: Change to not deref the URL, since the client already is
 export const loadTwitterProfile = async ({
-  TwitterControl: { url },
+  TwitterControl: {url},
 }: ClaimMap): Promise<void> => {
   if (url) {
     const res = await loadJsonBlob(url);
@@ -114,8 +114,8 @@ export const loadTwitterProfile = async ({
       json = json[0];
     }
 
-    const { credentialSubject } = json;
-    const { sameAs } = credentialSubject;
+    const {credentialSubject} = json;
+    const {sameAs} = credentialSubject;
     const handle = sameAs.replace('https://twitter.com/', '');
     twitterHandle.set(handle);
     localTwitterProfile.set(json);
@@ -124,12 +124,6 @@ export const loadTwitterProfile = async ({
     localTwitterProfile.set(null);
   }
 };
-
-export let DIDKit = writable(null);
-
-loadDIDKit('/didkit_wasm_bg.wasm').then((x) => {
-  DIDKit.set(x);
-});
 
 export const userData = writable(null);
 export const contractAddress: Writable<string> = writable<string>(null);
@@ -221,7 +215,6 @@ export interface Claim {
 let localClaimsStream: ClaimMap;
 let localClient: contractLib.TZProfilesClient;
 let localContractAddress: string;
-let localDIDKit: any;
 let localNetworkStr: string;
 let localWallet: BeaconWallet;
 export let localKepler: Kepler;
@@ -235,9 +228,6 @@ contractAddress.subscribe((x) => {
 });
 contractClient.subscribe((x) => {
   localClient = x;
-});
-DIDKit.subscribe((x) => {
-  localDIDKit = x;
 });
 wallet.subscribe((x) => {
   localWallet = x;
@@ -267,7 +257,7 @@ export const originate = async (): Promise<void> => {
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
-    let { url } = localClaimsStream[claimKey];
+    let {url} = localClaimsStream[claimKey];
     if (url) {
       claimsList.push(['VerifiableCredential', url]);
     }
@@ -405,8 +395,8 @@ wallet.subscribe((wallet) => {
           ): Promise<void> => {
             // Validate VC
             switch (t) {
-              case 'VerifiableCredential': {
-                let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+              case "VerifiableCredential": {
+                let verifyResult = await verifyCredential(c, '{}');
                 let verifyJSON = JSON.parse(verifyResult);
                 if (verifyJSON.errors.length > 0)
                   throw new Error(
@@ -631,7 +621,7 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
           // Validate VC
           switch (t) {
             case 'VerifiableCredential': {
-              let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+              let verifyResult = await verifyCredential(c, '{}');
               let verifyJSON = JSON.parse(verifyResult);
               if (verifyJSON.errors.length > 0)
                 throw new Error(

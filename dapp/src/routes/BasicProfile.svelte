@@ -12,7 +12,6 @@
     userData,
     wallet,
     networkStr,
-    DIDKit,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
   import { signBasicProfile } from 'src/basic_profile';
@@ -50,7 +49,7 @@
             website,
             logo,
           };
-          signBasicProfile($userData, $wallet, $networkStr, $DIDKit, profile)
+          signBasicProfile($userData, $wallet, $networkStr, profile)
             .then((vc) => {
               let nextClaimMap = verification;
               nextClaimMap.TezosControl.url = URL.createObjectURL(
