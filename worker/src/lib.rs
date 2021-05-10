@@ -39,6 +39,8 @@ use wee_alloc;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+const SPRUCE_DIDWEB: &str = "did:web:beta.tzprofiles.com";
+
 fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
     // Credential {
     //     context: Contexts::Object(vec![Context::URI(URI::String("https://www.w3.org/2018/credentials/v1".to_string())), Context::URI(URI::String("https://schema.org/".to_string())), Context::Object()])
@@ -71,7 +73,7 @@ fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
           "sameAs": "https://twitter.com/".to_string() + twitter_handle
       },
-      "issuer": "did:web:beta.tzprofiles.com"
+      "issuer": SPRUCE_DIDWEB
     }))?)
 }
 
@@ -150,8 +152,14 @@ pub async fn witness_tweet(
         vc.evidence = Some(OneOrMany::One(evidence));
 
         let proof = jserr!(
-            vc.generate_proof(&sk, &LinkedDataProofOptions::default())
-                .await
+            vc.generate_proof(
+                &sk,
+                &LinkedDataProofOptions {
+                    verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
+                    ..Default::default()
+                }
+            )
+            .await
         );
         vc.proof = Some(OneOrMany::One(proof));
         Ok(jserr!(serde_json::to_string(&vc)).into())
