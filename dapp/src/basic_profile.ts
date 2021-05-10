@@ -1,17 +1,17 @@
-import { v4 as uuid } from 'uuid';
-import { alert } from 'src/store';
-import { signClaim } from 'src/utils';
-import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-sdk';
+import {v4 as uuid} from 'uuid';
+import {alert} from 'src/store';
+import {signClaim} from 'src/utils';
+import {RequestSignPayloadInput, SigningType} from '@airgap/beacon-sdk';
+import {completeIssueCredential, JWKFromTezos, prepareIssueCredential, verifyCredential} from 'didkit-wasm';
 
 export const signBasicProfile = async (
   userData,
   wallet,
   networkStr,
-  DIDKit,
   profile
 ) => {
   try {
-    const { alias, description, website, logo } = profile;
+    const {alias, description, website, logo} = profile;
     const did = `did:pkh:tz:${userData.account.address}`;
     const credential = {
       '@context': [
@@ -44,14 +44,14 @@ export const signBasicProfile = async (
     };
 
     const publicKey = userData.account.publicKey;
-    const publicKeyJwkString = await DIDKit.JWKFromTezos(publicKey);
-    let prepStr = await DIDKit.prepareIssueCredential(
+    const publicKeyJwkString = await JWKFromTezos(publicKey);
+    let prepStr = await prepareIssueCredential(
       credentialString,
       JSON.stringify(proofOptions),
       publicKeyJwkString
     );
     const preparation = JSON.parse(prepStr);
-    const { signingInput } = preparation;
+    const {signingInput} = preparation;
     const micheline = signingInput && signingInput.micheline;
     if (!micheline) {
       throw new Error('Expected micheline signing input');
@@ -62,9 +62,9 @@ export const signBasicProfile = async (
       payload: micheline,
       sourceAddress: userData.account.address,
     };
-    const { signature } = await wallet.client.requestSignPayload(payload);
+    const {signature} = await wallet.client.requestSignPayload(payload);
 
-    let vcStr = await DIDKit.completeIssueCredential(
+    let vcStr = await completeIssueCredential(
       credentialString,
       prepStr,
       signature
@@ -72,7 +72,7 @@ export const signBasicProfile = async (
 
     const verifyOptionsString = '{}';
     const verifyResult = JSON.parse(
-      await DIDKit.verifyCredential(vcStr, verifyOptionsString)
+      await verifyCredential(vcStr, verifyOptionsString)
     );
     if (verifyResult.errors.length > 0) {
       const errorMessage = `Unable to verify credential: ${verifyResult.errors.join(", ")}`;
