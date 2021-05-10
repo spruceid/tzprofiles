@@ -348,21 +348,19 @@ wallet.subscribe((wallet) => {
           hashContent: hashFunc,
           nodeURL: urlNode,
           signer: signerOpts,
-          validateType: async () => {}
-          // TODO: RESTORE
-          // validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
-          //     // Validate VC
-          //     switch (t){
-          //       case "VerifiableCredential": {
-          //         let verifyResult = await localDIDKit.verifyCredential(c, '{}');
-          //         let verifyJSON = JSON.parse(verifyResult);
-          //         if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
-          //         break;
-          //       }
-          //       default: 
-          //         throw new Error(`Unknown ClaimType: ${t}`);
-          //     }
-          // }
+          validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+            // Validate VC
+            switch (t) {
+              case "VerifiableCredential": {
+                let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+                let verifyJSON = JSON.parse(verifyResult);
+                if (verifyJSON.errors.length > 0) throw new Error(`Verifying ${c}: ${verifyJSON.errors.join(", ")}`);
+                break;
+              }
+              default:
+                throw new Error(`Unknown ClaimType: ${t}`);
+            }
+          }
         };
 
         let nextClient = new contractLib.TZProfilesClient(clientOpts);
