@@ -1,14 +1,12 @@
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:web:beta.tzprofiles.com",
-  "publicKey": [{
-       "id": "did:web:beta.tzprofiles.com#owner",
+  "verificationMethod": [{
+       "id": "did:web:beta.tzprofiles.com#controller",
        "type": "Ed25519VerificationKey2018",
-       "owner": "did:web:beta.tzprofiles.com",
+       "controller": "did:web:beta.tzprofiles.com",
        "publicKeyJwk": {"kty":"OKP","crv":"Ed25519","x":"h1DQir9DTFOC3Y_MyL-oH5r-YUsM94Mi-vNgQCpxKww"}
   }],
-  "authentication": [{
-       "type": "Ed25519Signature2018",
-       "publicKey": "did:web:beta.tzprofiles.com#owner"
-  }]
+  "authentication": ["did:web:beta.tzprofiles.com#controller"],
+  "assertionMethod": ["did:web:beta.tzprofiles.com#controller"]
 }

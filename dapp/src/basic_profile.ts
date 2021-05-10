@@ -21,7 +21,7 @@ export const signBasicProfile = async (
           description: 'https://schema.org/description',
           website: 'https://schema.org/url',
           logo: 'https://schema.org/logo',
-          BasicProfile: 'https://tzprofiles.me/BasicProfile',
+          BasicProfile: 'https://tzprofiles.com/BasicProfile',
         },
       ],
       id: 'urn:uuid:' + uuid(),
