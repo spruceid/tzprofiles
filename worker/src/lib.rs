@@ -71,7 +71,7 @@ fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
           "sameAs": "https://twitter.com/".to_string() + twitter_handle
       },
-      "issuer": "did:web:beta.tzprofiles.me"
+      "issuer": "did:web:beta.tzprofiles.com"
     }))?)
 }
 
