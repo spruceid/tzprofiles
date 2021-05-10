@@ -8,7 +8,7 @@
     CopyButton,
     CircleCheckIcon,
   } from 'components';
-  import { claims, contract } from 'src/store';
+  import { claims, contractAddress } from 'src/store';
   import { onMount } from 'svelte';
 
   export let address: string;
@@ -34,7 +34,9 @@
 </script>
 
 {#if !ready}
-  <div />
+  <div>
+    <p>Loading...</p>
+  </div>
 {:else}
   <Card
     class="relative self-center w-full text-center break-all md:max-w-md lg:max-w-md"
@@ -151,7 +153,7 @@
       <a
         class="text-green-900 underline"
         target="_blank"
-        href={`https://${network}.tzkt.io/${$contract}`}
+        href={`https://${network}.tzkt.io/${$contractAddress}`}
       >
         {'tzkt.io'}
       </a>

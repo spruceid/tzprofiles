@@ -1,1 +1,0 @@
-declare const BUILD_MODE_DEV: boolean;

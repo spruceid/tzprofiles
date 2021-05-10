@@ -53,7 +53,9 @@
           signBasicProfile($userData, $wallet, $networkStr, $DIDKit, profile)
             .then((vc) => {
               let nextClaimMap = verification;
-              nextClaimMap.TezosControl.url = URL.createObjectURL(new Blob([vc]));
+              nextClaimMap.TezosControl.url = URL.createObjectURL(
+                new Blob([vc])
+              );
               claimsStream.set(nextClaimMap);
               next();
             })

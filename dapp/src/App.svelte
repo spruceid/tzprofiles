@@ -65,13 +65,16 @@
 <script lang="ts">
   import { Router, Route } from 'svelte-navigator';
   import {
-    Home,
+    Connect,
     Faq,
     Twitter,
     BasicProfile,
     TermsOfService,
     PrivacyPolicy,
     Deploy,
+    Search,
+    Splash,
+    View 
   } from 'routes';
 
   //This avoids PurgeCSS from deleting classes from production build
@@ -96,7 +99,10 @@
 
 <Router>
   <Route path="/">
-    <Home />
+    <Splash />
+  </Route>
+  <Route path="/connect">
+    <Connect />
   </Route>
   <Route path="faq">
     <Faq />
@@ -115,5 +121,14 @@
   </Route>
   <Route path="deploy">
     <Deploy />
+  </Route>
+  <Route path="search">
+    <Search />
+  </Route>
+  <Route path="/view/:network/:address">
+    <View />
+  </Route>
+  <Route path="/view/:address">
+    <View />
   </Route>
 </Router>

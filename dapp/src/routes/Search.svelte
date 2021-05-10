@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import {
     BasePage,
     PrimaryButton,
@@ -8,35 +8,29 @@
     Input,
     Label,
   } from 'components';
-
-  import { search, selectedNetwork, claims } from 'src/store';
-  import { onMount } from 'svelte';
-
   import { useNavigate } from 'svelte-navigator';
+  import { onMount } from 'svelte';
+  import { search, network } from 'src/store';
+  import type NetworkType from 'enumsNetworkType';
 
   const navigate = useNavigate();
 
   let address: string = '';
-  let network: string;
+  let localNetwork: string;
 
   onMount(() => {
-    network = $selectedNetwork;
+    localNetwork = $network;
   });
 
-  selectedNetwork.subscribe((node) => (network = node));
+  network.subscribe((node) => (localNetwork = node));
 
   const setSelectedNetwork = () => {
-    selectedNetwork.set(network);
+    network.set(localNetwork as NetworkType);
   };
 </script>
 
-<svelte:head>
-  <title>Tezos Profiles Viewer</title>
-</svelte:head>
-
-<BasePage class="items-center justify-center flex-wrap flex-col">
+<BasePage class="flex-col flex-wrap items-center justify-center">
   <h1 class="lg:text-8xl sm:text-7xl text-6xl">Tezos Profiles Viewer</h1>
-
   <TextBody2
     value="Tezos Profiles Viewer enables you to search for a Tezos Profile using
      a Tezos Address"
@@ -47,7 +41,7 @@
     <Select
       name="network"
       id="network"
-      bind:value={network}
+      bind:value={localNetwork}
       onChange={setSelectedNetwork}
     >
       <Option value="mainnet" text="mainnet" selected />
@@ -59,8 +53,11 @@
       <Input placeholder="Enter a Tezos address" bind:value={address} />
       <PrimaryButton
         class="m-4"
-        onClick={() =>
-          search(address).then(() => navigate(`/view/${network}/${address}`))}
+        onClick={() => {
+          search(address).then(() => {
+            navigate(`/view/${localNetwork}/${address}`);
+          })}
+        }
         text="Find"
         small
       />

@@ -25,7 +25,6 @@
           Object.values($claimsStream)
             .filter((claim) => claim.url)
             .map(async (claim) => {
-              console.log(claim);
               let { url } = claim;
               let jsonRes = await loadJsonBlob(url);
 

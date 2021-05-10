@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { CheckIcon, SpinnerIcon } from 'components';
+  import { CheckIcon, SpinnerIcon, ErrorIcon } from 'components';
   export let step: number;
   export let currentStep: number;
   export let title: string;
   export let description: string = '';
   export let loading: boolean = false;
+  export let error: boolean = false;
 
   $: isFilled = step <= currentStep;
   $: isDone = step < currentStep;
@@ -18,7 +19,9 @@
     class="w-8 h-8 mr-4 border-2 rounded-full inline-table border-green-550 text-bold"
     class:bg-green-550={isFilled}
   >
-    {#if loading}
+    {#if error}
+      <ErrorIcon class="w-8 h-8 text-center" />
+    {:else if loading}
       <SpinnerIcon class="w-8 h-8 text-center animate-spin" />
     {:else if isDone}
       <CheckIcon class="w-8 h-8 text-center" />
