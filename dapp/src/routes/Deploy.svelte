@@ -120,7 +120,8 @@
       step={1}
       bind:currentStep
       title="Upload Credentials to Kepler"
-      loading={currentStep === 1}
+      loading={currentStep === 1 && !retry}
+      error={currentStep === 1 && retry}
     >
       {#if retry && currentStep === 1}
         <div class="w-40">
@@ -133,7 +134,8 @@
       step={2}
       bind:currentStep
       title="Deploy Contract to Blockchain"
-      loading={currentStep === 2}
+      loading={currentStep === 2 && !retry}
+      error={currentStep === 2 && retry}
     >
       {#if retry && currentStep === 2}
         <div class="w-40">

@@ -189,7 +189,9 @@
               (vc) => {
                 let nextClaimMap = verification;
 
-                nextClaimMap.TwitterControl.url = URL.createObjectURL(new Blob([vc]));
+                nextClaimMap.TwitterControl.url = URL.createObjectURL(
+                  new Blob([vc])
+                );
                 claimsStream.set(nextClaimMap);
                 next();
               }

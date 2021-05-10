@@ -24,8 +24,7 @@ export const saveToKepler = async (...obj) => {
         variant: 'success',
       });
 
-      return addresses
-        .split('\n')
+      return addresses.split('\n');
     } catch (e) {
       alert.set({
         message: e.message || JSON.stringify(e),
@@ -52,6 +51,10 @@ export const loadBasicProfile = async ({
   if (url) {
     const res = await loadJsonBlob(url);
     if (!res.ok || res.status !== 200) {
+      alert.set({
+        message: `Failed in Basic Profile Fetch ${res.statusText}`,
+        variant: 'error',
+      });
       throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
     }
 
@@ -86,6 +89,10 @@ export const loadTwitterProfile = async ({
   if (url) {
     const res = await loadJsonBlob(url);
     if (!res.ok || res.status !== 200) {
+      alert.set({
+        message: `Failed in Basic Profile Fetch ${res.statusText}`,
+        variant: 'error',
+      });
       throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
     }
 
@@ -167,7 +174,9 @@ export const basicAlias: Writable<string> = writable<string>(null);
 export const basicDescription: Writable<string> = writable<string>(null);
 export const basicWebsite: Writable<string> = writable<string>(null);
 export const basicLogo: Writable<string> = writable<string>(null);
-export const contractClient: Writable<contractLib.TZProfilesClient> = writable<contractLib.TZProfilesClient>(null);
+export const contractClient: Writable<contractLib.TZProfilesClient> = writable<contractLib.TZProfilesClient>(
+  null
+);
 export const twitterHandle: Writable<string> = writable<string>(null);
 export const profileUrl: Writable<string> = writable<string>(null);
 
@@ -194,6 +203,7 @@ let localClaimsStream: ClaimMap;
 let localClient: contractLib.TZProfilesClient;
 let localContractAddress: string;
 let localDIDKit: any;
+let localNetworkStr: string;
 let localWallet: BeaconWallet;
 export let localKepler: Kepler<any>;
 export let viewerInstance: string = 'http://127.0.0.1:9090';
@@ -213,13 +223,16 @@ DIDKit.subscribe((x) => {
 wallet.subscribe((x) => {
   localWallet = x;
 });
+networkStr.subscribe((x) => {
+  localNetworkStr = x;
+})
 
 const hashFunc = async (claimString: string): Promise<string> => {
   let encodedString = new TextEncoder().encode(claimString);
   let buf = await crypto.subtle.digest('SHA-256', encodedString);
-  return [...new Uint8Array (buf)]
-        .map (b => b.toString (16).padStart (2, "0"))
-        .join ("");
+  return [...new Uint8Array(buf)]
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 };
 
 export const originate = async (): Promise<void> => {
@@ -230,23 +243,23 @@ export const originate = async (): Promise<void> => {
   let claimsKeys = Object.keys(localClaimsStream);
 
   // TODO: Specifically type?
-  let claimsList: Array<[
-    contractLib.ClaimType, 
-    contractLib.ClaimReference
-  ]> = [];
+  let claimsList: Array<
+    [contractLib.ClaimType, contractLib.ClaimReference]
+  > = [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
     let { url } = localClaimsStream[claimKey];
     if (url) {
-      claimsList.push([ 
-        "VerifiableCredential",
-        url
-      ]);
+      claimsList.push(['VerifiableCredential', url]);
     }
   }
 
   if (claimsList.length < 1) {
+    alert.set({
+      message: 'No claim urls found',
+      variant: 'error',
+    });
     throw new Error('No claim urls found');
   }
 
@@ -256,44 +269,56 @@ export const originate = async (): Promise<void> => {
 
 export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
   if (!localClient) {
+    alert.set({
+      message: 'No wallet detected',
+      variant: 'error',
+    });
     throw new Error('No wallet detected');
   }
 
   if (!localContractAddress) {
+    alert.set({
+      message: 'No contractAddress detected',
+      variant: 'error',
+    });
     throw new Error('No contractAddress detected');
   }
 
   let claimsArgsList: Array<
-    [
-      contractLib.ClaimType, 
-      contractLib.ClaimReference
-    ]
+    [contractLib.ClaimType, contractLib.ClaimReference]
   > = claimsList.map((claim) => {
-    return ["VerifiableCredential", claim.url];
+    return ['VerifiableCredential', claim.url];
   });
 
   return await localClient.addClaims(localContractAddress, claimsArgsList);
 };
 
-export const removeClaims = async (claimsList: Array<Claim>): Promise<string> => {
+export const removeClaims = async (
+  claimsList: Array<Claim>
+): Promise<string> => {
   if (!localClient) {
+    alert.set({
+      message: 'No smart contract client detected',
+      variant: 'error',
+    });
     throw new Error('No smart contract client detected');
   }
 
   if (!localContractAddress) {
+    alert.set({
+      message: 'No contractAddress detected',
+      variant: 'error',
+    });
     throw new Error('No contractAddress detected');
   }
 
   let claimsArgsList: Array<
-    [
-      contractLib.ClaimType, 
-      contractLib.ClaimReference
-    ]
+    [contractLib.ClaimType, contractLib.ClaimReference]
   > = claimsList.map((claim) => {
-    return ["VerifiableCredential", claim.url];
+    return ['VerifiableCredential', claim.url];
   });
 
-  return await localClient.removeClaims(localContractAddress, claimsArgsList)
+  return await localClient.removeClaims(localContractAddress, claimsArgsList);
 };
 
 let urlNode = '';
@@ -305,13 +330,21 @@ let urlBetterCallDev = '';
 function getVCType(vc: any): string {
   let nextVC = vc;
   if (typeof nextVC === 'string') {
-    nextVC = JSON.parse(vc)
+    nextVC = JSON.parse(vc);
   }
   if (!nextVC || !nextVC?.type) {
+    alert.set({
+      message: 'Could not find property "type" in vc',
+      variant: 'error',
+    });
     throw new Error('Could not find property "type" in vc');
   }
 
   if (!Array.isArray(nextVC.type) || nextVC.type.length < 1) {
+    alert.set({
+      message: 'VC "type" property must be an array',
+      variant: 'error',
+    });
     throw new Error('VC "type" property must be an array');
   }
 
@@ -334,13 +367,13 @@ wallet.subscribe((wallet) => {
         let bcdOpts: contractLib.BetterCallDevOpts = {
           base: urlBetterCallDev,
           network: networkStrTemp as contractLib.BetterCallDevNetworks,
-          version: 1 as contractLib.BetterCallDevVersions
+          version: 1 as contractLib.BetterCallDevVersions,
         };
 
         let signerOpts: contractLib.WalletSigner = {
-          type: "wallet",
-          wallet
-        }
+          type: 'wallet',
+          wallet,
+        };
 
         let clientOpts: contractLib.TZProfilesClientOpts = {
           betterCallDevConfig: bcdOpts,
@@ -379,26 +412,37 @@ wallet.subscribe((wallet) => {
                 let vcType = getVCType(content);
 
                 switch (vcType) {
-                  case "TwitterVerification":
+                  case 'TwitterVerification':
                     nextClaims.TwitterControl.url = url;
                     loadTwitterProfile(nextClaims);
                     break;
-                  case "BasicProfile":
+                  case 'BasicProfile':
                     nextClaims.TezosControl.url = url;
                     loadBasicProfile(nextClaims);
                     break;
                   default:
-                    throw new Error(`Unknown VC Type: ${vcType}`)
+                    alert.set({
+                      message: `Unknown VC Type: ${vcType}`,
+                      variant: 'error',
+                    });
+                    throw new Error(`Unknown VC Type: ${vcType}`);
                 }
-
               }
               claimsStream.set(nextClaims);
             }
           } else {
+            alert.set({
+              message: 'No contract detected, starting new one',
+              variant: 'info',
+            });
             console.warn('No contract detected, starting new one');
           }
         } catch (e) {
-          console.error(`store::load_contracts:: ${e}`);
+          alert.set({
+            message: e.message,
+            variant: 'error',
+          });
+          console.error('store::load_contracts::', e);
         } finally {
           loadingContracts.set(false);
         }
@@ -441,7 +485,7 @@ export const initWallet: () => Promise<void> = async () => {
     network: {
       type: strNetwork as NetworkType,
       rpcUrl: urlNode,
-      name: `${networkStr}`,
+      name: `${localNetworkStr}`,
     },
   };
 
@@ -467,3 +511,100 @@ export const initWallet: () => Promise<void> = async () => {
     throw e;
   }
 };
+
+// Viewer related params:
+// TODO: Organize
+// TODO: Make the network var reasonable / consistent / documented.
+export let claims: Writable<any> = writable({
+  BasicProfile: false,
+  TwitterProfile: false,
+});
+
+let localClaims;
+
+claims.subscribe((x) => (localClaims = x));
+
+export const search = async (wallet) => {
+  if (wallet) {
+    try {
+      let [bcdNetwork, bcdURL] = strNetwork === 'custom' 
+        ? ['sandboxnet', 'http://localhost:14000'] 
+        : [strNetwork, 'https://api.better-call.dev'];
+
+      let bcdOpts: contractLib.BetterCallDevOpts = {
+        base: bcdURL,
+        network: bcdNetwork as contractLib.BetterCallDevNetworks,
+        version: 1 as contractLib.BetterCallDevVersions
+      };
+
+      // Kepler Client with no wallet.
+      let searchKepler = new Kepler(
+        keplerInstance,
+      );
+
+      let clientOpts: contractLib.TZProfilesClientOpts = {
+        betterCallDevConfig: bcdOpts,
+        keplerClient: searchKepler,
+        hashContent: hashFunc,
+        nodeURL: urlNode,
+        signer: false,
+        validateType: async () => {}
+        // TODO: RESTORE
+        // validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+        //     // Validate VC
+        //     switch (t){
+        //       case "VerifiableCredential": {
+        //         let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+        //         let verifyJSON = JSON.parse(verifyResult);
+        //         if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
+        //         break;
+        //       }
+        //       default: 
+        //         throw new Error(`Unknown ClaimType: ${t}`);
+        //     }
+        // }
+      }
+
+      let contractClient = new contractLib.TZProfilesClient(clientOpts);
+
+      let found = await contractClient.retrieve(wallet);
+      if (found) {
+        contractAddress.set(found.address);
+        // NOTE: We are not dealing with invalid claims in the UI
+        // TODO: Handle invalid claims
+        found.valid.forEach((triple) => {
+          let [_url, claimStr, _type] = triple;
+          let claim = JSON.parse(claimStr);
+
+          claim.type.forEach((type) => {
+            switch (type) {
+              case 'TwitterVerification':
+                localClaims.TwitterProfile = claim;
+                break;
+              case 'BasicProfile':
+                localClaims.BasicProfile = claim;
+                break;
+              default:
+                break;
+            }
+          });
+        });
+        claims.set(localClaims);
+        return;
+      }
+    } catch (err) {
+      alert.set({
+        message: err.message || 'Network error',
+        variant: 'error',
+      });
+      console.error(err);
+      throw err;
+    }
+  }
+
+  alert.set({
+    message: `No contract found for ${wallet}`,
+    variant: 'error',
+  });
+  throw new Error(`No contract found for ${wallet}`);
+}

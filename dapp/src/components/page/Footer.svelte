@@ -19,7 +19,11 @@
     <GithubIcon class="h-8 mr-2" />
     Github
   </a>
-  <a class="flex items-center" href="https://twitter.com/sprucesystems/" target="_blank">
+  <a
+    class="flex items-center"
+    href="https://twitter.com/sprucesystems/"
+    target="_blank"
+  >
     <TwitterIcon class="h-8 mr-2 sm:my-8 my-2" />
     Twitter
   </a>

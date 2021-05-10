@@ -6,14 +6,27 @@
   let navigate = useNavigate();
 
   const unprotected = [
-    '/faq',
-    '/terms-of-service',
-    '/privacy-policy',
+    '/connect',
     '/deploy',
+    '/faq',
+    '/privacy-policy',
+    '/search',
+    '/terms-of-service',
+    '/view'
   ];
   const path = window.location.pathname;
 
-  if ($userData === null && !unprotected.includes(path)) navigate('/');
+  let isUnprotected = false;
+
+  for (let i = 0, n = unprotected.length; i < n; i++) {
+    let prefix = unprotected[i];
+    if (path.startsWith(prefix)) {
+      isUnprotected = true;
+      break;
+    }
+  }
+
+  if ($userData === null && !isUnprotected) navigate('/');
 </script>
 
 <nav class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14">
@@ -23,8 +36,11 @@
     {/if}
   </div>
   <div>
+    {#if path !== '/search'}
+      <Link to="/search" class="mx-1.5">Search Profiles</Link>
+    {/if}
     {#if path !== '/faq' && !$wallet}
-      <Link to="/faq">FAQ</Link>
+      <Link to="/faq" class="mx-1.5">FAQ</Link>
     {:else if $wallet}
       <FlatButton
         onClick={() =>
@@ -34,6 +50,7 @@
             navigate('/');
           })}
         text="Disconnect"
+        class="mx-1.5"
       />
     {/if}
   </div>
