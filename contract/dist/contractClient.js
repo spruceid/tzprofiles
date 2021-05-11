@@ -151,9 +151,9 @@ class ContractClient {
                 (item === null || item === void 0 ? void 0 : item.value))) {
                 return false;
             }
-            const contract = yield this.tezos.contract.at(item.value, tzip16.tzip16);
-            const metadata = yield contract.tzip16().getMetadata();
             try {
+                const contract = yield this.tezos.contract.at(item.value, tzip16.tzip16);
+                const metadata = yield contract.tzip16().getMetadata();
                 if (metadata.metadata.interfaces.includes("TZIP-023")) {
                     return true;
                 }
@@ -175,7 +175,6 @@ class ContractClient {
             for (var claim in claims) {
                 contents.push({ children: [{ value: claims[claim]['0'] }, { value: claims[claim]['1'] }, { value: claims[claim]['2'] }] });
             }
-            console.log(`${JSON.stringify(contents)}`);
             return contents;
         });
     }
@@ -211,7 +210,7 @@ class ContractClient {
             let prefix = this.bcdPrefix();
             let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
             if (searchRes.status !== 200) {
-                throw new Error(`Failed in explorer request: ${searchRes.statusText} `);
+                throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
             }
             let { data } = searchRes;
             if (data.count == 0) {

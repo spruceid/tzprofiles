@@ -307,9 +307,9 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		)) {
 			return false;
 		}
-		const contract = await this.tezos.contract.at(item.value, tzip16.tzip16);
-		const metadata = await contract.tzip16().getMetadata();
 		try {
+			const contract = await this.tezos.contract.at(item.value, tzip16.tzip16);
+			const metadata = await contract.tzip16().getMetadata();
 			if (metadata.metadata.interfaces.includes("TZIP-023")) {
 				return true;
 			}
