@@ -464,7 +464,9 @@ network.subscribe((network) => {
     urlBetterCallDev = 'http://localhost:14000';
     betterCallDevUrl.set('http://localhost:14000');
   } else {
-    networkStr.set(network);
+    networkStr.set(network === NetworkType.EDONET ? 'edo2net' : network);
+    // TODO can't read from writeable, but then I don't understand why others work.
+    networkStrTemp = network === NetworkType.EDONET ? 'edo2net' : network;
     strNetwork = network;
 
     nodeUrl.set(`https://api.tez.ie/rpc/${network}`);
@@ -527,14 +529,11 @@ claims.subscribe((x) => (localClaims = x));
 export const search = async (wallet) => {
   if (wallet) {
     try {
-      let [bcdNetwork, bcdURL] = strNetwork === 'custom' 
-        ? ['sandboxnet', 'http://localhost:14000'] 
-        : [strNetwork, 'https://api.better-call.dev'];
 
       let bcdOpts: contractLib.BetterCallDevOpts = {
-        base: bcdURL,
-        network: bcdNetwork as contractLib.BetterCallDevNetworks,
-        version: 1 as contractLib.BetterCallDevVersions
+        base: urlBetterCallDev,
+        network: networkStrTemp as contractLib.BetterCallDevNetworks,
+        version: 1 as contractLib.BetterCallDevVersions,
       };
 
       // Kepler Client with no wallet.
@@ -548,21 +547,19 @@ export const search = async (wallet) => {
         hashContent: hashFunc,
         nodeURL: urlNode,
         signer: false,
-        validateType: async () => {}
-        // TODO: RESTORE
-        // validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
-        //     // Validate VC
-        //     switch (t){
-        //       case "VerifiableCredential": {
-        //         let verifyResult = await localDIDKit.verifyCredential(c, '{}');
-        //         let verifyJSON = JSON.parse(verifyResult);
-        //         if (verifyJSON.errors.length > 0) throw new Error(verifyJSON.errors.join(", "));
-        //         break;
-        //       }
-        //       default: 
-        //         throw new Error(`Unknown ClaimType: ${t}`);
-        //     }
-        // }
+        validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+          // Validate VC
+          switch (t) {
+            case "VerifiableCredential": {
+              let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+              let verifyJSON = JSON.parse(verifyResult);
+              if (verifyJSON.errors.length > 0) throw new Error(`Verifying ${c}: ${verifyJSON.errors.join(", ")}`);
+              break;
+            }
+            default:
+              throw new Error(`Unknown ClaimType: ${t}`);
+          }
+        }
       }
 
       let contractClient = new contractLib.TZProfilesClient(clientOpts);
