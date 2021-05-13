@@ -16,7 +16,7 @@ const signer_1 = require("@taquito/signer");
 const taquito = require("@taquito/taquito");
 const tzip16 = require("@taquito/tzip16");
 const common_1 = require("../common");
-const axios_1 = require("axios");
+// import axios from "axios";
 // Magic Number controlling how long to wait before confirming success.
 // Seems to be an art more than a science, 3 was suggested by a help thread.
 const CONFIRMATION_CHECKS = 3;
@@ -151,8 +151,11 @@ class ContractClient {
                 (item === null || item === void 0 ? void 0 : item.value))) {
                 return false;
             }
+            console.log("Setting up Taquito");
             const contract = yield this.tezos.contract.at(item.value, tzip16.tzip16);
+            console.log("About to fetch metadata.");
             const metadata = yield contract.tzip16().getMetadata();
+            console.log("Got metadata.");
             try {
                 if (metadata.metadata.interfaces.includes("TZIP-023")) {
                     return true;
@@ -175,7 +178,6 @@ class ContractClient {
             for (var claim in claims) {
                 contents.push({ children: [{ value: claims[claim]['0'] }, { value: claims[claim]['1'] }, { value: claims[claim]['2'] }] });
             }
-            console.log(`${JSON.stringify(contents)}`);
             return contents;
         });
     }
@@ -208,15 +210,19 @@ class ContractClient {
     // false if not, or throws an error if the network fails
     retrieve(walletAddress) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("HELLO");
             let prefix = this.bcdPrefix();
-            let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
+            let searchRes = yield fetch(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
             if (searchRes.status !== 200) {
-                throw new Error(`Failed in explorer request: ${searchRes.statusText} `);
+                throw new Error(`Failed in explorer request: ${yield searchRes.text()}`);
             }
-            let { data } = searchRes;
+            console.log("HELLO2");
+            let data = yield searchRes.json();
+            console.log(JSON.stringify(data));
             if (data.count == 0) {
                 return false;
             }
+            console.log("HELLO3");
             let items = data.items;
             let possibleAddresses = [];
             for (let i = 0, n = items.length; i < n; i++) {
@@ -225,6 +231,7 @@ class ContractClient {
                     possibleAddresses.push(item.value);
                 }
             }
+            console.log("HELLO4");
             for (let i = 0, n = possibleAddresses.length; i < n; i++) {
                 let address = possibleAddresses[i];
                 let storage = yield this.retrieveAndScreenContract(address);
@@ -238,6 +245,7 @@ class ContractClient {
                     };
                 }
             }
+            console.log("HELLO5");
             return false;
         });
     }

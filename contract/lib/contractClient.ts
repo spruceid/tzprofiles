@@ -4,7 +4,7 @@ import {InMemorySigner, importKey} from "@taquito/signer";
 import * as taquito from "@taquito/taquito";
 import * as tzip16 from "@taquito/tzip16";
 import {contract} from "../common";
-import axios from "axios";
+// import axios from "axios";
 
 // Magic Number controlling how long to wait before confirming success.
 // Seems to be an art more than a science, 3 was suggested by a help thread.
@@ -307,8 +307,11 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		)) {
 			return false;
 		}
+		console.log("Setting up Taquito");
 		const contract = await this.tezos.contract.at(item.value, tzip16.tzip16);
+		console.log("About to fetch metadata.");
 		const metadata = await contract.tzip16().getMetadata();
+		console.log("Got metadata.");
 		try {
 			if (metadata.metadata.interfaces.includes("TZIP-023")) {
 				return true;
@@ -364,16 +367,20 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		ContentResult<Content, ContentType, Hash, Reference>
 		| false
 	> {
+		console.log("HELLO")
 		let prefix = this.bcdPrefix();
-		let searchRes = await axios.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
+		let searchRes = await fetch(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
 		if (searchRes.status !== 200) {
-			throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+			throw new Error(`Failed in explorer request: ${await searchRes.text()}`);
 		}
+		console.log("HELLO2")
 
-		let {data} = searchRes;
+		let data = await searchRes.json();
+		console.log(JSON.stringify(data));
 		if (data.count == 0) {
 			return false;
 		}
+		console.log("HELLO3")
 
 		let items: Array<ContractStorageItem> = data.items;
 		let possibleAddresses: Array<string> = [];
@@ -384,6 +391,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 				possibleAddresses.push(item.value);
 			}
 		}
+		console.log("HELLO4")
 
 		for (let i = 0, n = possibleAddresses.length; i < n; i++) {
 			let address = possibleAddresses[i];
@@ -398,6 +406,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 				};
 			}
 		}
+		console.log("HELLO5")
 
 		return false;
 	}
