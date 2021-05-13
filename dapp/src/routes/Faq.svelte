@@ -35,11 +35,11 @@
       class="mb-4"
     />
     <TextBody2
-      value="WI Would Like to Report a Bug or Give Feedback"
+      value="I Would Like to Report a Bug or Give Feedback"
       class="mb-2 font-bold"
     />
     <TextBody2
-      value="Please direct any questions or inquiries to hello@spruceid.com."
+      value="Please direct any questions or inquiries to hello@spruceid.com, or the #identity channel in the Tezos Developer slack."
       class="mb-4"
     />
   </div>
