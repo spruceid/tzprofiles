@@ -18,7 +18,7 @@ export interface KeySigner {
 }
 export declare type Signer = WalletSigner | SecretSigner | KeySigner;
 export declare type BetterCallDevVersions = 1;
-export declare type BetterCallDevNetworks = 'mainnet' | 'delphinet' | 'edonet' | 'florencenet' | 'sandboxnet';
+export declare type BetterCallDevNetworks = 'mainnet' | 'delphinet' | 'edo2net' | 'florencenet' | 'sandboxnet';
 export interface BetterCallDevOpts {
     base: string;
     network: BetterCallDevNetworks;

@@ -58,8 +58,6 @@
   const deploy = async () => {
     await originate();
   };
-
-  let network = $networkStr === 'edonet' ? 'edo2net' : $networkStr;
 </script>
 
 <Card
@@ -213,7 +211,7 @@
         <a
           class="text-green-900 underline"
           target="_blank"
-          href={`${viewerInstance}/view/${network}/${$userData.account.address}`}
+          href={`${viewerInstance}/view/${networkStr}/${$userData.account.address}`}
         >
           {'tzkt.io'}
         </a>

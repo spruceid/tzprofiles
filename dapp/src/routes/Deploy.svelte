@@ -107,8 +107,6 @@
     await generateContract();
   };
 
-  let network = $networkStr === 'edonet' ? 'edo2net' : $networkStr;
-
   deploy();
 </script>
 

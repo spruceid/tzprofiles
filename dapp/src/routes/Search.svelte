@@ -22,8 +22,6 @@
     localNetwork = $network;
   });
 
-  network.subscribe((node) => (localNetwork = node));
-
   const setSelectedNetwork = () => {
     network.set(localNetwork as NetworkType);
   };
@@ -45,7 +43,7 @@
       onChange={setSelectedNetwork}
     >
       <Option value="mainnet" text="mainnet" selected />
-      <Option value="edo2net" text="edo2net" />
+      <Option value="edonet" text="edonet" />
       <Option value="florencenet" text="florencenet" />
       <Option value="sandboxnet" text="localhost" />
     </Select>
