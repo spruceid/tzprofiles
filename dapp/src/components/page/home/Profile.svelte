@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Link } from 'svelte-navigator';
+
   import { onMount } from 'svelte';
   import {
     Card,
@@ -31,6 +33,12 @@
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
+
+  let currentNetwork: string;
+
+  networkStr.subscribe((x) => {
+    currentNetwork = x;
+  })
 
   onMount(() => {
     loadBasicProfile($claimsStream);
@@ -211,7 +219,7 @@
         <a
           class="text-green-900 underline"
           target="_blank"
-          href={`${viewerInstance}/view/${networkStr}/${$userData.account.address}`}
+          href={`https://${currentNetwork}.tzkt.io/${$userData.account.address}`}
         >
           {'tzkt.io'}
         </a>

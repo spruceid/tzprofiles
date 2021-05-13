@@ -143,32 +143,37 @@ export let alert: Writable<{
   variant: 'error' | 'warning' | 'success' | 'info';
 }>(null);
 
-export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>({
-  TwitterControl: {
-    display: ProfileDisplay.TWITTER,
-    url: '',
-    type: 'Social Media',
-    proof: 'Tweet',
-    title: 'Twitter Verification',
-    description:
-      'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
-    icon: () => TwitterIcon,
-    route: '/twitter',
-    contractType: 'VerifiableCredential',
-  },
-  TezosControl: {
-    display: ProfileDisplay.BASIC,
-    url: '',
-    type: 'Basic Profile',
-    proof: 'Self-Attestation',
-    title: 'Basic Profile',
-    description:
-      'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
-    icon: () => PersonOutlined,
-    route: '/basic-profile',
-    contractType: 'VerifiableCredential',
-  },
-});
+// Sets the claimsStream object back to sane defaults
+export const newClaimsStream = (): ClaimMap => {
+  return {
+    TwitterControl: {
+      display: ProfileDisplay.TWITTER,
+      url: '',
+      type: 'Social Media',
+      proof: 'Tweet',
+      title: 'Twitter Verification',
+      description:
+        'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
+      icon: () => TwitterIcon,
+      route: '/twitter',
+      contractType: 'VerifiableCredential',
+    },
+    TezosControl: {
+      display: ProfileDisplay.BASIC,
+      url: '',
+      type: 'Basic Profile',
+      proof: 'Self-Attestation',
+      title: 'Basic Profile',
+      description:
+        'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
+      icon: () => PersonOutlined,
+      route: '/basic-profile',
+      contractType: 'VerifiableCredential',
+    },
+  }
+}
+
+export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>(newClaimsStream());
 
 export const basicAlias: Writable<string> = writable<string>(null);
 export const basicDescription: Writable<string> = writable<string>(null);

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Link, useNavigate } from 'svelte-navigator';
   import { BackButton, FlatButton } from 'components';
-  import { userData, wallet } from 'src/store';
+  import { claimsStream, contractAddress, newClaimsStream, userData, wallet } from 'src/store';
 
   let navigate = useNavigate();
 
@@ -45,8 +45,11 @@
       <FlatButton
         onClick={() =>
           $wallet.disconnect().then(() => {
+            // TODO: Track state more carefully / explicitly.
             wallet.set(null);
             userData.set(null);
+            claimsStream.set(newClaimsStream());
+            contractAddress.set(null);
             navigate('/');
           })}
         text="Disconnect"
