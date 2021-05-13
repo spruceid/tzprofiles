@@ -24,6 +24,14 @@
   import type { ClaimMap } from 'src/store';
   import ProfileDisplay from 'enums/ProfileDisplay';
 
+  import { Link } from 'svelte-navigator';
+
+  let currentNetwork: string;
+
+  networkStr.subscribe((x) => {
+    currentNetwork = x;
+  })
+
   let currentStep: number = 1;
   let retry: boolean = false;
   const next = () => (currentStep = currentStep + 1);
@@ -146,11 +154,11 @@
       {#if currentStep > 2}
         <p class="inline font-poppins">
           {'View on '}
-          <a
-            href={`${viewerInstance}/view/${networkStr}/${$userData.account.address}`}
+          <Link
+            to={`/view/${currentNetwork}/${$userData.account.address}`}
           >
             {'Tezos Profiles Viewer'}
-          </a>
+          </Link>
         </p>
       {/if}
     </VerificationStep>
