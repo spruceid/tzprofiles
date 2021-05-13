@@ -60,15 +60,6 @@ const argv = yargs
 			}
 		}
 	)
-	.command('get-subject', 'Get the subject for a Tezos Public Profile smart contract.',
-		{
-			contract: {
-				description: 'TPP address.',
-				type: 'string',
-				demand: true,
-			}
-		}
-	)
 	.command('resolve-tzp', 'Get the TZP address for a Tezos Wallet address.',
 		{
 			address: {
