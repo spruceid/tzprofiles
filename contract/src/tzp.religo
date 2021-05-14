@@ -13,18 +13,8 @@ type storage = {
     claims            : set (claim)
 };
 
-let add_claims = ((c, s): (set (claim), storage)): storage => {
-    let predicate = ((ss, cc) : (set (claim), claim)): set (claim) => Set.add(cc, ss);
-    {
-        owner: s.owner,
-        contract_type: s.contract_type,
-        metadata: s.metadata,
-        claims: Set.fold (predicate, c, s.claims)
-    };
-};
-
-let remove_claims = ((c, s): (set (claim), storage)): storage => {
-    let predicate = ((ss, cc) : (set (claim), claim)): set (claim) => Set.remove(cc, ss);
+let update = ((c, u, s): (set (claim), bool, storage)): storage => {
+    let predicate = ((ss, cc) : (set (claim), claim)): set (claim) => Set.update(cc, u, ss);
     {
         owner: s.owner,
         contract_type: s.contract_type,
@@ -34,15 +24,13 @@ let remove_claims = ((c, s): (set (claim), storage)): storage => {
 };
 
 type parameter = 
-| AddClaims (set (claim))
-| RemoveClaims (set (claim))
+| Update ((set (claim), bool))
 ;
 type return = (list (operation), storage);
 
 let main = ((action, store): (parameter, storage)) : return => {
   if (Tezos.sender != store.owner) { failwith ("Unauthorized."); }; 
   switch (action) {
-      | AddClaims (l) => ([]: list (operation), add_claims (l, store))
-      | RemoveClaims (l) => ([]: list (operation), remove_claims (l, store))
+      | Update (l) => ([]: list (operation), update (l[0], l[1], store))
   };
 }
