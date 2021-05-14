@@ -262,7 +262,7 @@ class ContractClient {
                 contentList.push(triple);
             }
             const metadataBigMap = new taquito.MichelsonMap();
-            metadataBigMap.set("", tzip16.char2Bytes("https://beta.tzprofiles.com/tzip016_metadata.json"));
+            metadataBigMap.set("", tzip16.char2Bytes("https://tzprofiles.com/tzip016_metadata.json"));
             let originationOp, contractAddress;
             let args = {
                 code: common_1.contract,
