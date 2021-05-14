@@ -1,12 +1,12 @@
 {
   "@context": "https://w3id.org/did/v1",
-  "id": "did:web:beta.tzprofiles.com",
+  "id": "did:web:tzprofiles.com",
   "verificationMethod": [{
-       "id": "did:web:beta.tzprofiles.com#controller",
+       "id": "did:web:tzprofiles.com#controller",
        "type": "Ed25519VerificationKey2018",
-       "controller": "did:web:beta.tzprofiles.com",
-       "publicKeyJwk": {"kty":"OKP","crv":"Ed25519","x":"h1DQir9DTFOC3Y_MyL-oH5r-YUsM94Mi-vNgQCpxKww"}
+       "controller": "did:web:tzprofiles.com",
+       "publicKeyJwk": {"kty":"OKP","crv":"Ed25519","x":"wQYQZIM8yEi66OCt88oscUEqnnwvYszRC4DwF02YYt0"}
   }],
-  "authentication": ["did:web:beta.tzprofiles.com#controller"],
-  "assertionMethod": ["did:web:beta.tzprofiles.com#controller"]
+  "authentication": ["did:web:tzprofiles.com#controller"],
+  "assertionMethod": ["did:web:tzprofiles.com#controller"]
 }

@@ -47,7 +47,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.1.1",
     "svelte-navigator": "^3.1.5",
-    "tzprofiles": "^1.0.6",
+    "tzprofiles": "^1.1.0",
     "url": "^0.11.0",
     "uuid": "^8.3.2"
   },

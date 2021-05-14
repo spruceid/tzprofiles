@@ -39,7 +39,7 @@ use wee_alloc;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-const SPRUCE_DIDWEB: &str = "did:web:beta.tzprofiles.com";
+const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
     // Credential {

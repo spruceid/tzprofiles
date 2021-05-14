@@ -427,7 +427,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		}
 
 		const metadataBigMap = new taquito.MichelsonMap();
-		metadataBigMap.set("", tzip16.char2Bytes("https://beta.tzprofiles.com/tzip016_metadata.json"));
+		metadataBigMap.set("", tzip16.char2Bytes("https://tzprofiles.com/tzip016_metadata.json"));
 
 		let originationOp, contractAddress;
 		let args = {
