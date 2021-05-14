@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "@taquito/beacon-wallet": "^8.1.0",
     "@taquito/rpc": "^8.1.0",
