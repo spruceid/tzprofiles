@@ -477,11 +477,18 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 
 		let contract = await this.tezos.contract.at(contractAddress);
 
-		let op = await contract.methods.addClaims(contentList).send();
-
-		await op.confirmation(CONFIRMATION_CHECKS);
-
-		return op.hash;
+		let entrypoints = Object.keys(contract.methods);
+		if (entrypoints.length == 1 && entrypoints.includes('default')) {
+			let op = await contract.methods.default(contentList, true).send();
+			await op.confirmation(CONFIRMATION_CHECKS);
+			return op.hash;
+		} else if (entrypoints.includes('addClaims')) {
+			let op = await contract.methods.addClaims(contentList).send();
+			await op.confirmation(CONFIRMATION_CHECKS);
+			return op.hash;
+		} else {
+			throw new Error(`No entrypoint to add claim.`)
+		}
 	}
 
 	// removeClaims takes a contractAddress and a list of pairs of contentType 
@@ -504,9 +511,18 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		}
 
 		let contract = await this.tezos.contract.at(contractAddress);
-		let op = await contract.methods.removeClaims(contentList).send();
-		await op.confirmation(CONFIRMATION_CHECKS);
 
-		return op.hash;
+		let entrypoints = Object.keys(contract.methods);
+		if (entrypoints.length == 1 && entrypoints.includes('default')) {
+			let op = await contract.methods.default(contentList, false).send();
+			await op.confirmation(CONFIRMATION_CHECKS);
+			return op.hash;
+		} else if (entrypoints.includes('removeClaims')) {
+			let op = await contract.methods.removeClaims(contentList).send();
+			await op.confirmation(CONFIRMATION_CHECKS);
+			return op.hash;
+		} else {
+			throw new Error(`No entrypoint to add claim.`)
+		}
 	}
 }

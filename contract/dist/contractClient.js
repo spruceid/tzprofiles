@@ -305,9 +305,20 @@ class ContractClient {
                 contentList.push(triple);
             }
             let contract = yield this.tezos.contract.at(contractAddress);
-            let op = yield contract.methods.addClaims(contentList).send();
-            yield op.confirmation(CONFIRMATION_CHECKS);
-            return op.hash;
+            let entrypoints = Object.keys(contract.methods);
+            if (entrypoints.length == 1 && entrypoints.includes('default')) {
+                let op = yield contract.methods.default(contentList, true).send();
+                yield op.confirmation(CONFIRMATION_CHECKS);
+                return op.hash;
+            }
+            else if (entrypoints.includes('addClaims')) {
+                let op = yield contract.methods.addClaims(contentList).send();
+                yield op.confirmation(CONFIRMATION_CHECKS);
+                return op.hash;
+            }
+            else {
+                throw new Error(`No entrypoint to add claim.`);
+            }
         });
     }
     // removeClaims takes a contractAddress and a list of pairs of contentType 
@@ -328,9 +339,20 @@ class ContractClient {
                 contentList.push(triple);
             }
             let contract = yield this.tezos.contract.at(contractAddress);
-            let op = yield contract.methods.removeClaims(contentList).send();
-            yield op.confirmation(CONFIRMATION_CHECKS);
-            return op.hash;
+            let entrypoints = Object.keys(contract.methods);
+            if (entrypoints.length == 1 && entrypoints.includes('default')) {
+                let op = yield contract.methods.default(contentList, false).send();
+                yield op.confirmation(CONFIRMATION_CHECKS);
+                return op.hash;
+            }
+            else if (entrypoints.includes('removeClaims')) {
+                let op = yield contract.methods.removeClaims(contentList).send();
+                yield op.confirmation(CONFIRMATION_CHECKS);
+                return op.hash;
+            }
+            else {
+                throw new Error(`No entrypoint to add claim.`);
+            }
         });
     }
 }

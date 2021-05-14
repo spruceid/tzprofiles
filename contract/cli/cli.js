@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const yargs = require('yargs');
 const kepler = require('kepler-sdk');
-const DIDKit = require('../../../didkit/lib/web/pkg/node/didkit_wasm');
+const DIDKit = require('didkit-wasm-node');
 
 const hashFunc = async (claimBody) => {
 	return crypto.createHash("sha256").update(claimBody).digest().toString('hex');
@@ -190,28 +190,25 @@ async function originate() {
 	let client = getClient();
 
 	let claimsList = argv.claims.map((claim) => {
-		return {
-			url: claim,
-			type: "VerifiableCredential"
-		};
+		return ["VerifiableCredential", claim];
 	});
 
 	return await client.originate(claimsList);
 }
 
 async function add_claims() {
-	let client = getContractClient();
+	let client = getClient();
 	let claimsList = argv.claims.map((claim) => {
-		return ["VerifiableCredential", claim.url];
+		return ["VerifiableCredential", claim];
 	});
 
 	return await client.addClaims(argv.contract, claimsList)
 }
 
 async function remove_claims() {
-	let client = getContractClient();
+	let client = getClient();
 	let claimsList = argv.claims.map((claim) => {
-		return ["VerifiableCredential", claim.url];
+		return ["VerifiableCredential", claim];
 	});
 
 	return await client.removeClaims(argv.contract, claimsList)
