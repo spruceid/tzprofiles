@@ -3,6 +3,7 @@ name = "tzprofiles_witness"
 version = "0.1.0"
 authors = ["Spruce Systems, Inc."]
 edition = "2018"
+license = "Apache-2.0"
 resolver = "2"
 
 [lib]

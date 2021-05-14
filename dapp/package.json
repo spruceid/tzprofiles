@@ -1,5 +1,6 @@
 {
   "name": "tezos-profiles",
+  "license": "Apache-2.0",
   "version": "1.0.0",
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",
