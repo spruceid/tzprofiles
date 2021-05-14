@@ -1,0 +1,18 @@
+{
+  "name": "tzprofiles_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "didkit-wasm-node": "^0.1.0",
+    "express": "^4.17.1",
+    "kepler-sdk": "^0.3.0",
+    "node-fetch": "^2.6.1",
+    "tzprofiles": "^1.0.6"
+  }
+}
