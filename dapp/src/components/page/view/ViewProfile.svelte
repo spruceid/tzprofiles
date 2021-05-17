@@ -21,14 +21,19 @@
   onMount(() => {
     claims.subscribe((claim) => {
       ready = false;
-      if ($claims.BasicProfile || $claims.TwitterProfile) {
+
+      if ($claims.TwitterProfile) {
         twitterHandle = claim.TwitterProfile.credentialSubject.sameAs.replace(
           'https://twitter.com/',
           ''
         );
-        basicProfile = claim.BasicProfile.credentialSubject;
-        ready = true;
       }
+
+      if ($claims.BasicProfile) {
+        basicProfile = claim.BasicProfile.credentialSubject;
+      }
+
+      ready = true;
     });
   });
 </script>
@@ -53,7 +58,7 @@
     </div>
 
     <Label class="mt-4" fieldName="basic-alias" value="Alias" />
-    {#if basicProfile.alias}
+    {#if basicProfile?.alias}
       <div class="flex items-center">
         <Input
           fluid
@@ -69,7 +74,7 @@
     {/if}
 
     <Label class="mt-4" fieldName="basic-description" value="Description" />
-    {#if basicProfile.description}
+    {#if basicProfile?.description}
       <div class="flex items-center">
         <Input
           fluid
@@ -85,7 +90,7 @@
     {/if}
 
     <Label class="mt-4" fieldName="basic-website" value="Website" />
-    {#if basicProfile.website}
+    {#if basicProfile?.website}
       <div class="flex items-center">
         <Input
           fluid
@@ -106,7 +111,7 @@
         class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
         class:opacity-60={true}
       >
-        {#if basicProfile.logo}
+        {#if basicProfile?.logo}
           <img
             name="basic-logo"
             class="object-contain"
@@ -122,7 +127,7 @@
           </p>
         {/if}
       </div>
-      {#if basicProfile.logo}
+      {#if basicProfile?.logo}
         <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
       {/if}
     </div>
