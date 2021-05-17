@@ -5,25 +5,35 @@ import { TezosToolkit } from '@taquito/taquito';
 import { Tzip16Module } from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from 'tzprofiles';
+import * as contractLib from './vendored_tzprofiles/tzprofiles';
 
 import { PersonOutlined, TwitterIcon } from 'components';
 import SvelteComponentDev from '*.svelte';
-import { Kepler, authenticator } from 'kepler-sdk';
+import { Kepler, authenticator, Action } from 'kepler-sdk';
 import { loadDIDKit } from './loader/didkit-loader';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
 export const saveToKepler = async (...obj) => {
   if (localKepler) {
     try {
-      const addresses = await localKepler
-        .createOrbit(...obj)
-        .then((r) => r.text());
+      // Get around the error of possibly passing nothing.
+      let f = obj.pop();
+      if (!f) {
+        throw new Error("Empty array passed to saveToKepler")
+      }
+
+      const res = await localKepler.createOrbit(f, ...obj);
+      if (!res.ok || res.status !== 200) {
+        throw new Error(`Failed to create orbit: ${res.statusText}`);
+      }
+
+      const addresses = await res.text();
+
       alert.set({
         message: 'Successfuly uploaded to Kepler',
         variant: 'success',
       });
-
+     
       return addresses.split('\n');
     } catch (e) {
       alert.set({
@@ -210,7 +220,7 @@ let localContractAddress: string;
 let localDIDKit: any;
 let localNetworkStr: string;
 let localWallet: BeaconWallet;
-export let localKepler: Kepler<any>;
+export let localKepler: Kepler;
 export let viewerInstance: string = 'http://127.0.0.1:9090';
 
 claimsStream.subscribe((x) => {
@@ -366,7 +376,7 @@ wallet.subscribe((wallet) => {
           keplerInstance,
           // NOTE: Ran into a typing err w/o any
           // Consider correcting?
-          await authenticator<any>(wallet.client)
+          await authenticator(wallet.client as any, 'kepler.tzprofiles.com')
         );
 
         let bcdOpts: contractLib.BetterCallDevOpts = {
@@ -503,7 +513,9 @@ export const initWallet: () => Promise<void> = async () => {
     await newWallet.requestPermissions(requestPermissionsInput);
     localKepler = new Kepler(
       keplerInstance,
-      await authenticator(newWallet.client, 'TZProfiles')
+      // NOTE: Ran into a typing err w/o any
+      // Consider correcting?
+      await authenticator(newWallet.client as any, 'kepler.tzprofiles.com')
     );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
@@ -531,7 +543,47 @@ let localClaims;
 
 claims.subscribe((x) => (localClaims = x));
 
-export const search = async (wallet) => {
+export interface searchRetryOpts {
+  current: number,
+  max: number,
+  step: number
+}
+
+export const defaultSearchOpts = {
+  current: 0,
+  max: 10000,
+  step: 1000
+};
+
+const searchRetry = async (addr: string, contractClient: contractLib.TZProfilesClient, opts: searchRetryOpts): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
+  try {
+    let found = await contractClient.retrieve(addr);
+
+    return found
+  } catch (err) {
+    if (opts.current >= opts.max) {
+      throw Error(`Found contract, encountered repeated network errors, gave up on: ${err.message}`)
+    }
+    opts.current += opts.step;
+
+    let f = (): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
+      return new Promise((resolve, reject) => {
+        let innerF = async () => {
+          let found = await searchRetry(addr, contractClient, opts);
+          resolve(found)
+        }
+
+        setTimeout(innerF, opts.current);
+      })
+    }
+
+    let result = await f();
+
+    return result
+  }
+}
+
+export const search = async (wallet: string, opts: searchRetryOpts) => {
   if (wallet) {
     try {
 
@@ -541,9 +593,15 @@ export const search = async (wallet) => {
         version: 1 as contractLib.BetterCallDevVersions,
       };
 
+      let dummyAuthenticator = {
+        content: async (orbit: string, cids: string[], action: Action) => "",
+        createOrbit: async (cids: string[]) => ""
+      };
+
       // Kepler Client with no wallet.
       let searchKepler = new Kepler(
         keplerInstance,
+        dummyAuthenticator
       );
 
       let clientOpts: contractLib.TZProfilesClientOpts = {
@@ -569,7 +627,7 @@ export const search = async (wallet) => {
 
       let contractClient = new contractLib.TZProfilesClient(clientOpts);
 
-      let found = await contractClient.retrieve(wallet);
+      let found = await searchRetry(wallet, contractClient, opts);
       if (found) {
         contractAddress.set(found.address);
         // NOTE: We are not dealing with invalid claims in the UI

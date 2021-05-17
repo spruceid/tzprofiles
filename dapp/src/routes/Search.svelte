@@ -10,7 +10,7 @@
   } from 'components';
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
-  import { search, network } from 'src/store';
+  import { defaultSearchOpts, search, network } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
 
   const navigate = useNavigate();
@@ -52,7 +52,7 @@
       <PrimaryButton
         class="m-4"
         onClick={() => {
-          search(address).then(() => {
+          search(address, defaultSearchOpts).then(() => {
             navigate(`/view/${localNetwork}/${address}`);
           })}
         }

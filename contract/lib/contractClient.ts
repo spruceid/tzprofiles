@@ -3,7 +3,7 @@
 import {InMemorySigner, importKey} from "@taquito/signer";
 import * as taquito from "@taquito/taquito";
 import * as tzip16 from "@taquito/tzip16";
-import {contract} from "../common";
+import { contract as contractCode } from "./contract";
 import axios from "axios";
 
 // Magic Number controlling how long to wait before confirming success.
@@ -431,7 +431,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 
 		let originationOp, contractAddress;
 		let args = {
-			code: contract,
+			code: contractCode,
 			storage: {
 				claims: contentList,
 				contract_type: this.contractType,

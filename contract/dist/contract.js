@@ -1,4 +1,7 @@
-const contract = `{ parameter (pair (set (pair (pair string bytes) string)) bool) ;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.contract = void 0;
+exports.contract = `{ parameter (pair (set (pair (pair string bytes) string)) bool) ;
   storage
     (pair (pair (set %claims (pair (pair string bytes) string)) (string %contract_type))
           (pair (big_map %metadata string bytes) (address %owner))) ;
@@ -34,6 +37,3 @@ const contract = `{ parameter (pair (set (pair (pair string bytes) string)) bool
          PAIR ;
          NIL operation ;
          PAIR } }`;
-
-
-module.exports.contract = contract;

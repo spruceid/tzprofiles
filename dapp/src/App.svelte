@@ -75,7 +75,7 @@
     Search,
     Splash,
     View 
-  } from 'routes';
+  } from './routes';
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =

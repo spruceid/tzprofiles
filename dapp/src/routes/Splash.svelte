@@ -1,5 +1,5 @@
 <script type="ts">
-  import { Claims } from 'routes';
+  import { Claims } from './';
   import {
     BasePage,
     PrimaryButton,
