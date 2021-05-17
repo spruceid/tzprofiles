@@ -12,6 +12,7 @@
     userData,
     networkStr,
     claimsStream,
+    contractAddress,
     localBasicProfile,
     localTwitterProfile,
     saveToKepler,
@@ -26,14 +27,35 @@
 
   import { Link } from 'svelte-navigator';
 
+  import { useNavigate } from 'svelte-navigator';
+  let navigate = useNavigate();
+
   let currentNetwork: string;
+  let currentContractAddress: string
+
+  contractAddress.subscribe((x) => {
+    currentContractAddress = x;
+  });
 
   networkStr.subscribe((x) => {
     currentNetwork = x;
-  })
+  });
 
   let currentStep: number = 1;
   let retry: boolean = false;
+
+  const hasUrl = (cMap: ClaimMap): boolean => {
+    let keys = Object.keys(cMap);
+    for (let i = 0, n = keys.length; i < n; i++) {
+      let claim = cMap[keys[i]];
+      if (claim.url) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const next = () => (currentStep = currentStep + 1);
 
   const generateContract = async () => {
@@ -111,6 +133,10 @@
   };
 
   const deploy = async () => {
+    let rd = (hasUrl($claimsStream) && currentContractAddress) || !$userData;
+    if (rd) {
+      return navigate("/connect");
+    }
     await upload();
     await generateContract();
   };
