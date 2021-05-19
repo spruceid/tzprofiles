@@ -18,7 +18,7 @@
     "axios": "^0.21.1",
     "didkit-wasm-node": "^0.1.0",
     "express": "^4.17.1",
-    "kepler-sdk": "^0.4.0",
+    "kepler-sdk": "^0.6.0",
     "process": "^0.11.10",
     "yargs": "^16.2.0"
   }
