@@ -36,6 +36,9 @@
     {/if}
   </div>
   <div>
+    {#if $userData && path !== '/connect'}
+      <Link to="/connect" class="mx-1.5">View My Profile</Link>
+    {/if}
     {#if path !== '/search'}
       <Link to="/search" class="mx-1.5">Search Profiles</Link>
     {/if}

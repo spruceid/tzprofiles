@@ -8,7 +8,7 @@
     CopyButton,
     CircleCheckIcon,
   } from 'components';
-  import { claims, contractAddress } from 'src/store';
+  import { claims, searchAddress } from 'src/store';
   import { onMount } from 'svelte';
 
   export let address: string;
@@ -158,7 +158,7 @@
       <a
         class="text-green-900 underline"
         target="_blank"
-        href={`https://${network}.tzkt.io/${$contractAddress}`}
+        href={`https://${network === 'edonet' ? 'edo2net' : network}.tzkt.io/${$searchAddress}`}
       >
         {'tzkt.io'}
       </a>

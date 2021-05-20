@@ -54,7 +54,7 @@
         if (subscriptionTimeout) clearTimeout(subscriptionTimeout);
         subscriptionTimeout = setTimeout(() => {
           reset();
-        }, 10000);
+        }, 30000);
       }
     });
   });

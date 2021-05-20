@@ -14,6 +14,7 @@ import { loadDIDKit } from './loader/didkit-loader';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
 export const saveToKepler = async (...obj) => {
+  obj.forEach(o => console.log(o))
   if (localKepler) {
     try {
       // Get around the error of possibly passing nothing.
@@ -132,6 +133,7 @@ loadDIDKit('/didkit_wasm_bg.wasm').then((x) => {
 
 export const userData = writable(null);
 export const contractAddress: Writable<string> = writable<string>(null);
+export const searchAddress: Writable<string> = writable<string>(null);
 export const keplerInstance = process.env.KEPLER_URL;
 export const witnessUrl = process.env.WITNESS_URL;
 export let nodeUrl: Writable<string> = writable<string>(null);
@@ -629,7 +631,7 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
 
       let found = await searchRetry(wallet, contractClient, opts);
       if (found) {
-        contractAddress.set(found.address);
+        searchAddress.set(found.address);
         // NOTE: We are not dealing with invalid claims in the UI
         // TODO: Handle invalid claims
         found.valid.forEach((triple) => {

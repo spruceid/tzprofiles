@@ -219,7 +219,7 @@
         <a
           class="text-green-900 underline"
           target="_blank"
-          href={`https://${currentNetwork}.tzkt.io/${$userData.account.address}`}
+          href={`https://${currentNetwork === 'edonet' ? 'edo2net' : currentNetwork}.tzkt.io/${$userData.account.address}`}
         >
           {'tzkt.io'}
         </a>
