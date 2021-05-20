@@ -14,13 +14,13 @@ import { loadDIDKit } from './loader/didkit-loader';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
 export const saveToKepler = async (...obj) => {
-  obj.forEach(o => console.log(o))
+  obj.forEach((o) => console.log(o));
   if (localKepler) {
     try {
       // Get around the error of possibly passing nothing.
       let f = obj.pop();
       if (!f) {
-        throw new Error("Empty array passed to saveToKepler")
+        throw new Error('Empty array passed to saveToKepler');
       }
 
       const res = await localKepler.createOrbit(f, ...obj);
@@ -34,7 +34,7 @@ export const saveToKepler = async (...obj) => {
         message: 'Successfuly uploaded to Kepler',
         variant: 'success',
       });
-     
+
       return addresses.split('\n');
     } catch (e) {
       alert.set({
@@ -150,10 +150,11 @@ export const betterCallDevUrl: Writable<string> = writable<string>(
 export let alert: Writable<{
   message: string;
   variant: 'error' | 'warning' | 'success' | 'info';
-}> = writable<{
-  message: string;
-  variant: 'error' | 'warning' | 'success' | 'info';
-}>(null);
+}> =
+  writable<{
+    message: string;
+    variant: 'error' | 'warning' | 'success' | 'info';
+  }>(null);
 
 // Sets the claimsStream object back to sane defaults
 export const newClaimsStream = (): ClaimMap => {
@@ -182,18 +183,19 @@ export const newClaimsStream = (): ClaimMap => {
       route: '/basic-profile',
       contractType: 'VerifiableCredential',
     },
-  }
-}
+  };
+};
 
-export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>(newClaimsStream());
+export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>(
+  newClaimsStream()
+);
 
 export const basicAlias: Writable<string> = writable<string>(null);
 export const basicDescription: Writable<string> = writable<string>(null);
 export const basicWebsite: Writable<string> = writable<string>(null);
 export const basicLogo: Writable<string> = writable<string>(null);
-export const contractClient: Writable<contractLib.TZProfilesClient> = writable<contractLib.TZProfilesClient>(
-  null
-);
+export const contractClient: Writable<contractLib.TZProfilesClient> =
+  writable<contractLib.TZProfilesClient>(null);
 export const twitterHandle: Writable<string> = writable<string>(null);
 export const profileUrl: Writable<string> = writable<string>(null);
 
@@ -242,7 +244,7 @@ wallet.subscribe((x) => {
 });
 networkStr.subscribe((x) => {
   localNetworkStr = x;
-})
+});
 
 const hashFunc = async (claimString: string): Promise<string> => {
   let encodedString = new TextEncoder().encode(claimString);
@@ -260,9 +262,8 @@ export const originate = async (): Promise<void> => {
   let claimsKeys = Object.keys(localClaimsStream);
 
   // TODO: Specifically type?
-  let claimsList: Array<
-    [contractLib.ClaimType, contractLib.ClaimReference]
-  > = [];
+  let claimsList: Array<[contractLib.ClaimType, contractLib.ClaimReference]> =
+    [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
@@ -398,19 +399,25 @@ wallet.subscribe((wallet) => {
           hashContent: hashFunc,
           nodeURL: urlNode,
           signer: signerOpts,
-          validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+          validateType: async (
+            c: contractLib.ClaimContent,
+            t: contractLib.ClaimType
+          ): Promise<void> => {
             // Validate VC
             switch (t) {
-              case "VerifiableCredential": {
+              case 'VerifiableCredential': {
                 let verifyResult = await localDIDKit.verifyCredential(c, '{}');
                 let verifyJSON = JSON.parse(verifyResult);
-                if (verifyJSON.errors.length > 0) throw new Error(`Verifying ${c}: ${verifyJSON.errors.join(", ")}`);
+                if (verifyJSON.errors.length > 0)
+                  throw new Error(
+                    `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
+                  );
                 break;
               }
               default:
                 throw new Error(`Unknown ClaimType: ${t}`);
             }
-          }
+          },
         };
 
         let nextClient = new contractLib.TZProfilesClient(clientOpts);
@@ -498,6 +505,7 @@ export const initWallet: () => Promise<void> = async () => {
   const options = {
     name: 'Tezos Personal Profile',
     iconUrl: 'https://tezostaquito.io/img/favicon.png',
+    preferredNetwork: strNetwork as NetworkType,
   };
 
   const requestPermissionsInput = {
@@ -546,49 +554,56 @@ let localClaims;
 claims.subscribe((x) => (localClaims = x));
 
 export interface searchRetryOpts {
-  current: number,
-  max: number,
-  step: number
+  current: number;
+  max: number;
+  step: number;
 }
 
 export const defaultSearchOpts = {
   current: 0,
   max: 10000,
-  step: 1000
+  step: 1000,
 };
 
-const searchRetry = async (addr: string, contractClient: contractLib.TZProfilesClient, opts: searchRetryOpts): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
+const searchRetry = async (
+  addr: string,
+  contractClient: contractLib.TZProfilesClient,
+  opts: searchRetryOpts
+): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
   try {
     let found = await contractClient.retrieve(addr);
 
-    return found
+    return found;
   } catch (err) {
     if (opts.current >= opts.max) {
-      throw Error(`Found contract, encountered repeated network errors, gave up on: ${err.message}`)
+      throw Error(
+        `Found contract, encountered repeated network errors, gave up on: ${err.message}`
+      );
     }
     opts.current += opts.step;
 
-    let f = (): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
+    let f = (): Promise<
+      contractLib.ContentResult<any, any, any, any> | false
+    > => {
       return new Promise((resolve, reject) => {
         let innerF = async () => {
           let found = await searchRetry(addr, contractClient, opts);
-          resolve(found)
-        }
+          resolve(found);
+        };
 
         setTimeout(innerF, opts.current);
-      })
-    }
+      });
+    };
 
     let result = await f();
 
-    return result
+    return result;
   }
-}
+};
 
 export const search = async (wallet: string, opts: searchRetryOpts) => {
   if (wallet) {
     try {
-
       let bcdOpts: contractLib.BetterCallDevOpts = {
         base: urlBetterCallDev,
         network: networkStrTemp as contractLib.BetterCallDevNetworks,
@@ -596,15 +611,12 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
       };
 
       let dummyAuthenticator = {
-        content: async (orbit: string, cids: string[], action: Action) => "",
-        createOrbit: async (cids: string[]) => ""
+        content: async (orbit: string, cids: string[], action: Action) => '',
+        createOrbit: async (cids: string[]) => '',
       };
 
       // Kepler Client with no wallet.
-      let searchKepler = new Kepler(
-        keplerInstance,
-        dummyAuthenticator
-      );
+      let searchKepler = new Kepler(keplerInstance, dummyAuthenticator);
 
       let clientOpts: contractLib.TZProfilesClientOpts = {
         betterCallDevConfig: bcdOpts,
@@ -612,20 +624,26 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
         hashContent: hashFunc,
         nodeURL: urlNode,
         signer: false,
-        validateType: async (c: contractLib.ClaimContent, t: contractLib.ClaimType): Promise<void> => {
+        validateType: async (
+          c: contractLib.ClaimContent,
+          t: contractLib.ClaimType
+        ): Promise<void> => {
           // Validate VC
           switch (t) {
-            case "VerifiableCredential": {
+            case 'VerifiableCredential': {
               let verifyResult = await localDIDKit.verifyCredential(c, '{}');
               let verifyJSON = JSON.parse(verifyResult);
-              if (verifyJSON.errors.length > 0) throw new Error(`Verifying ${c}: ${verifyJSON.errors.join(", ")}`);
+              if (verifyJSON.errors.length > 0)
+                throw new Error(
+                  `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
+                );
               break;
             }
             default:
               throw new Error(`Unknown ClaimType: ${t}`);
           }
-        }
-      }
+        },
+      };
 
       let contractClient = new contractLib.TZProfilesClient(clientOpts);
 
@@ -669,4 +687,4 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
     variant: 'error',
   });
   throw new Error(`No contract found for ${wallet}`);
-}
+};
