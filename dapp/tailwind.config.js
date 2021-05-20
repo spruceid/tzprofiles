@@ -38,7 +38,12 @@ module.exports = {
         '8': '2rem',
       },
       width: {
-        'fit-content': 'fit-content'
+        'fit-content': 'fit-content',
+        '15': '3.75rem'
+      },
+      height: {
+        'fit-content': 'fit-content',
+        '15': '3.75rem'
       },
       outline: {
         green: ['2px solid #429383', '-6px'],
@@ -47,7 +52,7 @@ module.exports = {
         'poppins': ['Poppins'],
         'inter': ['Inter'],
         'monserrat': ['Montserrat'],
-       },
+      },
     },
   },
   variants: {

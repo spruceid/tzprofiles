@@ -7,6 +7,7 @@
     Option,
     Input,
     Label,
+    SpinnerIcon,
   } from 'components';
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
@@ -17,6 +18,7 @@
 
   let address: string = '';
   let localNetwork: string;
+  let searching: boolean = false;
 
   onMount(() => {
     localNetwork = $network;
@@ -48,17 +50,24 @@
       <Option value="sandboxnet" text="localhost" />
     </Select>
     <div class="flex items-center mt-8">
-      <Input placeholder="Enter a Tezos address" bind:value={address} />
-      <PrimaryButton
-        class="m-4"
-        onClick={() => {
-          search(address, defaultSearchOpts).then(() => {
-            navigate(`/view/${localNetwork}/${address}`);
-          })}
-        }
-        text="Find"
-        small
-      />
+      {#if !searching}
+        <Input placeholder="Enter a Tezos address" bind:value={address} />
+        <PrimaryButton
+          class="m-4"
+          onClick={() => {
+            searching = true;
+            search(address, defaultSearchOpts)
+              .then(() => {
+                navigate(`/view/${localNetwork}/${address}`);
+              })
+              .finally(() => (searching = false));
+          }}
+          text="Find"
+          small
+        />
+      {:else}
+        <SpinnerIcon class="w-15 h-15 text-center animate-spin" />
+      {/if}
     </div>
   </div>
 </BasePage>
