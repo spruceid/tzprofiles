@@ -31,7 +31,7 @@
   let navigate = useNavigate();
 
   let currentNetwork: string;
-  let currentContractAddress: string
+  let currentContractAddress: string;
 
   contractAddress.subscribe((x) => {
     currentContractAddress = x;
@@ -135,7 +135,7 @@
   const deploy = async () => {
     let rd = (hasUrl($claimsStream) && currentContractAddress) || !$userData;
     if (rd) {
-      return navigate("/connect");
+      return navigate('/connect');
     }
     await upload();
     await generateContract();
@@ -180,9 +180,7 @@
       {#if currentStep > 2}
         <p class="inline font-poppins">
           {'View on '}
-          <Link
-            to={`/view/${currentNetwork}/${$userData.account.address}`}
-          >
+          <Link to={`/view/${currentNetwork}/${$userData.account.address}`}>
             {'Tezos Profiles Viewer'}
           </Link>
         </p>

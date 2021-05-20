@@ -10,10 +10,7 @@
       value="Tezos Profiles (TZP) is a web application where users can associate their public online identity based on social media profiles and self-attested information to their Tezos address."
       class="mb-4"
     />
-    <TextBody2
-      value="How Does it Work?"
-      class="mb-2 font-bold"
-    />
+    <TextBody2 value="How Does it Work?" class="mb-2 font-bold" />
     <TextBody2
       value="Users can build their profiles with the available credentials on Tezos Profiles. Each credential has a unique workflow that must be completed prior to credential issuance. Once issued and uploaded, platforms can then globally resolve this user-managed information to establish a creator’s profile."
       class="mb-4"

@@ -1,7 +1,13 @@
 <script lang="ts">
   import { Link, useNavigate } from 'svelte-navigator';
   import { BackButton, FlatButton } from 'components';
-  import { claimsStream, contractAddress, newClaimsStream, userData, wallet } from 'src/store';
+  import {
+    claimsStream,
+    contractAddress,
+    newClaimsStream,
+    userData,
+    wallet,
+  } from 'src/store';
 
   let navigate = useNavigate();
 
@@ -12,7 +18,7 @@
     '/privacy-policy',
     '/search',
     '/terms-of-service',
-    '/view'
+    '/view',
   ];
   const path = window.location.pathname;
 
