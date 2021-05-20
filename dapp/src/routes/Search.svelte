@@ -54,8 +54,8 @@
         onClick={() => {
           search(address, defaultSearchOpts).then(() => {
             navigate(`/view/${localNetwork}/${address}`);
-          })}
-        }
+          });
+        }}
         text="Find"
         small
       />

@@ -74,7 +74,7 @@
     Deploy,
     Search,
     Splash,
-    View 
+    View,
   } from './routes';
 
   //This avoids PurgeCSS from deleting classes from production build

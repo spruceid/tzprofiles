@@ -1,2 +1,2 @@
-export * from "./tzprofilesClient";
-export * from "./contractClient";
+export * from './tzprofilesClient';
+export * from './contractClient';
