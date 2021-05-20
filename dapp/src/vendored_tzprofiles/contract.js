@@ -1,5 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.contract = void 0;
 exports.contract = `{ parameter (pair (set (pair (pair string bytes) string)) bool) ;
   storage

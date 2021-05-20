@@ -1,24 +1,19 @@
 <script type="ts">
   import { Claims } from './';
-  import {
-    BasePage,
-    PrimaryButton,
-    TextBody2,
-  } from 'components';
-  import {  userData } from 'src/store';
+  import { BasePage, PrimaryButton, TextBody2 } from 'components';
+  import { userData } from 'src/store';
   import { useNavigate } from 'svelte-navigator';
 
   $: errorMessage = '';
   const navigate = useNavigate();
 
   const search = () => {
-    navigate("/search")
-  }
+    navigate('/search');
+  };
 
   const connect = () => {
-    navigate("/connect")
-  }
-
+    navigate('/connect');
+  };
 </script>
 
 {#if errorMessage}
@@ -36,14 +31,14 @@
     <div class="flex flex-col items-center">
       <p>
         <PrimaryButton
-            class="my-4 mx-2.5"
-            onClick={() => connect()}
-            text="Connect Profile"
+          class="my-4 mx-2.5"
+          onClick={() => connect()}
+          text="Connect Profile"
         />
         <PrimaryButton
-            class="my-4 mx-2.5"
-            onClick={() => search()}
-            text="View Profile"
+          class="my-4 mx-2.5"
+          onClick={() => search()}
+          text="View Profile"
         />
       </p>
     </div>

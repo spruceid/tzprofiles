@@ -74,7 +74,7 @@
     Deploy,
     Search,
     Splash,
-    View 
+    View,
   } from './routes';
 
   //This avoids PurgeCSS from deleting classes from production build
@@ -82,7 +82,7 @@
     'py-4 py-1 opacity-0 opacity-60 opacity-50 cursor-not-allowed text-gray-350\
      text-gray-500 hidden w-full w-80 italic pl-6 bg-green-550 text-gray-370 \
      opacity-100 translate-y-0 scale-100 translate-y-4 sm:translate-y-0 \
-     sm:scale-95';
+     sm:scale-95 lg:w-80';
 
   //Loads UserSnap when not in production
   if (BUILD_MODE_DEV) {
