@@ -132,9 +132,9 @@
           onClick={() => {
             next();
           }}
-          disabled={alias.length < 4 ||
-            description.length < 4 ||
-            logo.length < 4}
+          disabled={alias.length < 1 ||
+            description.length < 1 ||
+            logo.length < 1}
         />
       {/if}
     </VerificationStep>
