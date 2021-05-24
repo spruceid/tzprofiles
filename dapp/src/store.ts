@@ -463,7 +463,7 @@ wallet.subscribe((wallet) => {
           }
         } catch (e) {
           alert.set({
-            message: e.message,
+            message: e.message || JSON.stringify(e),
             variant: 'error',
           });
           console.error('store::load_contracts::', e);

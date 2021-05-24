@@ -66,7 +66,7 @@
       next();
     } catch (e) {
       alert.set({
-        message: e.message || e,
+        message: e.message || JSON.stringify(e),
         variant: 'error',
       });
       console.error(e);
