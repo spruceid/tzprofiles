@@ -1,6 +1,9 @@
 {
-  "name": "Tezos Public Profiles",
-  "interfaces":["TZIP-023"],
+  "name": "Tezos Profiles",
+  "interfaces":["TZIP-024-bf800506"],
+  "license": {"name": "Apache-2.0"},
+  "authors": ["Spruce Systems, Inc."],
+  "homepage": "https://github.com/spruceid/tzprofiles",
   "views":[
     {
       "implementations":[
