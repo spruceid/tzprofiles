@@ -12,6 +12,12 @@
   let navigate = useNavigate();
 
   const unprotected = [
+    '/BasicProfile',
+    '/TwitterVerification',
+    '/TwitterVerificationPublicTweet',
+    '/handle',
+    '/timestamp',
+    '/tweetId',
     '/connect',
     '/deploy',
     '/faq',
