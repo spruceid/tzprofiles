@@ -4,6 +4,7 @@ global.Request = fetch.Request;
 global.Response = fetch.Response;
 global.fetch = fetch;
 
+const cors = require('cors');
 const express = require('express');
 const tzprofiles = require('tzprofiles');
 const kepler = require("kepler-sdk");
@@ -12,6 +13,7 @@ const crypto = require('crypto');
 
 const port = 8080;
 const app = express();
+app.use(cors());
 
 app.get('/:address', async function (req, res) {
     const content = await retrieve(req.params.address, "mainnet", req.query);
