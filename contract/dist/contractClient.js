@@ -145,9 +145,12 @@ class ContractClient {
             try {
                 const contract = yield this.tezos.contract.at(contractAddress, tzip16.tzip16);
                 const metadata = yield contract.tzip16().getMetadata();
-                if (metadata.metadata.interfaces.includes("TZIP-023")) {
-                    return true;
+                for (var i in metadata.metadata.interfaces) {
+                    if (metadata.metadata.interfaces[i].includes("TZIP-024")) {
+                        return true;
+                    }
                 }
+                return false;
             }
             catch (_) {
                 return false;
