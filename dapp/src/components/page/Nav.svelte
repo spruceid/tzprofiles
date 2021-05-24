@@ -1,17 +1,18 @@
 <script lang="ts">
   import { Link, useNavigate } from 'svelte-navigator';
   import { BackButton, FlatButton } from 'components';
-  import {
-    claimsStream,
-    contractAddress,
-    newClaimsStream,
-    userData,
-    wallet,
-  } from 'src/store';
+  import { claimsStream, contractAddress, userData, wallet } from 'src/store';
+  import { addDefaults } from 'src/helpers';
 
   let navigate = useNavigate();
 
   const unprotected = [
+    '/BasicProfile',
+    '/TwitterVerification',
+    '/TwitterVerificationPublicTweet',
+    '/handle',
+    '/timestamp',
+    '/tweetId',
     '/connect',
     '/deploy',
     '/faq',
@@ -21,6 +22,7 @@
     '/view',
   ];
   const path = window.location.pathname;
+  export let backHome: boolean = false;
 
   let isUnprotected = false;
 
@@ -38,7 +40,7 @@
 <nav class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14">
   <div>
     {#if path !== '/'}
-      <BackButton />
+      <BackButton home={backHome} />
     {/if}
   </div>
   <div>
@@ -57,7 +59,7 @@
             // TODO: Track state more carefully / explicitly.
             wallet.set(null);
             userData.set(null);
-            claimsStream.set(newClaimsStream());
+            claimsStream.set(addDefaults({}));
             contractAddress.set(null);
             navigate('/');
           })}

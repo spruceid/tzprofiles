@@ -12,7 +12,7 @@ export const getTwitterClaim = async (userData, twitterHandle) => {
     return `Tezos Signed Message: ${sig_target}`;
   } catch (e) {
     alert.set({
-      message: e.message,
+      message: e.message || JSON.stringify(e),
       variant: 'error',
     });
 
@@ -30,7 +30,7 @@ export const signTwitterClaim = async (
     return `sig:${sig}`;
   } catch (e) {
     alert.set({
-      message: e.message,
+      message: e.message || JSON.stringify(e),
       variant: 'error',
     });
 

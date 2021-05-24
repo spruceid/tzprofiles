@@ -13,17 +13,12 @@
     networkStr,
     claimsStream,
     contractAddress,
-    localBasicProfile,
-    localTwitterProfile,
     saveToKepler,
-    viewerInstance,
     alert,
-    Claim,
-    profileUrl,
   } from 'src/store';
 
-  import type { ClaimMap } from 'src/store';
-  import ProfileDisplay from 'enums/ProfileDisplay';
+  import type { ClaimMap } from 'src/helpers';
+  import { contentToDraft } from 'src/helpers';
 
   import { Link } from 'svelte-navigator';
 
@@ -44,15 +39,14 @@
   let currentStep: number = 1;
   let retry: boolean = false;
 
-  const hasUrl = (cMap: ClaimMap): boolean => {
+  const redirectCheck = (cMap: ClaimMap): boolean => {
     let keys = Object.keys(cMap);
     for (let i = 0, n = keys.length; i < n; i++) {
       let claim = cMap[keys[i]];
-      if (claim.url) {
+      if (claim.onChain) {
         return true;
       }
     }
-
     return false;
   };
 
@@ -66,7 +60,7 @@
       next();
     } catch (e) {
       alert.set({
-        message: e.message || e,
+        message: e.message || JSON.stringify(e),
         variant: 'error',
       });
       console.error(e);
@@ -74,56 +68,30 @@
     }
   };
 
-  const signedClaims = (cMap: ClaimMap): Array<Claim> => {
-    let keys = Object.keys(cMap);
-    let res: Array<Claim> = [];
-    for (let i = 0, n = keys.length; i < n; i++) {
-      let claim = cMap[keys[i]];
-      if (claim.url) {
-        res.push(claim);
-      }
-    }
-
-    return res;
-  };
-
-  const vcsToUpload = (profiles: Array<Claim>): Array<any> => {
-    let vcs: Array<any> = [];
-
-    profiles.forEach((profile) => {
-      switch (profile.display) {
-        case ProfileDisplay.BASIC: {
-          vcs.push($localBasicProfile);
-          break;
-        }
-        case ProfileDisplay.TWITTER: {
-          vcs.push($localTwitterProfile);
-          break;
-        }
-      }
-    });
-    return vcs;
-  };
-
   const upload = async () => {
     retry = false;
     try {
-      const profileStream = $claimsStream;
-      const filledProfiles = signedClaims(profileStream);
-      const urls = await saveToKepler(...vcsToUpload(filledProfiles));
-      filledProfiles.reverse().forEach((profile) => {
-        switch (profile.display) {
-          case ProfileDisplay.BASIC: {
-            profileStream.TezosControl.url = urls.pop();
-            break;
-          }
-          case ProfileDisplay.TWITTER: {
-            profileStream.TwitterControl.url = urls.pop();
-            break;
-          }
-        }
+      const nextClaimStream = $claimsStream;
+      const newClaims = Object.values(nextClaimStream).filter((claim) => {
+        return !!claim.preparedContent;
       });
-      claimsStream.set(profileStream);
+      const urls = await saveToKepler(
+        ...newClaims.map((claim) => claim.preparedContent)
+      );
+
+      newClaims.reverse().forEach((profile) => {
+        let next = nextClaimStream[profile.type];
+
+        next.irl = urls.pop();
+        // Is a string because findNewClaims checked.
+        next.content = profile.preparedContent;
+        next.preparedContent = false;
+        next.draft = contentToDraft(next.type, next.content);
+
+        nextClaimStream[profile.type] = next;
+      });
+
+      claimsStream.set(nextClaimStream);
       await new Promise((resolve) => setTimeout(resolve, 500));
       next();
     } catch (e) {
@@ -133,7 +101,8 @@
   };
 
   const deploy = async () => {
-    let rd = (hasUrl($claimsStream) && currentContractAddress) || !$userData;
+    let rd =
+      (redirectCheck($claimsStream) && currentContractAddress) || !$userData;
     if (rd) {
       return navigate('/connect');
     }

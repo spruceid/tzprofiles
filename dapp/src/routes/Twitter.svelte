@@ -6,6 +6,7 @@
     PrimaryButton,
     VerificationDescription,
     VerificationStep,
+    CopyTextArea,
   } from 'components';
 
   import { claimsStream, wallet, userData } from 'src/store';
@@ -16,20 +17,24 @@
     getTweetMessage,
   } from 'src/twitter';
 
-  import type { ClaimMap } from 'src/store';
+  import { contentToDraft } from 'src/helpers';
+  import type { ClaimMap } from 'src/helpers';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
 
-  let verification: ClaimMap;
+  let readClaimMap: ClaimMap;
   claimsStream.subscribe((x) => {
-    verification = x;
+    readClaimMap = x;
   });
 
+  let display = readClaimMap?.twitter?.display;
+
+  let twitterHandle = '';
+  let tweetURL = '';
+
   let currentStep: number = 1;
-  let twitterHandle: string = '';
   let lock: boolean = false;
-  let tweetURL: string = '';
   let twitterClaim: string = '';
   let tweetMessage: string = '';
 
@@ -49,9 +54,9 @@
 
 <BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
-    icon={verification['TwitterControl'].icon()}
-    title={verification['TwitterControl'].title}
-    description={verification['TwitterControl'].description}
+    icon={display.icon}
+    title={display.title}
+    description={display.description}
   >
     {#if currentStep > 4}
       <PrimaryButton
@@ -101,15 +106,7 @@
       description="Sign the message presented to you containing your Twitter handle and additional information."
     >
       {#if currentStep >= 2}
-        <div class="flex items-center w-full py-2">
-          <textarea
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
-            bind:value={twitterClaim}
-            readonly
-            disabled
-          />
-          <CopyButton text={twitterClaim} />
-        </div>
+        <CopyTextArea bind:value={twitterClaim} />
       {/if}
       {#if currentStep === 2}
         <PrimaryButton
@@ -137,15 +134,7 @@
       description="Tweet out your signed messaged to create a link between your Tezos account and your Twitter profile."
     >
       {#if currentStep > 2}
-        <div class="flex items-center w-full py-2">
-          <textarea
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
-            bind:value={tweetMessage}
-            readonly
-            disabled
-          />
-          <CopyButton text={tweetMessage} />
-        </div>
+        <CopyTextArea bind:value={tweetMessage} />
       {/if}
       {#if currentStep === 3}
         <div class="flex flex-col lg:flex-row">
@@ -187,10 +176,11 @@
           onClick={() => {
             next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
-                let nextClaimMap = verification;
-
-                nextClaimMap.TwitterControl.url = URL.createObjectURL(
-                  new Blob([vc])
+                let nextClaimMap = readClaimMap;
+                nextClaimMap.twitter.preparedContent = JSON.parse(vc);
+                nextClaimMap.twitter.draft = contentToDraft(
+                  'twitter',
+                  nextClaimMap.twitter.preparedContent
                 );
                 claimsStream.set(nextClaimMap);
                 next();

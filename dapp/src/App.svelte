@@ -75,7 +75,14 @@
     Search,
     Splash,
     View,
+    Handle,
+    Timestamp,
+    TweetId,
+    BasicProfileContext,
+    TwitterVerification,
+    TwitterVerificationPublicTweet,
   } from './routes';
+
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =
@@ -130,5 +137,23 @@
   </Route>
   <Route path="/view/:address">
     <View />
+  </Route>
+  <Route path="BasicProfile">
+    <BasicProfileContext />
+  </Route>
+  <Route path="TwitterVerification">
+    <TwitterVerification />
+  </Route>
+  <Route path="TwitterVerificationPublicTweet">
+    <TwitterVerificationPublicTweet />
+  </Route>
+  <Route path="handle">
+    <Handle />
+  </Route>
+  <Route path="timestamp">
+    <Timestamp />
+  </Route>
+  <Route path="tweetId">
+    <TweetId />
   </Route>
 </Router>

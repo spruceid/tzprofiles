@@ -1,37 +1,27 @@
 <script lang="ts">
-  import { Link } from 'svelte-navigator';
-
-  import { onMount } from 'svelte';
   import {
     Card,
     Cat,
-    Input,
-    LinkInput,
-    Label,
+    ClaimDisplay,
     PrimaryButton,
     Spacer,
     CopyButton,
-    CircleCheckIcon,
   } from 'components';
 
   import {
+    alert,
     claimsStream,
-    originate,
     userData,
     networkStr,
-    loadBasicProfile,
-    loadTwitterProfile,
-    basicAlias,
-    basicDescription,
-    basicWebsite,
-    basicLogo,
-    twitterHandle,
     contractAddress,
+    addToKepler,
+    addClaims,
   } from 'src/store';
-  import type { ClaimMap } from 'src/store';
-  import { viewerInstance } from 'src/store';
 
+  import { contentToDraft } from 'src/helpers';
+  import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
+
   let navigate = useNavigate();
 
   let currentNetwork: string;
@@ -40,16 +30,39 @@
     currentNetwork = x;
   });
 
-  onMount(() => {
-    loadBasicProfile($claimsStream);
-    loadTwitterProfile($claimsStream);
-  });
+  $: isAddingClaims = false;
 
-  const hasUrl = (cMap: ClaimMap): boolean => {
+  const isAllOnChain = (cMap: ClaimMap): boolean => {
+    let keys = Object.keys(cMap);
+    let found = 0;
+    for (let i = 0, n = keys.length; i < n; i++) {
+      let claim = cMap[keys[i]];
+      if (claim.onChain) {
+        found++;
+      }
+    }
+
+    return keys.length === found;
+  };
+
+  const getCurrentOrbit = (cMap: ClaimMap) => {
     let keys = Object.keys(cMap);
     for (let i = 0, n = keys.length; i < n; i++) {
       let claim = cMap[keys[i]];
-      if (claim.url) {
+      if (claim.irl && claim.irl.startsWith('kepler')) {
+        let irl = claim.irl;
+        let prefixless = irl.slice(9);
+        let orbitPath = prefixless.split('/');
+        return orbitPath[0];
+      }
+    }
+  };
+
+  const canUpload = (): boolean => {
+    let claims = Object.values($claimsStream);
+    for (let i = 0, n = claims.length; i < n; i++) {
+      let claim = claims[i];
+      if (claim.preparedContent) {
         return true;
       }
     }
@@ -57,14 +70,52 @@
     return false;
   };
 
+  const uploadNewClaim = async () => {
+    isAddingClaims = true;
+    try {
+      const nextClaimStream = $claimsStream;
+      const newClaims = Object.values(nextClaimStream).filter((claim) => {
+        return !!claim.preparedContent;
+      });
+
+      const orbit = getCurrentOrbit(nextClaimStream);
+
+      const urls = await addToKepler(
+        orbit,
+        ...newClaims.map((claim) => claim.preparedContent)
+      );
+
+      for (let i = newClaims.length, x = 0; i > x; i--) {
+        let profile = newClaims[i - 1];
+        let next = nextClaimStream[profile.type];
+
+        next.irl = urls.pop();
+        // Is a string because findNewClaims checked.
+        next.content = profile.preparedContent;
+        next.preparedContent = false;
+        next.draft = contentToDraft(next.type, next.content);
+        next.onChain = true;
+
+        nextClaimStream[profile.type] = next;
+      }
+
+      await addClaims(newClaims);
+
+      claimsStream.set(nextClaimStream);
+    } catch (e) {
+      alert.set({
+        message: `Error in add claim ${e?.message || e}`,
+        variant: 'error',
+      });
+    } finally {
+      isAddingClaims = false;
+    }
+  };
+
   let agreement: boolean = false;
 
   const toggle = () => {
     agreement = !agreement;
-  };
-
-  const deploy = async () => {
-    await originate();
   };
 </script>
 
@@ -84,97 +135,9 @@
     />
   </div>
 
-  <Label class="mt-4" fieldName="basic-alias" value="Alias" />
-  {#if $basicAlias}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-alias"
-        value={$basicAlias}
-        disabled
-      />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
-    </div>
-  {:else}
-    <LinkInput href="/basic-profile" source="Basic Profile Information" />
-  {/if}
-
-  <Label class="mt-4" fieldName="basic-description" value="Description" />
-  {#if $basicDescription}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-description"
-        value={$basicDescription}
-        disabled
-      />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
-    </div>
-  {:else}
-    <LinkInput href="/basic-profile" source="Basic Profile Information" />
-  {/if}
-
-  <Label class="mt-4" fieldName="basic-website" value="Website" />
-  {#if $basicWebsite}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-website"
-        value={$basicWebsite}
-        disabled
-      />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
-    </div>
-  {:else}
-    <LinkInput href="/basic-profile" source="Basic Profile Information" />
-  {/if}
-
-  <Label class="mt-4" fieldName="basic-logo" value="Logo" />
-  <div class="flex items-center justify-between">
-    <div
-      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
-      class:opacity-60={true}
-    >
-      {#if $basicLogo}
-        <img
-          name="basic-logo"
-          class="object-contain"
-          src={$basicLogo}
-          alt="Basic profile logo"
-        />
-      {:else}
-        <p class="m-2 italic break-words select-none">
-          {'Available in '}
-          <a href="/basic-profile" class="underline">
-            {'Basic profile Information'}
-          </a>
-        </p>
-      {/if}
-    </div>
-    {#if $basicLogo}
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
-    {/if}
-  </div>
-
-  <Label class="mt-4" fieldName="basic-twitter-handle" value="Twitter Handle" />
-  {#if $twitterHandle}
-    <div class="flex items-center">
-      <Input
-        prefix="@"
-        fluid
-        class="font-bold"
-        name="basic-twitter-handle"
-        value={$twitterHandle}
-        disabled
-      />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
-    </div>
-  {:else}
-    <LinkInput href="/twitter" source="Twitter Account Information" />
-  {/if}
+  {#each Object.values($claimsStream) as c}
+    <ClaimDisplay claim={c} />
+  {/each}
 
   <Spacer class="min-h-8" />
 
@@ -211,7 +174,7 @@
     </div>
   {/if}
 
-  {#if hasUrl($claimsStream)}
+  {#if canUpload()}
     {#if $contractAddress !== null}
       <!-- TODO: Stylize -->
       <span class="py-2 text-white rounded bg-green-550">
@@ -220,25 +183,36 @@
           class="text-green-900 underline"
           target="_blank"
           href={`https://${
-            currentNetwork === 'edonet' ? 'edo2net' : currentNetwork
-          }.tzkt.io/${$userData.account.address}`}
+            currentNetwork
+              ? currentNetwork === 'edonet.'
+                ? 'edo2net.'
+                : `${currentNetwork}.`
+              : ''
+          }tzkt.io/${$userData.account.address}`}
         >
           {'tzkt.io'}
         </a>
       </span>
+      {#if !isAllOnChain($claimsStream)}
+        {#if isAddingClaims}
+          Adding claims....
+        {:else}
+          <PrimaryButton
+            text="Add Claims to profile"
+            class="mx-auto mt-4 bottom-6"
+            onClick={async () => {
+              await uploadNewClaim();
+            }}
+          />
+        {/if}
+      {/if}
     {:else}
       <PrimaryButton
         text="Deploy Profile"
         class="mx-auto mt-4 bottom-6"
         disabled={!agreement}
-        onClick={() => navigate('deploy')}
+        onClick={() => navigate('/deploy')}
       />
     {/if}
-  {:else}
-    <PrimaryButton
-      text="Deploy Profile"
-      class="mx-auto mt-4 bottom-6"
-      disabled
-    />
   {/if}
 </Card>

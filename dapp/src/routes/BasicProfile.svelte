@@ -6,42 +6,76 @@
     Input,
     Label,
     PrimaryButton,
+    ExplainerToolModal,
+    CopyButton,
   } from 'components';
-  import {
-    claimsStream,
-    userData,
-    wallet,
-    networkStr,
-    DIDKit,
-  } from 'src/store';
-  import type { ClaimMap } from 'src/store';
-  import { signBasicProfile } from 'src/basic_profile';
+  import { claimsStream, userData, wallet, networkStr } from 'src/store';
+  import { contentToDraft } from 'src/helpers';
+  import { generateSignature, signBasicProfile } from 'src/basic_profile';
+  import { valueDecoder } from '@taquito/local-forging/dist/lib/michelson/codec';
+  import { Uint8ArrayConsumer } from '@taquito/local-forging/dist/lib/uint8array-consumer';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
 
   const verification: ClaimMap = $claimsStream;
 
+  $: display = verification?.basic.display;
+
+  let alias = '';
+  let description = '';
+  let logo = '';
+  let website = '';
+
   let lock: boolean = false;
-  let alias: string = '';
-  let description: string = '';
-  let website: string = '';
-  let logo: string = '';
   let currentStep: number = 1;
 
+  let profile = {
+    alias,
+    description,
+    website,
+    logo,
+  };
+
   const next = () => (currentStep = currentStep + 1);
+  let toggle;
+  let signature = '';
 </script>
 
 <BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
-    icon={verification['TezosControl'].icon()}
-    title={verification['TezosControl'].title}
-    description={verification['TezosControl'].description}
+    icon={display.icon}
+    title={display.title}
+    description={display.description}
   >
     {#if currentStep == 2}
+      <ExplainerToolModal
+        bind:toggle
+        signature={async () => {
+          let profile = {
+            alias,
+            description,
+            website,
+            logo,
+          };
+
+          return generateSignature(profile, $userData).then(({ micheline }) => {
+            let str = JSON.stringify(
+              valueDecoder(Uint8ArrayConsumer.fromHexString(micheline.slice(2)))
+                .string
+            );
+            str = str.substring(1, str.length - 1);
+            return str;
+          });
+          console.log('generated');
+        }}
+      />
+      <div class="flex flex-grow justify-evenly mt-8">
+        <button on:click={toggle}> What am I signing? </button>
+      </div>
       <PrimaryButton
         text="Sign Profile"
-        class="mt-8"
+        class="mt-8 flex-grow"
         onClick={() => {
           lock = true;
           let profile = {
@@ -50,11 +84,13 @@
             website,
             logo,
           };
-          signBasicProfile($userData, $wallet, $networkStr, $DIDKit, profile)
+          signBasicProfile($userData, $wallet, $networkStr, profile)
             .then((vc) => {
               let nextClaimMap = verification;
-              nextClaimMap.TezosControl.url = URL.createObjectURL(
-                new Blob([vc])
+              nextClaimMap.basic.preparedContent = JSON.parse(vc);
+              nextClaimMap.basic.draft = contentToDraft(
+                'basic',
+                nextClaimMap.basic.preparedContent
               );
               claimsStream.set(nextClaimMap);
               next();
@@ -67,7 +103,7 @@
     {:else if currentStep > 2}
       <PrimaryButton
         text="Return to Profile"
-        class="mt-8"
+        class="mt-4"
         onClick={() => navigate('/')}
       />
     {/if}

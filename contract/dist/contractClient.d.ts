@@ -1,4 +1,5 @@
 import * as taquito from "@taquito/taquito";
+import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
 export interface WalletSigner {
     type: "wallet";
     wallet: any;
@@ -63,8 +64,10 @@ export declare class ContractClient<Content, ContentType, Hash, Reference> {
     private retrieveAndScreenContract;
     private contentListFromStorage;
     private referenceToTriple;
+    private retrieveAllContracts;
     retrieve(walletAddress: string): Promise<ContentResult<Content, ContentType, Hash, Reference> | false>;
     originate(contentReferenceList: Array<[ContentType, Reference]>): Promise<string>;
+    getContract(address: string): Promise<ContractAbstraction<ContractProvider | taquito.Wallet>>;
     addClaims(contractAddress: string, contentReferenceList: Array<[ContentType, Reference]>): Promise<string>;
     removeClaims(contractAddress: string, contentReferenceList: Array<[ContentType, Reference]>): Promise<string>;
 }

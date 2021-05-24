@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  indexer:
+    image: ghcr.io/spruceid/tzp_indexer:latest
+    build: ./indexer
+    depends_on:
+      - db
+      - api
+      - hasura
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - TZP_API=${TZP_API:-http://api:8080}
+
+  db:
+    image: postgres:13
+    restart: always
+    volumes:
+      - db:/var/lib/postgres/data
+    environment:
+      - POSTGRES_USER=dipdup
+      - POSTGRES_DB=dipdup
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dipdup"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  hasura:
+    image: hasura/graphql-engine:v1.3.3
+    ports:
+      - 127.0.0.1:42000:8080
+    depends_on:
+      - db
+    restart: always
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--spider', 'http://localhost:8080/healthz', '||', 'exit 1']
+      interval: 30s
+      timeout: 3s
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD:-changeme}@db:5432/dipdup
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_DEV_MODE=false
+      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup, http-log, webhook-log, websocket-log, query-log
+      - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
+
+  api:
+    image: ghcr.io/spruceid/tzp_api:latest
+    build: ./service
+    ports:
+      - 127.0.0.1:15000:8080
+    restart: always
+    environment:
+      - DEBUG=express:*
+
+volumes:
+  db:

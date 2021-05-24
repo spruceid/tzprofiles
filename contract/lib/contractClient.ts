@@ -3,8 +3,9 @@
 import {InMemorySigner, importKey} from "@taquito/signer";
 import * as taquito from "@taquito/taquito";
 import * as tzip16 from "@taquito/tzip16";
-import { contract as contractCode } from "./contract";
+import {contract as contractCode} from "./contract";
 import axios from "axios";
+import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
 
 // Magic Number controlling how long to wait before confirming success.
 // Seems to be an art more than a science, 3 was suggested by a help thread.
@@ -302,7 +303,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 	private async validateItem(item: ContractStorageItem): Promise<boolean> {
 		if (!(
 			item?.type &&
-			item.type === "contract" &&
+			(item.type === "contract" || item.type === "contracts") &&
 			item?.value
 		)) {
 			return false;
@@ -357,6 +358,21 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		return [r, h, t];
 	}
 
+	private async retrieveAllContracts(offset: number, walletAddress: string): Promise<Array<ContractStorageItem>> {
+		let prefix = this.bcdPrefix();
+		let searchRes = await axios.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager&o=${offset}`);
+		if (searchRes.status !== 200) {
+			throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+		}
+		let {data} = searchRes;
+		let totalCount = data.count;
+		let pageCount = data.items.length;
+		if (pageCount + offset < totalCount) {
+			return data.items.concat(await this.retrieveAllContracts(offset + pageCount, walletAddress));
+		}
+		return data.items;
+	}
+
 	// retrieve finds a smart contract from it's owner's wallet address, returns a 
 	// result including the contract address and valid / invalid claims if found, 
 	// false if not, or throws an error if the network fails
@@ -364,20 +380,12 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		ContentResult<Content, ContentType, Hash, Reference>
 		| false
 	> {
-		let prefix = this.bcdPrefix();
-		let searchRes = await axios.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
-		if (searchRes.status !== 200) {
-			throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
-		}
-
-		let {data} = searchRes;
-		if (data.count == 0) {
+		let items: Array<ContractStorageItem> = await this.retrieveAllContracts(0, walletAddress);
+		if (items.length === 0) {
 			return false;
 		}
 
-		let items: Array<ContractStorageItem> = data.items;
 		let possibleAddresses: Array<string> = [];
-
 		for (let i = 0, n = items.length; i < n; i++) {
 			let item = items[i];
 			if (await this.validateItem(item)) {
@@ -456,6 +464,22 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		return contractAddress;
 	}
 
+	async getContract(address: string): Promise<ContractAbstraction<ContractProvider | taquito.Wallet>> {
+		if (!this.signer) {
+			throw new Error("Requires valid Signer options to be able to getContract");
+		}
+		let t = this.signer.type;
+		switch (this.signer.type) {
+			case "key":
+			case "secret":
+				return this.tezos.contract.at(address);
+			case "wallet":
+				return this.tezos.wallet.at(address);
+			default:
+				throw new Error(`Unknown signer type: ${t}`)
+		}
+	}
+
 	// addClaims takes a contractAddress and a list of pairs of contentType and references, 
 	// adds them to the contract with the addClaims entrypoint returns the hash of 
 	// the transaction
@@ -475,17 +499,19 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 			contentList.push(triple);
 		}
 
-		let contract = await this.tezos.contract.at(contractAddress);
+		let contract = await this.getContract(contractAddress);
 
 		let entrypoints = Object.keys(contract.methods);
 		if (entrypoints.length == 1 && entrypoints.includes('default')) {
-			let op = await contract.methods.default(contentList, true).send();
+			let op: any = await contract.methods.default(contentList, true).send();
+
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+			return op.hash || op.opHash;
 		} else if (entrypoints.includes('addClaims')) {
-			let op = await contract.methods.addClaims(contentList).send();
+			let op: any = await contract.methods.addClaims(contentList).send();
+
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+			return op.hash || op.opHash;
 		} else {
 			throw new Error(`No entrypoint to add claim.`)
 		}
@@ -510,17 +536,19 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 			contentList.push(triple);
 		}
 
-		let contract = await this.tezos.contract.at(contractAddress);
+		let contract = await this.getContract(contractAddress);
 
 		let entrypoints = Object.keys(contract.methods);
 		if (entrypoints.length == 1 && entrypoints.includes('default')) {
-			let op = await contract.methods.default(contentList, false).send();
+			let op: any = await contract.methods.default(contentList, false).send();
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+
+			return op.hash || op.opHash;
 		} else if (entrypoints.includes('removeClaims')) {
-			let op = await contract.methods.removeClaims(contentList).send();
+			let op: any = await contract.methods.removeClaims(contentList).send();
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+
+			return op.hash || op.opHash;
 		} else {
 			throw new Error(`No entrypoint to add claim.`)
 		}

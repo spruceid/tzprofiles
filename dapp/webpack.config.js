@@ -1,4 +1,3 @@
-const {loader} = require('mini-css-extract-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const sveltePreprocess = require('svelte-preprocess');
@@ -80,8 +79,7 @@ module.exports = {
 			},
 			{
 				test: /\.wasm$/,
-				loader: 'base64-loader',
-				type: 'javascript/auto'
+				type: 'webassembly/async'
 			}
 		]
 	},
@@ -100,7 +98,7 @@ module.exports = {
 			'BUILD_MODE_DEV': !prod,
 		}),
 		new webpack.EnvironmentPlugin({
-			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
+			WITNESS_URL: "http://localhost:8787",
 			KEPLER_URL: "http://localhost:8000"
 		})
 	],
@@ -112,6 +110,6 @@ module.exports = {
 		},
 	},
 	experiments: {
-		syncWebAssembly: true
+		asyncWebAssembly: true
 	}
 };

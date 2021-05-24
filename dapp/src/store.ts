@@ -1,153 +1,66 @@
-import { BeaconWallet } from '@taquito/beacon-wallet';
-import type { Writable } from 'svelte/store';
-import { writable } from 'svelte/store';
-import { TezosToolkit } from '@taquito/taquito';
-import { Tzip16Module } from '@taquito/tzip16';
+import {BeaconWallet} from '@taquito/beacon-wallet';
+import type {Writable} from 'svelte/store';
+import {writable} from 'svelte/store';
+import {TezosToolkit} from '@taquito/taquito';
+import {Tzip16Module} from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from './vendored_tzprofiles/tzprofiles';
+import * as contractLib from 'tzprofiles';
+import * as helpers from './helpers/index';
 
-import { PersonOutlined, TwitterIcon } from 'components';
-import SvelteComponentDev from '*.svelte';
-import { Kepler, authenticator, Action } from 'kepler-sdk';
-import { loadDIDKit } from './loader/didkit-loader';
-import ProfileDisplay from 'enums/ProfileDisplay';
+import {Kepler, authenticator, Action, getOrbitId} from 'kepler-sdk';
+import {verifyCredential} from 'didkit-wasm';
+import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 
-export const saveToKepler = async (...obj) => {
-  obj.forEach((o) => console.log(o));
-  if (localKepler) {
-    try {
-      // Get around the error of possibly passing nothing.
-      let f = obj.pop();
-      if (!f) {
-        throw new Error('Empty array passed to saveToKepler');
-      }
+/*
+* Global Variables
+*/
 
-      const res = await localKepler.createOrbit(f, ...obj);
-      if (!res.ok || res.status !== 200) {
-        throw new Error(`Failed to create orbit: ${res.statusText}`);
-      }
-
-      const addresses = await res.text();
-
-      alert.set({
-        message: 'Successfuly uploaded to Kepler',
-        variant: 'success',
-      });
-
-      return addresses.split('\n');
-    } catch (e) {
-      alert.set({
-        message: e.message || JSON.stringify(e),
-        variant: 'error',
-      });
-      throw e;
-    }
-  }
-
-  throw new Error('No Kepler integration found');
-};
-
-export const loadJsonBlob = async (url: string): Promise<any> => {
-  if (!url.startsWith('blob:')) {
-    return await localKepler.resolve(url, false);
-  }
-  return await fetch(url);
-};
-
-// TODO: Change to not deref the URL, since the client already is
-export const loadBasicProfile = async ({
-  TezosControl: { url },
-}: ClaimMap): Promise<void> => {
-  if (url) {
-    const res = await loadJsonBlob(url);
-    if (!res.ok || res.status !== 200) {
-      alert.set({
-        message: `Failed in Basic Profile Fetch ${res.statusText}`,
-        variant: 'error',
-      });
-      throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
-    }
-
-    let json = await res.json();
-
-    // TODO: Make this consistant through different usage of Kepler:
-    // AUTHOR'S HACK: This would fail with more than 2 claim!
-    if (Array.isArray(json)) {
-      json = json[0];
-    }
-
-    const { credentialSubject } = json;
-    const { alias, description, website, logo } = credentialSubject;
-    basicAlias.set(alias);
-    basicWebsite.set(website);
-    basicDescription.set(description);
-    basicLogo.set(logo);
-    localBasicProfile.set(json);
-  } else {
-    basicAlias.set('');
-    basicWebsite.set('');
-    basicDescription.set('');
-    basicLogo.set('');
-    localBasicProfile.set(null);
-  }
-};
-
-// TODO: Change to not deref the URL, since the client already is
-export const loadTwitterProfile = async ({
-  TwitterControl: { url },
-}: ClaimMap): Promise<void> => {
-  if (url) {
-    const res = await loadJsonBlob(url);
-    if (!res.ok || res.status !== 200) {
-      alert.set({
-        message: `Failed in Basic Profile Fetch ${res.statusText}`,
-        variant: 'error',
-      });
-      throw new Error(`Failed in Basic Profile Fetch ${res.statusText}`);
-    }
-
-    let json = await res.json();
-    // TODO: Make this consistant through different usage of Kepler:
-    // AUTHOR'S HACK: This would fail with more than 2 claim!
-    if (Array.isArray(json)) {
-      json = json[0];
-    }
-
-    const { credentialSubject } = json;
-    const { sameAs } = credentialSubject;
-    const handle = sameAs.replace('https://twitter.com/', '');
-    twitterHandle.set(handle);
-    localTwitterProfile.set(json);
-  } else {
-    twitterHandle.set('');
-    localTwitterProfile.set(null);
-  }
-};
-
-export let DIDKit = writable(null);
-
-loadDIDKit('/didkit_wasm_bg.wasm').then((x) => {
-  DIDKit.set(x);
-});
-
-export const userData = writable(null);
-export const contractAddress: Writable<string> = writable<string>(null);
-export const searchAddress: Writable<string> = writable<string>(null);
+// Global Constants
+// The kepler server hostname
 export const keplerInstance = process.env.KEPLER_URL;
+// The witness worker hostname
 export const witnessUrl = process.env.WITNESS_URL;
-export let nodeUrl: Writable<string> = writable<string>(null);
-export let loadingContracts: Writable<boolean> = writable(true);
-export let networkStr: Writable<string> = writable<string>(null);
+
+// Global variables used in the store with the writable API
+// UserData from a beacon wallet
+export const userData = writable(null);
+
+// The contract address associated with a logged in wallet
+export const contractAddress: Writable<string> = writable<string>(null);
+
+// The address entered by an end user in the search bar
+export const searchAddress: Writable<string> = writable<string>(null);
+
+// The contract address associated with a logged in wallet
+export const contractAddress: Writable<string> = writable<string>(null);
+
+// Is the contract being loaded?
+export const loadingContracts: Writable<boolean> = writable(true);
+
+// The end user's wallet
 export const wallet: Writable<BeaconWallet> = writable<BeaconWallet>(null);
+// TODO: MOVE LOCALS
+let localWallet: BeaconWallet;
+wallet.subscribe((x) => {
+  localWallet = x
+})
+
+// TODO: Unify these two?
+// The name of the Tezos blockchain network used 
+export const networkStr: Writable<string> = writable<string>(null);
+// Enum representation of the Tezos blockchain used
 export const network: Writable<NetworkType> = writable<NetworkType>(
   NetworkType.MAINNET
 );
+
+// URL Prefix of the block explorer to be used.
 export const betterCallDevUrl: Writable<string> = writable<string>(
   'https://api.better-call.dev'
 );
 
-export let alert: Writable<{
+// The UI element for poping toast-like alerts
+export const alert: Writable<{
   message: string;
   variant: 'error' | 'warning' | 'success' | 'info';
 }> =
@@ -156,92 +69,83 @@ export let alert: Writable<{
     variant: 'error' | 'warning' | 'success' | 'info';
   }>(null);
 
-// Sets the claimsStream object back to sane defaults
-export const newClaimsStream = (): ClaimMap => {
-  return {
-    TwitterControl: {
-      display: ProfileDisplay.TWITTER,
-      url: '',
-      type: 'Social Media',
-      proof: 'Tweet',
-      title: 'Twitter Verification',
-      description:
-        'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
-      icon: () => TwitterIcon,
-      route: '/twitter',
-      contractType: 'VerifiableCredential',
-    },
-    TezosControl: {
-      display: ProfileDisplay.BASIC,
-      url: '',
-      type: 'Basic Profile',
-      proof: 'Self-Attestation',
-      title: 'Basic Profile',
-      description:
-        'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
-      icon: () => PersonOutlined,
-      route: '/basic-profile',
-      contractType: 'VerifiableCredential',
-    },
-  };
-};
+/* 
+ * Kepler Interactions 
+*/
 
-export let claimsStream: Writable<ClaimMap> = writable<ClaimMap>(
-  newClaimsStream()
+export const addToKepler = async (orbit: string, ...obj: Array<any>): Promise<Array<string>>=> {
+  try {
+    let addresses = await helpers.addToKepler(localKepler, orbit, ...obj);
+
+    alert.set({
+      message: 'Successfuly uploaded to Kepler',
+      variant: 'success',
+    });
+
+    return addresses;
+  } catch (e) {
+      alert.set({
+        message: e.message || JSON.stringify(e),
+        variant: 'error',
+      });
+
+      throw e;
+  }
+}
+
+export const saveToKepler = async(...obj: Array<any>): Promise<Array<string>> => {
+  try {
+    let addresses = await helpers.saveToKepler(localKepler, await localWallet.getPKH(), ...obj);
+
+    alert.set({
+      message: 'Successfuly uploaded to Kepler',
+      variant: 'success',
+    });
+
+    return addresses;
+  } catch (e) {
+    alert.set({
+      message: e.message || JSON.stringify(e),
+      variant: 'error',
+    });
+
+    throw e;
+  }
+}
+
+/* 
+* Claims Interactions
+*/
+
+
+export let claimsStream: Writable<helpers.ClaimMap> = writable<helpers.ClaimMap>(
+  addDefaults({})
 );
 
-export const basicAlias: Writable<string> = writable<string>(null);
-export const basicDescription: Writable<string> = writable<string>(null);
-export const basicWebsite: Writable<string> = writable<string>(null);
-export const basicLogo: Writable<string> = writable<string>(null);
+
 export const contractClient: Writable<contractLib.TZProfilesClient> =
   writable<contractLib.TZProfilesClient>(null);
-export const twitterHandle: Writable<string> = writable<string>(null);
-export const profileUrl: Writable<string> = writable<string>(null);
 
-export const localBasicProfile: Writable<any> = writable(null);
-export const localTwitterProfile: Writable<any> = writable(null);
-
-export interface ClaimMap {
-  [index: string]: Claim;
-}
-
-export interface Claim {
-  display: ProfileDisplay;
-  url: string;
-  type: string;
-  proof: string;
-  title: string;
-  description: string;
-  icon: () => typeof SvelteComponentDev;
-  route: string;
-  contractType: string;
-}
-
-let localClaimsStream: ClaimMap;
+let localClaimsStream: helpers.ClaimMap;
 let localClient: contractLib.TZProfilesClient;
 let localContractAddress: string;
-let localDIDKit: any;
 let localNetworkStr: string;
-let localWallet: BeaconWallet;
+
 export let localKepler: Kepler;
 export let viewerInstance: string = 'http://127.0.0.1:9090';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
 });
+
 contractAddress.subscribe((x) => {
   localContractAddress = x;
 });
+
 contractClient.subscribe((x) => {
   localClient = x;
 });
-DIDKit.subscribe((x) => {
-  localDIDKit = x;
-});
-wallet.subscribe((x) => {
-  localWallet = x;
-});
+
 networkStr.subscribe((x) => {
   localNetworkStr = x;
 });
@@ -261,15 +165,14 @@ export const originate = async (): Promise<void> => {
 
   let claimsKeys = Object.keys(localClaimsStream);
 
-  // TODO: Specifically type?
   let claimsList: Array<[contractLib.ClaimType, contractLib.ClaimReference]> =
     [];
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
-    let { url } = localClaimsStream[claimKey];
-    if (url) {
-      claimsList.push(['VerifiableCredential', url]);
+    let {irl} = localClaimsStream[claimKey];
+    if (irl) {
+      claimsList.push(['VerifiableCredential', irl]);
     }
   }
 
@@ -285,7 +188,7 @@ export const originate = async (): Promise<void> => {
   contractAddress.set(contractAddr);
 };
 
-export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
+export const addClaims = async (claimsList: Array<helpers.Claim>): Promise<string> => {
   if (!localClient) {
     alert.set({
       message: 'No wallet detected',
@@ -305,14 +208,14 @@ export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
   let claimsArgsList: Array<
     [contractLib.ClaimType, contractLib.ClaimReference]
   > = claimsList.map((claim) => {
-    return ['VerifiableCredential', claim.url];
+    return ['VerifiableCredential', claim.irl || ''];
   });
 
   return await localClient.addClaims(localContractAddress, claimsArgsList);
 };
 
 export const removeClaims = async (
-  claimsList: Array<Claim>
+  claimsList: Array<helpers.Claim>
 ): Promise<string> => {
   if (!localClient) {
     alert.set({
@@ -333,7 +236,7 @@ export const removeClaims = async (
   let claimsArgsList: Array<
     [contractLib.ClaimType, contractLib.ClaimReference]
   > = claimsList.map((claim) => {
-    return ['VerifiableCredential', claim.url];
+    return ['VerifiableCredential', claim.irl || ''];
   });
 
   return await localClient.removeClaims(localContractAddress, claimsArgsList);
@@ -369,9 +272,9 @@ function getVCType(vc: any): string {
   return nextVC.type[nextVC.type.length - 1];
 }
 
-wallet.subscribe((wallet) => {
-  if (wallet) {
-    wallet.client.subscribeToEvent(
+wallet.subscribe((w) => {
+  if (w) {
+    w.client.subscribeToEvent(
       BeaconEvent.PERMISSION_REQUEST_SUCCESS,
       async (data) => {
         userData.set(data);
@@ -379,7 +282,7 @@ wallet.subscribe((wallet) => {
           keplerInstance,
           // NOTE: Ran into a typing err w/o any
           // Consider correcting?
-          await authenticator(wallet.client as any, 'kepler.tzprofiles.com')
+          await authenticator(w.client as any, process.env.KEPLER_URL)
         );
 
         let bcdOpts: contractLib.BetterCallDevOpts = {
@@ -390,7 +293,7 @@ wallet.subscribe((wallet) => {
 
         let signerOpts: contractLib.WalletSigner = {
           type: 'wallet',
-          wallet,
+          wallet: w,
         };
 
         let clientOpts: contractLib.TZProfilesClientOpts = {
@@ -405,13 +308,14 @@ wallet.subscribe((wallet) => {
           ): Promise<void> => {
             // Validate VC
             switch (t) {
-              case 'VerifiableCredential': {
-                let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+              case "VerifiableCredential": {
+                let verifyResult = await verifyCredential(c, '{}');
                 let verifyJSON = JSON.parse(verifyResult);
-                if (verifyJSON.errors.length > 0)
+                if (verifyJSON.errors.length > 0) {
                   throw new Error(
                     `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
                   );
+                }
                 break;
               }
               default:
@@ -425,24 +329,28 @@ wallet.subscribe((wallet) => {
 
         loadingContracts.set(true);
         try {
-          let result = await nextClient.retrieve(await wallet.getPKH());
+          let result = await nextClient.retrieve(await w.getPKH());
           if (result) {
             contractAddress.set(result.address);
             let nextClaims = Object.assign({}, localClaimsStream);
+
             for (let i = 0, x = result.valid.length; i < x; i++) {
               let [url, content, contentType] = result.valid[i];
               // TODO: Handle other types?
               if (contentType === 'VerifiableCredential') {
                 let vcType = getVCType(content);
-
                 switch (vcType) {
                   case 'TwitterVerification':
-                    nextClaims.TwitterControl.url = url;
-                    loadTwitterProfile(nextClaims);
+                    nextClaims['twitter'] = helpers.claimFromTriple(
+                      'twitter', 
+                      [url, content, contentType]
+                    );
                     break;
                   case 'BasicProfile':
-                    nextClaims.TezosControl.url = url;
-                    loadBasicProfile(nextClaims);
+                    nextClaims['basic'] = helpers.claimFromTriple(
+                      'basic',
+                      [url, content, contentType]
+                    )
                     break;
                   default:
                     alert.set({
@@ -452,6 +360,9 @@ wallet.subscribe((wallet) => {
                     throw new Error(`Unknown VC Type: ${vcType}`);
                 }
               }
+
+              nextClaims = addDefaults(nextClaims)
+
               claimsStream.set(nextClaims);
             }
           } else {
@@ -463,7 +374,7 @@ wallet.subscribe((wallet) => {
           }
         } catch (e) {
           alert.set({
-            message: e.message,
+            message: e.message || JSON.stringify(e),
             variant: 'error',
           });
           console.error('store::load_contracts::', e);
@@ -493,8 +404,8 @@ network.subscribe((network) => {
     networkStrTemp = network === NetworkType.EDONET ? 'edo2net' : network;
     strNetwork = network;
 
-    nodeUrl.set(`https://api.tez.ie/rpc/${network}`);
-    urlNode = `https://api.tez.ie/rpc/${network}`;
+    urlNode = `https://${network}.smartpy.io/`;
+    nodeUrl.set(urlNode);
 
     urlBetterCallDev = 'https://api.better-call.dev';
     betterCallDevUrl.set('https://api.better-call.dev');
@@ -521,11 +432,12 @@ export const initWallet: () => Promise<void> = async () => {
   try {
     wallet.set(newWallet);
     await newWallet.requestPermissions(requestPermissionsInput);
+
     localKepler = new Kepler(
       keplerInstance,
       // NOTE: Ran into a typing err w/o any
       // Consider correcting?
-      await authenticator(newWallet.client as any, 'kepler.tzprofiles.com')
+      await authenticator(newWallet.client as any, process.env.KEPLER_URL)
     );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
@@ -542,16 +454,8 @@ export const initWallet: () => Promise<void> = async () => {
 };
 
 // Viewer related params:
-// TODO: Organize
 // TODO: Make the network var reasonable / consistent / documented.
-export let claims: Writable<any> = writable({
-  BasicProfile: false,
-  TwitterProfile: false,
-});
-
-let localClaims;
-
-claims.subscribe((x) => (localClaims = x));
+export let searchClaims: Writable<helpers.ClaimMap> = writable(addDefaults({}));
 
 export interface searchRetryOpts {
   current: number;
@@ -571,7 +475,26 @@ const searchRetry = async (
   opts: searchRetryOpts
 ): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
   try {
-    let found = await contractClient.retrieve(addr);
+    let found;
+    if (networkStrTemp === "mainnet") {
+      let data = {
+        query: `query MyQuery { tzprofiles_by_pk(account: \"${addr}\") { invalid_claims valid_claims contract } }`,
+        variables: null,
+        operationName: "MyQuery"
+      }
+      found = await fetch("https://indexer.tzprofiles.com/v1/graphql", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      found = await found.json()
+      found = found.data.tzprofiles_by_pk
+      found = {address: found.contract, valid: found.valid_claims, invalid: found.invalid_claims}
+    } else {
+      found = await contractClient.retrieve(addr);
+    }
 
     return found;
   } catch (err) {
@@ -604,6 +527,8 @@ const searchRetry = async (
 export const search = async (wallet: string, opts: searchRetryOpts) => {
   if (wallet) {
     try {
+      searchClaims.set(addDefaults({}));
+
       let bcdOpts: contractLib.BetterCallDevOpts = {
         base: urlBetterCallDev,
         network: networkStrTemp as contractLib.BetterCallDevNetworks,
@@ -631,7 +556,7 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
           // Validate VC
           switch (t) {
             case 'VerifiableCredential': {
-              let verifyResult = await localDIDKit.verifyCredential(c, '{}');
+              let verifyResult = await verifyCredential(c, '{}');
               let verifyJSON = JSON.parse(verifyResult);
               if (verifyJSON.errors.length > 0)
                 throw new Error(
@@ -649,27 +574,23 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
 
       let found = await searchRetry(wallet, contractClient, opts);
       if (found) {
+        let nextSearchClaims = addDefaults({});
         searchAddress.set(found.address);
         // NOTE: We are not dealing with invalid claims in the UI
         // TODO: Handle invalid claims
         found.valid.forEach((triple) => {
-          let [_url, claimStr, _type] = triple;
-          let claim = JSON.parse(claimStr);
+          let [_irl, contentStr, _contractType] = triple;
+          // TODO: Check if it's a vc via contractType?
+          let vc = JSON.parse(contentStr);
+          let ct = claimTypeFromVC(vc);
+          if (!ct) {
+            throw new Error(`No claim type found in vc: ${JSON.stringify(vc?.type)}`);
+          }
 
-          claim.type.forEach((type) => {
-            switch (type) {
-              case 'TwitterVerification':
-                localClaims.TwitterProfile = claim;
-                break;
-              case 'BasicProfile':
-                localClaims.BasicProfile = claim;
-                break;
-              default:
-                break;
-            }
-          });
+          nextSearchClaims[ct] = claimFromTriple(ct, triple);
         });
-        claims.set(localClaims);
+
+        searchClaims.set(nextSearchClaims);
         return;
       }
     } catch (err) {

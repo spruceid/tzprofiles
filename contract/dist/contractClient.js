@@ -147,7 +147,7 @@ class ContractClient {
     validateItem(item) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!((item === null || item === void 0 ? void 0 : item.type) &&
-                item.type === "contract" &&
+                (item.type === "contract" || item.type === "contracts") &&
                 (item === null || item === void 0 ? void 0 : item.value))) {
                 return false;
             }
@@ -202,21 +202,31 @@ class ContractClient {
             return [r, h, t];
         });
     }
+    retrieveAllContracts(offset, walletAddress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let prefix = this.bcdPrefix();
+            let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager&o=${offset}`);
+            if (searchRes.status !== 200) {
+                throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+            }
+            let { data } = searchRes;
+            let totalCount = data.count;
+            let pageCount = data.items.length;
+            if (pageCount + offset < totalCount) {
+                return data.items.concat(yield this.retrieveAllContracts(offset + pageCount, walletAddress));
+            }
+            return data.items;
+        });
+    }
     // retrieve finds a smart contract from it's owner's wallet address, returns a 
     // result including the contract address and valid / invalid claims if found, 
     // false if not, or throws an error if the network fails
     retrieve(walletAddress) {
         return __awaiter(this, void 0, void 0, function* () {
-            let prefix = this.bcdPrefix();
-            let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
-            if (searchRes.status !== 200) {
-                throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
-            }
-            let { data } = searchRes;
-            if (data.count == 0) {
+            let items = yield this.retrieveAllContracts(0, walletAddress);
+            if (items.length === 0) {
                 return false;
             }
-            let items = data.items;
             let possibleAddresses = [];
             for (let i = 0, n = items.length; i < n; i++) {
                 let item = items[i];
@@ -287,6 +297,23 @@ class ContractClient {
             return contractAddress;
         });
     }
+    getContract(address) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.signer) {
+                throw new Error("Requires valid Signer options to be able to getContract");
+            }
+            let t = this.signer.type;
+            switch (this.signer.type) {
+                case "key":
+                case "secret":
+                    return this.tezos.contract.at(address);
+                case "wallet":
+                    return this.tezos.wallet.at(address);
+                default:
+                    throw new Error(`Unknown signer type: ${t}`);
+            }
+        });
+    }
     // addClaims takes a contractAddress and a list of pairs of contentType and references, 
     // adds them to the contract with the addClaims entrypoint returns the hash of 
     // the transaction
@@ -304,17 +331,17 @@ class ContractClient {
                 let triple = yield this.referenceToTriple(t, r);
                 contentList.push(triple);
             }
-            let contract = yield this.tezos.contract.at(contractAddress);
+            let contract = yield this.getContract(contractAddress);
             let entrypoints = Object.keys(contract.methods);
             if (entrypoints.length == 1 && entrypoints.includes('default')) {
                 let op = yield contract.methods.default(contentList, true).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else if (entrypoints.includes('addClaims')) {
                 let op = yield contract.methods.addClaims(contentList).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else {
                 throw new Error(`No entrypoint to add claim.`);
@@ -338,17 +365,17 @@ class ContractClient {
                 let triple = yield this.referenceToTriple(t, r);
                 contentList.push(triple);
             }
-            let contract = yield this.tezos.contract.at(contractAddress);
+            let contract = yield this.getContract(contractAddress);
             let entrypoints = Object.keys(contract.methods);
             if (entrypoints.length == 1 && entrypoints.includes('default')) {
                 let op = yield contract.methods.default(contentList, false).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else if (entrypoints.includes('removeClaims')) {
                 let op = yield contract.methods.removeClaims(contentList).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else {
                 throw new Error(`No entrypoint to add claim.`);
