@@ -75,7 +75,7 @@ export const signBasicProfile = async (
       await DIDKit.verifyCredential(vcStr, verifyOptionsString)
     );
     if (verifyResult.errors.length > 0) {
-      const errorMessage = `Unable to verify credential: ${verifyResult}`;
+      const errorMessage = `Unable to verify credential: ${verifyResult.errors.join(", ")}`;
       alert.set({
         message: errorMessage,
         variant: 'error',
@@ -91,7 +91,7 @@ export const signBasicProfile = async (
     return vcStr;
   } catch (e) {
     alert.set({
-      message: e,
+      message: e.message || JSON.stringify(e),
       variant: 'error',
     });
     throw e;
