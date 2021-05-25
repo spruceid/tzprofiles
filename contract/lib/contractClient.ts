@@ -3,7 +3,7 @@
 import {InMemorySigner, importKey} from "@taquito/signer";
 import * as taquito from "@taquito/taquito";
 import * as tzip16 from "@taquito/tzip16";
-import { contract as contractCode } from "./contract";
+import {contract as contractCode} from "./contract";
 import axios from "axios";
 
 // Magic Number controlling how long to wait before confirming success.
@@ -302,7 +302,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 	private async validateItem(item: ContractStorageItem): Promise<boolean> {
 		if (!(
 			item?.type &&
-			item.type === "contract" &&
+			(item.type === "contract" || item.type === "contracts") &&
 			item?.value
 		)) {
 			return false;

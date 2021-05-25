@@ -147,7 +147,7 @@ class ContractClient {
     validateItem(item) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!((item === null || item === void 0 ? void 0 : item.type) &&
-                item.type === "contract" &&
+                (item.type === "contract" || item.type === "contracts") &&
                 (item === null || item === void 0 ? void 0 : item.value))) {
                 return false;
             }
