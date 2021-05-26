@@ -359,17 +359,35 @@ function getVCType(vc: any): string {
   return nextVC.type[nextVC.type.length - 1];
 }
 
-wallet.subscribe((wallet) => {
-  if (wallet) {
-    wallet.client.subscribeToEvent(
+wallet.subscribe((w) => {
+  if (w) {
+    w.client.subscribeToEvent(
       BeaconEvent.PERMISSION_REQUEST_SUCCESS,
       async (data) => {
+        let pkh = await w.getPKH();
+
+        if (!pkh.startsWith("tz1")) {
+          alert.set({
+            message: 'Currently, only tz1 addresses are supported. Implementing tz2 support is the current product roadmap priority. For any questions, please send a telegram to https://t.me/tezosprofiles',
+            variant: 'error',
+          });
+
+          await w.disconnect().then(() => {
+            wallet.set(null);
+            userData.set(null);
+            claimsStream.set(newClaimsStream());
+            contractAddress.set(null);
+          })
+
+          return;
+        }
+
         userData.set(data);
         localKepler = new Kepler(
           keplerInstance,
           // NOTE: Ran into a typing err w/o any
           // Consider correcting?
-          await authenticator(wallet.client as any, 'kepler.tzprofiles.com')
+          await authenticator(w.client as any, 'kepler.tzprofiles.com')
         );
 
         let bcdOpts: contractLib.BetterCallDevOpts = {
@@ -380,7 +398,7 @@ wallet.subscribe((wallet) => {
 
         let signerOpts: contractLib.WalletSigner = {
           type: 'wallet',
-          wallet,
+          wallet: w,
         };
 
         let clientOpts: contractLib.TZProfilesClientOpts = {
@@ -415,7 +433,7 @@ wallet.subscribe((wallet) => {
 
         loadingContracts.set(true);
         try {
-          let result = await nextClient.retrieve(await wallet.getPKH());
+          let result = await nextClient.retrieve(await w.getPKH());
           if (result) {
             contractAddress.set(result.address);
             let nextClaims = Object.assign({}, localClaimsStream);
@@ -507,10 +525,11 @@ export const initWallet: () => Promise<void> = async () => {
   };
 
   const newWallet = new BeaconWallet(options);
-
+    
   try {
     wallet.set(newWallet);
     await newWallet.requestPermissions(requestPermissionsInput);
+
     localKepler = new Kepler(
       keplerInstance,
       // NOTE: Ran into a typing err w/o any
