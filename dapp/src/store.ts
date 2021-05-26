@@ -368,7 +368,7 @@ wallet.subscribe((w) => {
 
         if (!pkh.startsWith("tz1")) {
           alert.set({
-            message: 'Currently, only tz1 addresses are supported. Implementing tz2 support is the current product roadmap priority. For any questions, please send a telegram to https://t.me/tezosprofiles',
+            message: 'Currently, only tz1 addresses are supported. Implementing tz2 support is a priority for us. For any questions, please join our telegram at https://t.me/tezosprofiles',
             variant: 'error',
           });
 
