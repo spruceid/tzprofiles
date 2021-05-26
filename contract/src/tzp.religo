@@ -13,23 +13,24 @@ type storage = {
     claims            : set (claim)
 };
 
-let update = ((c, u, s): (set (claim), bool, storage)): storage => {
+let update = ((c, u, s): (list (claim), bool, storage)): storage => {
     let predicate = ((ss, cc) : (set (claim), claim)): set (claim) => Set.update(cc, u, ss);
     {
         owner: s.owner,
         contract_type: s.contract_type,
         metadata: s.metadata,
-        claims: Set.fold (predicate, c, s.claims)
+        claims: List.fold (predicate, c, s.claims)
     };
 };
 
 type parameter = 
-| Update ((set (claim), bool))
+| Update ((list (claim), bool))
 ;
 type return = (list (operation), storage);
 
 let main = ((action, store): (parameter, storage)) : return => {
   if (Tezos.sender != store.owner) { failwith ("Unauthorized."); }; 
+  if (Tezos.amount > 0tz) { failwith ("Tez not accepted."); };
   switch (action) {
       | Update (l) => ([]: list (operation), update (l[0], l[1], store))
   };

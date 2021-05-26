@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.contract = void 0;
-exports.contract = `{ parameter (pair (set (pair (pair string bytes) string)) bool) ;
+exports.contract = `{ parameter (pair (list (pair (pair string bytes) string)) bool) ;
   storage
     (pair (pair (set %claims (pair (pair string bytes) string)) (string %contract_type))
           (pair (big_map %metadata string bytes) (address %owner))) ;
@@ -15,6 +15,11 @@ exports.contract = `{ parameter (pair (set (pair (pair string bytes) string)) bo
          COMPARE ;
          NEQ ;
          IF { PUSH string "Unauthorized." ; FAILWITH } {} ;
+         PUSH mutez 0 ;
+         AMOUNT ;
+         COMPARE ;
+         GT ;
+         IF { PUSH string "Tez not accepted." ; FAILWITH } {} ;
          UNPAIR ;
          DUP 3 ;
          CDR ;
