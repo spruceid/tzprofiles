@@ -47,7 +47,7 @@
       <Option value="mainnet" text="mainnet" selected />
       <Option value="edonet" text="edonet" />
       <Option value="florencenet" text="florencenet" />
-      <Option value="sandboxnet" text="localhost" />
+      <Option value="custom" text="localhost" />
     </Select>
     <div class="flex items-center mt-8">
       {#if !searching}
