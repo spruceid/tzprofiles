@@ -21,6 +21,7 @@
     '/view',
   ];
   const path = window.location.pathname;
+  export let backHome: boolean = false;
 
   let isUnprotected = false;
 
@@ -38,7 +39,7 @@
 <nav class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14">
   <div>
     {#if path !== '/'}
-      <BackButton />
+      <BackButton home={backHome} />
     {/if}
   </div>
   <div>
