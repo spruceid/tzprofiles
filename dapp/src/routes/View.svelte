@@ -17,6 +17,6 @@
   });
 </script>
 
-<BasePage class="justify-center">
+<BasePage class="justify-center" backHome>
   <ViewProfile address={$params.address} network={$params.network} />
 </BasePage>
