@@ -159,8 +159,8 @@
         class="text-green-900 underline"
         target="_blank"
         href={`https://${
-          network === 'edonet' ? 'edo2net' : network
-        }.tzkt.io/${$searchAddress}`}
+          network ? (network === 'edonet.' ? 'edo2net.' : `${network}.`) : ''
+        }tzkt.io/${$searchAddress}`}
       >
         {'tzkt.io'}
       </a>
