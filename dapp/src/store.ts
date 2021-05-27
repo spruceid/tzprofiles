@@ -366,22 +366,6 @@ wallet.subscribe((w) => {
       async (data) => {
         let pkh = await w.getPKH();
 
-        if (!pkh.startsWith("tz1")) {
-          alert.set({
-            message: 'Currently, only tz1 addresses are supported. Implementing tz2 support is a priority for us. For any questions, please join our telegram at https://t.me/tezosprofiles',
-            variant: 'error',
-          });
-
-          await w.disconnect().then(() => {
-            wallet.set(null);
-            userData.set(null);
-            claimsStream.set(newClaimsStream());
-            contractAddress.set(null);
-          })
-
-          return;
-        }
-
         userData.set(data);
         localKepler = new Kepler(
           keplerInstance,
