@@ -18,6 +18,18 @@
   let basicProfile;
   let ready: boolean = false;
 
+  const getNetwork = () => {
+    if (!network || network === 'undefined') {
+      return 'mainnet'
+    }
+
+    if (network === 'edonet') {
+      return 'edo2net';
+    }
+
+    return network
+  }
+
   onMount(() => {
     claims.subscribe((claim) => {
       ready = false;
@@ -158,9 +170,7 @@
       <a
         class="text-green-900 underline"
         target="_blank"
-        href={`https://${
-          network ? (network === 'edonet.' ? 'edo2net.' : `${network}.`) : ''
-        }tzkt.io/${$searchAddress}`}
+        href={`https://${getNetwork()}.tzkt.io/${$searchAddress}`}
       >
         {'tzkt.io'}
       </a>
