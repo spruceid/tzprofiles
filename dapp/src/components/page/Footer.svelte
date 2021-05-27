@@ -11,6 +11,10 @@
     <BrandIcon class="sm:h-12 h-8 mr-2" />
     Spruce
   </a>
+  <a class="flex items-center mr-8" href="/privacy-policy"> Privacy Policy </a>
+  <a class="flex items-center mr-8" href="/terms-of-service">
+    Terms of Service
+  </a>
   <a
     class="flex items-center sm:mr-12 sm:my-8 my-2"
     href="https://github.com/spruceid/"
