@@ -7,12 +7,14 @@
     Label,
     CopyButton,
     CircleCheckIcon,
+    SpinnerIcon,
   } from 'components';
   import { claims, searchAddress } from 'src/store';
   import { onMount } from 'svelte';
 
   export let address: string;
   export let network: string = 'mainnet';
+  export let fetching: boolean = false;
 
   let twitterHandle;
   let basicProfile;
