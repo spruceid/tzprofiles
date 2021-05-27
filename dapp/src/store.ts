@@ -5,7 +5,7 @@ import {TezosToolkit} from '@taquito/taquito';
 import {Tzip16Module} from '@taquito/tzip16';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from './vendored_tzprofiles/tzprofiles';
+import * as contractLib from 'tzprofiles';
 
 import {PersonOutlined, TwitterIcon} from 'components';
 import SvelteComponentDev from '*.svelte';
@@ -525,7 +525,7 @@ export const initWallet: () => Promise<void> = async () => {
   };
 
   const newWallet = new BeaconWallet(options);
-    
+
   try {
     wallet.set(newWallet);
     await newWallet.requestPermissions(requestPermissionsInput);
