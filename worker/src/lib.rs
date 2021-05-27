@@ -117,9 +117,14 @@ pub async fn witness_tweet(
         let twitter_res = jserr!(twitter::retrieve_tweet(twitter_token, tweet_id.clone()).await);
         let mut vc = jserr!(build_vc_(&pk, &twitter_handle));
 
-        if twitter_handle != twitter_res.includes.users[0].username {
-            jserr!(Err(anyhow!("Different twitter handle.")));
+        if twitter_handle.to_lowercase() != twitter_res.includes.users[0].username.to_lowercase() {
+            jserr!(Err(anyhow!(format!(
+                "Different twitter handle {} v. {}",
+                twitter_handle.to_lowercase(),
+                twitter_res.includes.users[0].username.to_lowercase()
+            ))));
         }
+
         let (sig_target, sig) =
             jserr!(twitter::extract_signature(twitter_res.data[0].text.clone()));
         let mut props = HashMap::new();
