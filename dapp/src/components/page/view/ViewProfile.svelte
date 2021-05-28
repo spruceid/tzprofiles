@@ -6,15 +6,13 @@
     LinkInput,
     Label,
     CopyButton,
-    CircleCheckIcon,
-    SpinnerIcon,
+    TwitterIcon,
   } from 'components';
-  import { claims, searchAddress } from 'src/store';
+  import { claims, searchAddress, tweetUrl } from 'src/store';
   import { onMount } from 'svelte';
 
   export let address: string;
   export let network: string = 'mainnet';
-  export let fetching: boolean = false;
 
   let twitterHandle;
   let basicProfile;
@@ -59,7 +57,12 @@
       <CopyButton text={address} color="gray" class="w-4 h-4 ml-2" />
     </div>
 
-    <Label class="mt-4" fieldName="basic-alias" value="Alias" />
+    <div class="flex justify-between items-center">
+      <Label class="mt-4" fieldName="basic-alias" value="Alias" />
+      {#if basicProfile?.alias}
+        <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      {/if}
+    </div>
     {#if basicProfile?.alias}
       <div class="flex items-center">
         <Input
@@ -69,13 +72,17 @@
           value={basicProfile.alias}
           disabled
         />
-        <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
       </div>
     {:else}
       <LinkInput href="/basic-profile" source="Basic Profile Information" />
     {/if}
 
-    <Label class="mt-4" fieldName="basic-description" value="Description" />
+    <div class="flex justify-between items-center">
+      <Label class="mt-4" fieldName="basic-description" value="Description" />
+      {#if basicProfile?.description}
+        <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      {/if}
+    </div>
     {#if basicProfile?.description}
       <div class="flex items-center">
         <Input
@@ -85,13 +92,17 @@
           value={basicProfile.description}
           disabled
         />
-        <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
       </div>
     {:else}
       <LinkInput href="/basic-profile" source="Basic Profile Information" />
     {/if}
 
-    <Label class="mt-4" fieldName="basic-website" value="Website" />
+    <div class="flex justify-between items-center">
+      <Label class="mt-4" fieldName="basic-website" value="Website" />
+      {#if basicProfile?.website}
+        <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      {/if}
+    </div>
     {#if basicProfile?.website}
       <div class="flex items-center">
         <Input
@@ -101,13 +112,17 @@
           value={basicProfile.website}
           disabled
         />
-        <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
       </div>
     {:else}
       <LinkInput href="/basic-profile" source="Basic Profile Information" />
     {/if}
 
-    <Label class="mt-4" fieldName="basic-logo" value="Logo" />
+    <div class="flex justify-between items-center">
+      <Label class="mt-4" fieldName="basic-logo" value="Logo" />
+      {#if basicProfile?.logo}
+        <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      {/if}
+    </div>
     <div class="flex items-center justify-between">
       <div
         class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
@@ -129,16 +144,21 @@
           </p>
         {/if}
       </div>
-      {#if basicProfile?.logo}
-        <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
-      {/if}
     </div>
 
-    <Label
-      class="mt-4"
-      fieldName="basic-twitter-handle"
-      value="Twitter Handle"
-    />
+    <div class="flex justify-between items-center">
+      <Label
+        class="mt-4"
+        fieldName="basic-twitter-handle"
+        value="Twitter Handle"
+      />
+
+      {#if twitterHandle}
+        <p class="text-sm text-gray-350 italic mt-2">
+          (signed-by tzprofiles.com)
+        </p>
+      {/if}
+    </div>
     {#if twitterHandle}
       <div class="flex items-center">
         <Input
@@ -149,7 +169,9 @@
           value={twitterHandle}
           disabled
         />
-        <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+        <a href={$tweetUrl} title="View tweet" target="_blank">
+          <TwitterIcon class="h-6 ml-2" color="#00ACEE" />
+        </a>
       </div>
     {:else}
       <LinkInput href="/twitter" source="Twitter Account Information" />

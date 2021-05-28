@@ -114,10 +114,11 @@ export const loadTwitterProfile = async ({
       json = json[0];
     }
 
-    const {credentialSubject} = json;
+    const {credentialSubject, evidence} = json;
     const {sameAs} = credentialSubject;
     const handle = sameAs.replace('https://twitter.com/', '');
     twitterHandle.set(handle);
+    tweetUrl.set(`https://twitter.com/${handle}/status/${evidence.tweetId}`)
     localTwitterProfile.set(json);
   } else {
     twitterHandle.set('');
@@ -191,6 +192,7 @@ export const basicLogo: Writable<string> = writable<string>(null);
 export const contractClient: Writable<contractLib.TZProfilesClient> =
   writable<contractLib.TZProfilesClient>(null);
 export const twitterHandle: Writable<string> = writable<string>(null);
+export const tweetUrl: Writable<string> = writable<string>(null);
 export const profileUrl: Writable<string> = writable<string>(null);
 
 export const localBasicProfile: Writable<any> = writable(null);

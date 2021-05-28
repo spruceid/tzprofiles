@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Link } from 'svelte-navigator';
-
   import { onMount } from 'svelte';
   import {
     Card,
@@ -11,7 +9,7 @@
     PrimaryButton,
     Spacer,
     CopyButton,
-    CircleCheckIcon,
+    TwitterIcon,
   } from 'components';
 
   import {
@@ -27,9 +25,9 @@
     basicLogo,
     twitterHandle,
     contractAddress,
+    tweetUrl,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
-  import { viewerInstance } from 'src/store';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
@@ -84,7 +82,12 @@
     />
   </div>
 
-  <Label class="mt-4" fieldName="basic-alias" value="Alias" />
+  <div class="flex justify-between items-center">
+    <Label class="mt-4" fieldName="basic-alias" value="Alias" />
+    {#if $basicAlias}
+      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+    {/if}
+  </div>
   {#if $basicAlias}
     <div class="flex items-center">
       <Input
@@ -94,13 +97,18 @@
         value={$basicAlias}
         disabled
       />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     </div>
   {:else}
     <LinkInput href="/basic-profile" source="Basic Profile Information" />
   {/if}
 
-  <Label class="mt-4" fieldName="basic-description" value="Description" />
+  <div class="flex justify-between items-center">
+    <Label class="mt-4" fieldName="basic-description" value="Description" />
+    {#if $basicDescription}
+      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+    {/if}
+  </div>
+
   {#if $basicDescription}
     <div class="flex items-center">
       <Input
@@ -110,13 +118,18 @@
         value={$basicDescription}
         disabled
       />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     </div>
   {:else}
     <LinkInput href="/basic-profile" source="Basic Profile Information" />
   {/if}
 
-  <Label class="mt-4" fieldName="basic-website" value="Website" />
+  <div class="flex justify-between items-center">
+    <Label class="mt-4" fieldName="basic-website" value="Website" />
+    {#if $basicWebsite}
+      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+    {/if}
+  </div>
+
   {#if $basicWebsite}
     <div class="flex items-center">
       <Input
@@ -126,13 +139,17 @@
         value={$basicWebsite}
         disabled
       />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
     </div>
   {:else}
     <LinkInput href="/basic-profile" source="Basic Profile Information" />
   {/if}
+  <div class="flex justify-between items-center">
+    <Label class="mt-4" fieldName="basic-logo" value="Logo" />
+    {#if $basicLogo}
+      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+    {/if}
+  </div>
 
-  <Label class="mt-4" fieldName="basic-logo" value="Logo" />
   <div class="flex items-center justify-between">
     <div
       class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
@@ -154,12 +171,22 @@
         </p>
       {/if}
     </div>
-    {#if $basicLogo}
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+  </div>
+
+  <div class="flex justify-between items-center">
+    <Label
+      class="mt-4"
+      fieldName="basic-twitter-handle"
+      value="Twitter Handle"
+    />
+
+    {#if $twitterHandle}
+      <p class="text-sm text-gray-350 italic mt-2">
+        (signed-by tzprofiles.com)
+      </p>
     {/if}
   </div>
 
-  <Label class="mt-4" fieldName="basic-twitter-handle" value="Twitter Handle" />
   {#if $twitterHandle}
     <div class="flex items-center">
       <Input
@@ -170,7 +197,9 @@
         value={$twitterHandle}
         disabled
       />
-      <CircleCheckIcon class="mx-2 w-7 h-7" color="#429383" />
+      <a href={$tweetUrl} title="View tweet" target="_blank">
+        <TwitterIcon class="h-6 ml-2" color="#00ACEE" />
+      </a>
     </div>
   {:else}
     <LinkInput href="/twitter" source="Twitter Account Information" />
