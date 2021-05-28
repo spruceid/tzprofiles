@@ -13,6 +13,41 @@ import {Kepler, authenticator, Action} from 'kepler-sdk';
 import {verifyCredential} from 'didkit-wasm';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
+export const addToKepler = async (orbit, ...obj) => {
+  obj.forEach((o) => console.log(o));
+  if (localKepler) {
+    try {
+      // Get around the error of possibly passing nothing.
+      let f = obj.pop();
+      if (!f) {
+        throw new Error('Empty array passed to saveToKepler');
+      }
+
+      const res = await localKepler.put(orbit, f, ...obj);
+      if (!res.ok || res.status !== 200) {
+        throw new Error(`Failed to create orbit: ${res.statusText}`);
+      }
+
+      const addresses = await res.text();
+
+      alert.set({
+        message: 'Successfuly uploaded to Kepler',
+        variant: 'success',
+      });
+
+      return addresses.split('\n');
+    } catch (e) {
+      alert.set({
+        message: e.message || JSON.stringify(e),
+        variant: 'error',
+      });
+      throw e;
+    }
+  }
+
+  throw new Error('No Kepler integration found');
+}
+
 export const saveToKepler = async (...obj) => {
   obj.forEach((o) => console.log(o));
   if (localKepler) {
@@ -237,6 +272,7 @@ networkStr.subscribe((x) => {
 });
 
 const hashFunc = async (claimString: string): Promise<string> => {
+  console.log("In Hash Func")
   let encodedString = new TextEncoder().encode(claimString);
   let buf = await crypto.subtle.digest('SHA-256', encodedString);
   return [...new Uint8Array(buf)]
@@ -297,6 +333,10 @@ export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
   > = claimsList.map((claim) => {
     return ['VerifiableCredential', claim.url];
   });
+
+  console.log("About to pass to SDK:")
+  console.log(localContractAddress);
+  console.log(claimsArgsList);
 
   return await localClient.addClaims(localContractAddress, claimsArgsList);
 };
@@ -396,11 +436,16 @@ wallet.subscribe((w) => {
             t: contractLib.ClaimType
           ): Promise<void> => {
             // Validate VC
+            console.log("In Validate Type")
+            console.log(c)
             switch (t) {
               case "VerifiableCredential": {
+                console.log("About to VC")
                 let verifyResult = await verifyCredential(c, '{}');
+                console.log("Passed VC result")
                 let verifyJSON = JSON.parse(verifyResult);
                 if (verifyJSON.errors.length > 0)
+                  console.log("ERR DETECTED")
                   throw new Error(
                     `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
                   );
