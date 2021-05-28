@@ -15,6 +15,7 @@
   export let network: string = 'mainnet';
 
   let twitterHandle;
+  let twitterUrl;
   let basicProfile;
   let ready: boolean = false;
 
@@ -27,6 +28,7 @@
           'https://twitter.com/',
           ''
         );
+        twitterUrl = `https://twitter.com/${twitterHandle}/status/${claim.TwitterProfile.evidence.tweetId}`;
       }
 
       if ($claims.BasicProfile) {
@@ -169,7 +171,7 @@
           value={twitterHandle}
           disabled
         />
-        <a href={$tweetUrl} title="View tweet" target="_blank">
+        <a href={twitterUrl} title="View tweet" target="_blank">
           <TwitterIcon class="h-6 ml-2" color="#00ACEE" />
         </a>
       </div>
