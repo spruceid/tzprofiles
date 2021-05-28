@@ -13,6 +13,41 @@ import {Kepler, authenticator, Action} from 'kepler-sdk';
 import {verifyCredential} from 'didkit-wasm';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
+export const addToKepler = async (orbit, ...obj) => {
+  obj.forEach((o) => console.log(o));
+  if (localKepler) {
+    try {
+      // Get around the error of possibly passing nothing.
+      let f = obj.pop();
+      if (!f) {
+        throw new Error('Empty array passed to saveToKepler');
+      }
+
+      const res = await localKepler.put(orbit, f, ...obj);
+      if (!res.ok || res.status !== 200) {
+        throw new Error(`Failed to create orbit: ${res.statusText}`);
+      }
+
+      const addresses = await res.text();
+
+      alert.set({
+        message: 'Successfuly uploaded to Kepler',
+        variant: 'success',
+      });
+
+      return addresses.split('\n');
+    } catch (e) {
+      alert.set({
+        message: e.message || JSON.stringify(e),
+        variant: 'error',
+      });
+      throw e;
+    }
+  }
+
+  throw new Error('No Kepler integration found');
+}
+
 export const saveToKepler = async (...obj) => {
   obj.forEach((o) => console.log(o));
   if (localKepler) {
@@ -301,7 +336,8 @@ export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
   });
 
   return await localClient.addClaims(localContractAddress, claimsArgsList);
-};
+
+  };
 
 export const removeClaims = async (
   claimsList: Array<Claim>
@@ -398,19 +434,24 @@ wallet.subscribe((w) => {
             t: contractLib.ClaimType
           ): Promise<void> => {
             // Validate VC
-            switch (t) {
-              case "VerifiableCredential": {
-                let verifyResult = await verifyCredential(c, '{}');
-                let verifyJSON = JSON.parse(verifyResult);
-                if (verifyJSON.errors.length > 0)
-                  throw new Error(
-                    `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
-                  );
-                break;
-              }
-              default:
-                throw new Error(`Unknown ClaimType: ${t}`);
-            }
+            // TODO: RESTORE:
+            return
+            // switch (t) {
+            //   case "VerifiableCredential": {
+            //     console.log("About to VC")
+            //     let verifyResult = await verifyCredential(c, '{}');
+            //     console.log("Passed VC result")
+            //     let verifyJSON = JSON.parse(verifyResult);
+            //     if (verifyJSON.errors.length > 0)
+            //       console.log("ERR DETECTED")
+            //       throw new Error(
+            //         `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
+            //       );
+            //     break;
+            //   }
+            //   default:
+            //     throw new Error(`Unknown ClaimType: ${t}`);
+            // }
           },
         };
 

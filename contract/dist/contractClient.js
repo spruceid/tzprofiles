@@ -147,8 +147,7 @@ class ContractClient {
     validateItem(item) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!((item === null || item === void 0 ? void 0 : item.type) &&
-                (item.type === "contract" || item.type === "contracts") &&
-                (item === null || item === void 0 ? void 0 : item.value))) {
+                (item.type === "contract" || item.type === "contracts") && (item === null || item === void 0 ? void 0 : item.value))) {
                 return false;
             }
             try {
@@ -287,6 +286,23 @@ class ContractClient {
             return contractAddress;
         });
     }
+    getContract(address) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.signer) {
+                throw new Error("Requires valid Signer options to be able to getContract");
+            }
+            let t = this.signer.type;
+            switch (this.signer.type) {
+                case "key":
+                case "secret":
+                    return this.tezos.contract.at(address);
+                case "wallet":
+                    return this.tezos.wallet.at(address);
+                default:
+                    throw new Error(`Unknown signer type: ${t}`);
+            }
+        });
+    }
     // addClaims takes a contractAddress and a list of pairs of contentType and references, 
     // adds them to the contract with the addClaims entrypoint returns the hash of 
     // the transaction
@@ -304,17 +320,17 @@ class ContractClient {
                 let triple = yield this.referenceToTriple(t, r);
                 contentList.push(triple);
             }
-            let contract = yield this.tezos.contract.at(contractAddress);
+            let contract = yield this.getContract(contractAddress);
             let entrypoints = Object.keys(contract.methods);
             if (entrypoints.length == 1 && entrypoints.includes('default')) {
                 let op = yield contract.methods.default(contentList, true).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else if (entrypoints.includes('addClaims')) {
                 let op = yield contract.methods.addClaims(contentList).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else {
                 throw new Error(`No entrypoint to add claim.`);
@@ -338,17 +354,17 @@ class ContractClient {
                 let triple = yield this.referenceToTriple(t, r);
                 contentList.push(triple);
             }
-            let contract = yield this.tezos.contract.at(contractAddress);
+            let contract = yield this.getContract(contractAddress);
             let entrypoints = Object.keys(contract.methods);
             if (entrypoints.length == 1 && entrypoints.includes('default')) {
                 let op = yield contract.methods.default(contentList, false).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else if (entrypoints.includes('removeClaims')) {
                 let op = yield contract.methods.removeClaims(contentList).send();
                 yield op.confirmation(CONFIRMATION_CHECKS);
-                return op.hash;
+                return op.hash || op.opHash;
             }
             else {
                 throw new Error(`No entrypoint to add claim.`);

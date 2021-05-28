@@ -1,4 +1,3 @@
-const {loader} = require('mini-css-extract-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const sveltePreprocess = require('svelte-preprocess');
@@ -99,7 +98,7 @@ module.exports = {
 			'BUILD_MODE_DEV': !prod,
 		}),
 		new webpack.EnvironmentPlugin({
-			WITNESS_URL: "http://localhost:8787",
+			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
 			KEPLER_URL: "http://localhost:8000"
 		})
 	],

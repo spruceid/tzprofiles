@@ -5,6 +5,7 @@ import * as taquito from "@taquito/taquito";
 import * as tzip16 from "@taquito/tzip16";
 import {contract as contractCode} from "./contract";
 import axios from "axios";
+import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
 
 // Magic Number controlling how long to wait before confirming success.
 // Seems to be an art more than a science, 3 was suggested by a help thread.
@@ -456,6 +457,22 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		return contractAddress;
 	}
 
+	async getContract(address: string): Promise<ContractAbstraction<ContractProvider | taquito.Wallet>> {
+		if (!this.signer) {
+			throw new Error("Requires valid Signer options to be able to getContract");
+		}
+		let t = this.signer.type;
+		switch (this.signer.type) {
+			case "key":
+			case "secret":
+				return this.tezos.contract.at(address);
+			case "wallet":
+				return this.tezos.wallet.at(address);
+			default:
+				throw new Error(`Unknown signer type: ${t}`)
+		}
+	}
+
 	// addClaims takes a contractAddress and a list of pairs of contentType and references, 
 	// adds them to the contract with the addClaims entrypoint returns the hash of 
 	// the transaction
@@ -475,17 +492,19 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 			contentList.push(triple);
 		}
 
-		let contract = await this.tezos.contract.at(contractAddress);
+		let contract = await this.getContract(contractAddress);
 
 		let entrypoints = Object.keys(contract.methods);
 		if (entrypoints.length == 1 && entrypoints.includes('default')) {
-			let op = await contract.methods.default(contentList, true).send();
+			let op: any = await contract.methods.default(contentList, true).send();
+
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+			return op.hash || op.opHash;
 		} else if (entrypoints.includes('addClaims')) {
-			let op = await contract.methods.addClaims(contentList).send();
+			let op: any = await contract.methods.addClaims(contentList).send();
+
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+			return op.hash || op.opHash;
 		} else {
 			throw new Error(`No entrypoint to add claim.`)
 		}
@@ -510,17 +529,19 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 			contentList.push(triple);
 		}
 
-		let contract = await this.tezos.contract.at(contractAddress);
+		let contract = await this.getContract(contractAddress);
 
 		let entrypoints = Object.keys(contract.methods);
 		if (entrypoints.length == 1 && entrypoints.includes('default')) {
-			let op = await contract.methods.default(contentList, false).send();
+			let op: any = await contract.methods.default(contentList, false).send();
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+
+			return op.hash || op.opHash;
 		} else if (entrypoints.includes('removeClaims')) {
-			let op = await contract.methods.removeClaims(contentList).send();
+			let op: any = await contract.methods.removeClaims(contentList).send();
 			await op.confirmation(CONFIRMATION_CHECKS);
-			return op.hash;
+
+			return op.hash || op.opHash;
 		} else {
 			throw new Error(`No entrypoint to add claim.`)
 		}

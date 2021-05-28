@@ -11,7 +11,9 @@ export type ClaimContent = string;
 // Opts are used to create new ContractClients
 export interface TZProfilesClientOpts {
 	betterCallDevConfig: BetterCallDevOpts,
-	keplerClient: Kepler,
+
+	keplerClient: Kepler<any>;
+
 	// hashContent should take stringified JSON and return a hash for content validation.
 	hashContent: (input: ClaimContent) => Promise<ClaimHash>,
 
@@ -25,7 +27,8 @@ export interface TZProfilesClientOpts {
 // Client exposes operations on a TZP contract and queries to better-call.dev
 export class TZProfilesClient {
 	contractClient: ContractClient<ClaimContent, ClaimType, ClaimHash, ClaimReference>;
-	keplerClient: Kepler;
+
+	keplerClient: Kepler<any>;
 
 	constructor(opts: TZProfilesClientOpts) {
 		this.keplerClient = opts.keplerClient;
