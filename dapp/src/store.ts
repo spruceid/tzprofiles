@@ -438,6 +438,8 @@ wallet.subscribe((w) => {
             // Validate VC
             console.log("In Validate Type")
             console.log(c)
+            // TODO: REMOVE
+            return
             switch (t) {
               case "VerifiableCredential": {
                 console.log("About to VC")
@@ -458,6 +460,7 @@ wallet.subscribe((w) => {
         };
 
         let nextClient = new contractLib.TZProfilesClient(clientOpts);
+        console.log("SIGNER SET")
         contractClient.set(nextClient);
 
         loadingContracts.set(true);

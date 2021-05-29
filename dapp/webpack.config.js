@@ -99,7 +99,7 @@ module.exports = {
 			'BUILD_MODE_DEV': !prod,
 		}),
 		new webpack.EnvironmentPlugin({
-			WITNESS_URL: "http://localhost:8787",
+			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
 			KEPLER_URL: "http://localhost:8000"
 		})
 	],

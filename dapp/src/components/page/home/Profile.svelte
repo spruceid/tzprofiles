@@ -21,6 +21,8 @@
     networkStr,
     loadBasicProfile,
     loadTwitterProfile,
+    localBasicProfile,
+    localTwitterProfile,
     basicAlias,
     basicDescription,
     basicWebsite,
@@ -31,7 +33,6 @@
     addClaims,
   } from 'src/store';
   import type { ClaimMap } from 'src/store';
-  import { viewerInstance } from 'src/store';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
@@ -46,6 +47,25 @@
     loadBasicProfile($claimsStream);
     loadTwitterProfile($claimsStream);
   });
+
+  // TODO: Put this in store and export it to both here and deploy
+  const vcsToUpload = (profiles: Array<any>): Array<any> => {
+    let vcs: Array<any> = [];
+
+    profiles.forEach((profile) => {
+      switch (profile.display) {
+        case ProfileDisplay.BASIC: {
+          vcs.push($localBasicProfile);
+          break;
+        }
+        case ProfileDisplay.TWITTER: {
+          vcs.push($localTwitterProfile);
+          break;
+        }
+      }
+    });
+    return vcs;
+  };
 
   const hasUrl = (cMap: ClaimMap): boolean => {
     let keys = Object.keys(cMap);
@@ -123,7 +143,8 @@
       console.log('Before Current Orbit');
       const orbit = getCurrentOrbit(profileStream);
       console.log('Before Current URLS');
-      const urls = await addToKepler(orbit, ...newClaims);
+      const urls = await addToKepler(orbit, ...vcsToUpload(newClaims));
+      console.log(urls);
 
       for (let i = newClaims.length, x = 0; i > x; i--) {
         let profile = newClaims[i-1];
