@@ -337,7 +337,7 @@ export const addClaims = async (claimsList: Array<Claim>): Promise<string> => {
 
   return await localClient.addClaims(localContractAddress, claimsArgsList);
 
-  };
+};
 
 export const removeClaims = async (
   claimsList: Array<Claim>
@@ -434,24 +434,19 @@ wallet.subscribe((w) => {
             t: contractLib.ClaimType
           ): Promise<void> => {
             // Validate VC
-            // TODO: RESTORE:
-            return
-            // switch (t) {
-            //   case "VerifiableCredential": {
-            //     console.log("About to VC")
-            //     let verifyResult = await verifyCredential(c, '{}');
-            //     console.log("Passed VC result")
-            //     let verifyJSON = JSON.parse(verifyResult);
-            //     if (verifyJSON.errors.length > 0)
-            //       console.log("ERR DETECTED")
-            //       throw new Error(
-            //         `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
-            //       );
-            //     break;
-            //   }
-            //   default:
-            //     throw new Error(`Unknown ClaimType: ${t}`);
-            // }
+            switch (t) {
+              case "VerifiableCredential": {
+                let verifyResult = await verifyCredential(c, '{}');
+                let verifyJSON = JSON.parse(verifyResult);
+                if (verifyJSON.errors.length > 0)
+                  throw new Error(
+                    `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
+                  );
+                break;
+              }
+              default:
+                throw new Error(`Unknown ClaimType: ${t}`);
+            }
           },
         };
 
