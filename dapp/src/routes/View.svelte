@@ -1,21 +1,28 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { useParams } from 'svelte-navigator';
-  import { claims, defaultSearchOpts, search, network } from 'src/store';
+  import { searchClaims, searchAddress, defaultSearchOpts, search, network } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
   import { BasePage, ViewProfile, SpinnerIcon } from 'components';
 
   const params = useParams();
-  let fetching: boolean = false;
+  if ($params.address) {
+    searchAddress.set($params.address);
+  }
+
+  $: fetching = false;
 
   onMount(() => {
-    if (!$claims.BasicProfile || !$claims.TwitterProfile) {
+    // TODO: Generalize over claim types?
+    if (!$searchClaims?.basic.content || !$searchClaims?.twitter.content) {
       network.set(
         ($params.network as NetworkType) || ('mainnet' as NetworkType)
       );
       fetching = true;
       search($params.address, defaultSearchOpts).finally(
-        () => (fetching = false)
+        () => { 
+          fetching = false;
+        }
       );
     }
   });
@@ -29,8 +36,8 @@
     </div>
   {/if}
   <ViewProfile
-    address={$params.address}
+    claimsMap={searchClaims}
+    address={$searchAddress}
     network={$params.network}
-    bind:fetching
   />
 </BasePage>

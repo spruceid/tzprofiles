@@ -1,13 +1,8 @@
 <script lang="ts">
   import { Link, useNavigate } from 'svelte-navigator';
   import { BackButton, FlatButton } from 'components';
-  import {
-    claimsStream,
-    contractAddress,
-    newClaimsStream,
-    userData,
-    wallet,
-  } from 'src/store';
+  import { claimsStream, contractAddress, userData, wallet } from 'src/store';
+  import { addDefaults } from 'src/helpers';
 
   let navigate = useNavigate();
 
@@ -64,7 +59,7 @@
             // TODO: Track state more carefully / explicitly.
             wallet.set(null);
             userData.set(null);
-            claimsStream.set(newClaimsStream());
+            claimsStream.set(addDefaults({}));
             contractAddress.set(null);
             navigate('/');
           })}

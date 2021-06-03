@@ -16,20 +16,24 @@
     getTweetMessage,
   } from 'src/twitter';
 
-  import type { ClaimMap } from 'src/store';
+  import { contentToDraft } from 'src/helpers';
+  import type { ClaimMap } from 'src/helpers';
 
   import { useNavigate } from 'svelte-navigator';
   let navigate = useNavigate();
 
-  let verification: ClaimMap;
+  let readClaimMap: ClaimMap;
   claimsStream.subscribe((x) => {
-    verification = x;
+    readClaimMap = x;
   });
 
+  let display = readClaimMap?.twitter?.display;
+
+  let twitterHandle = '';
+  let tweetURL = '';
+
   let currentStep: number = 1;
-  let twitterHandle: string = '';
   let lock: boolean = false;
-  let tweetURL: string = '';
   let twitterClaim: string = '';
   let tweetMessage: string = '';
 
@@ -49,9 +53,9 @@
 
 <BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
-    icon={verification['TwitterControl'].icon()}
-    title={verification['TwitterControl'].title}
-    description={verification['TwitterControl'].description}
+    icon={display.icon}
+    title={display.title}
+    description={display.description}
   >
     {#if currentStep > 4}
       <PrimaryButton
@@ -187,10 +191,11 @@
           onClick={() => {
             next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
-                let nextClaimMap = verification;
-
-                nextClaimMap.TwitterControl.url = URL.createObjectURL(
-                  new Blob([vc])
+                let nextClaimMap = readClaimMap;
+                nextClaimMap.twitter.preparedContent = JSON.parse(vc);
+                nextClaimMap.twitter.draft = contentToDraft(
+                  'twitter',
+                  nextClaimMap.twitter.preparedContent
                 );
                 claimsStream.set(nextClaimMap);
                 next();

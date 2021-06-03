@@ -7,13 +7,9 @@
     Label,
     PrimaryButton,
   } from 'components';
-  import {
-    claimsStream,
-    userData,
-    wallet,
-    networkStr,
-  } from 'src/store';
-  import type { ClaimMap } from 'src/store';
+  import { claimsStream, userData, wallet, networkStr } from 'src/store';
+  import type { ClaimMap } from 'src/helpers';
+  import { contentToDraft } from 'src/helpers';
   import { signBasicProfile } from 'src/basic_profile';
 
   import { useNavigate } from 'svelte-navigator';
@@ -21,11 +17,14 @@
 
   const verification: ClaimMap = $claimsStream;
 
+  $: display = verification?.basic.display;
+
+  let alias = '';
+  let description = '';
+  let logo = '';
+  let website = '';
+
   let lock: boolean = false;
-  let alias: string = '';
-  let description: string = '';
-  let website: string = '';
-  let logo: string = '';
   let currentStep: number = 1;
 
   const next = () => (currentStep = currentStep + 1);
@@ -33,9 +32,9 @@
 
 <BasePage class="flex-wrap items-center justify-center">
   <VerificationDescription
-    icon={verification['TezosControl'].icon()}
-    title={verification['TezosControl'].title}
-    description={verification['TezosControl'].description}
+    icon={display.icon}
+    title={display.title}
+    description={display.description}
   >
     {#if currentStep == 2}
       <PrimaryButton
@@ -52,8 +51,10 @@
           signBasicProfile($userData, $wallet, $networkStr, profile)
             .then((vc) => {
               let nextClaimMap = verification;
-              nextClaimMap.TezosControl.url = URL.createObjectURL(
-                new Blob([vc])
+              nextClaimMap.basic.preparedContent = JSON.parse(vc);
+              nextClaimMap.basic.draft = contentToDraft(
+                'basic',
+                nextClaimMap.basic.preparedContent
               );
               claimsStream.set(nextClaimMap);
               next();
