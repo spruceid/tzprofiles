@@ -9,7 +9,7 @@ import * as contractLib from 'tzprofiles';
 
 import {PersonOutlined, TwitterIcon} from 'components';
 import SvelteComponentDev from '*.svelte';
-import {Kepler, authenticator, Action} from 'kepler-sdk';
+import {Kepler, authenticator, Action, getOrbitId} from 'kepler-sdk';
 import {verifyCredential} from 'didkit-wasm';
 import ProfileDisplay from 'enums/ProfileDisplay';
 
@@ -50,14 +50,15 @@ export const addToKepler = async (orbit, ...obj) => {
 
 export const saveToKepler = async (...obj) => {
   obj.forEach((o) => console.log(o));
+
+  // Get around the error of possibly passing nothing.
+  let f = obj.pop();
+  if (!f) {
+    throw new Error('Empty array passed to saveToKepler');
+  }
+
   if (localKepler) {
     try {
-      // Get around the error of possibly passing nothing.
-      let f = obj.pop();
-      if (!f) {
-        throw new Error('Empty array passed to saveToKepler');
-      }
-
       const res = await localKepler.createOrbit(f, ...obj);
       if (!res.ok || res.status !== 200) {
         throw new Error(`Failed to create orbit: ${res.statusText}`);
@@ -72,11 +73,20 @@ export const saveToKepler = async (...obj) => {
 
       return addresses.split('\n');
     } catch (e) {
-      alert.set({
-        message: e.message || JSON.stringify(e),
-        variant: 'error',
-      });
-      throw e;
+      console.warn(`Failed in create new orbit with error: ${e?.message || JSON.stringify(e)}`)
+      console.warn("Trying existing orbit")
+      try {
+        let p = await localWallet.getPKH()
+        let id = await getOrbitId(p, {domain: process.env.KEPLER_URL, index: 0});
+
+        return await addToKepler(id, ...[f, ...obj]);
+      } catch (err) {
+        alert.set({
+          message: err.message || JSON.stringify(err),
+          variant: 'error',
+        });
+        throw err;
+      }
     }
   }
 
@@ -402,14 +412,12 @@ wallet.subscribe((w) => {
     w.client.subscribeToEvent(
       BeaconEvent.PERMISSION_REQUEST_SUCCESS,
       async (data) => {
-        let pkh = await w.getPKH();
-
         userData.set(data);
         localKepler = new Kepler(
           keplerInstance,
           // NOTE: Ran into a typing err w/o any
           // Consider correcting?
-          await authenticator(w.client as any, 'kepler.tzprofiles.com')
+          await authenticator(w.client as any, process.env.KEPLER_URL)
         );
 
         let bcdOpts: contractLib.BetterCallDevOpts = {
@@ -438,10 +446,11 @@ wallet.subscribe((w) => {
               case "VerifiableCredential": {
                 let verifyResult = await verifyCredential(c, '{}');
                 let verifyJSON = JSON.parse(verifyResult);
-                if (verifyJSON.errors.length > 0)
+                if (verifyJSON.errors.length > 0) {
                   throw new Error(
                     `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
                   );
+                }
                 break;
               }
               default:
@@ -464,7 +473,6 @@ wallet.subscribe((w) => {
               // TODO: Handle other types?
               if (contentType === 'VerifiableCredential') {
                 let vcType = getVCType(content);
-
                 switch (vcType) {
                   case 'TwitterVerification':
                     nextClaims.TwitterControl.url = url;
@@ -556,7 +564,7 @@ export const initWallet: () => Promise<void> = async () => {
       keplerInstance,
       // NOTE: Ran into a typing err w/o any
       // Consider correcting?
-      await authenticator(newWallet.client as any, 'kepler.tzprofiles.com')
+      await authenticator(newWallet.client as any, process.env.KEPLER_URL)
     );
     const Tezos = new TezosToolkit(urlNode);
     Tezos.addExtension(new Tzip16Module());
