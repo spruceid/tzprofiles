@@ -1,12 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { IconLink, DownloadIcon } from 'components';
-  import {
-    claimsStream,
-    loadingContracts,
-    localKepler,
-    loadJsonBlob,
-  } from 'src/store';
+  import { claimsStream, loadingContracts, localKepler } from 'src/store';
 
   const makeDownloadable = (obj: any): string => {
     let stringify = JSON.stringify(obj, null, 2);
@@ -18,25 +13,22 @@
 
   onMount(async () => {
     try {
-      if (Object.values($claimsStream).every((claim) => !claim.url)) {
+      if (
+        Object.values($claimsStream).every(
+          (claim) => !claim.content && !claim.preparedContent
+        )
+      ) {
         data = [];
       } else {
         data = await Promise.all(
           Object.values($claimsStream)
-            .filter((claim) => claim.url)
+            // TODO: Distinguish between content and preparedContent in UI
+            .filter((claim) => claim.content || claim.preparedContent)
             .map(async (claim) => {
-              let { url } = claim;
-              let jsonRes = await loadJsonBlob(url);
-
-              if (!jsonRes.ok || jsonRes.status !== 200) {
-                throw new Error(
-                  `Error in claims retrieval: ${jsonRes.statusText}`
-                );
-              }
-
-              let jsonObj = await jsonRes.json();
-              if (typeof jsonObj === 'string') jsonObj = JSON.parse(jsonObj);
-              let json = makeDownloadable(jsonObj);
+              // TODO: Distinguish between content and preparedContent in UI
+              let json = makeDownloadable(
+                claim.content || claim.preparedContent
+              );
               return { ...claim, json };
             })
         );
@@ -67,23 +59,23 @@
               class="flex items-center px-2 my-1 cursor-pointer sm:px-4 md:px-6"
             >
               <svelte:component
-                this={claim.icon()}
+                this={claim.display.icon}
                 class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
               />
-              <p class="font-bold">{claim.display}</p>
+              <p class="font-bold">{claim.display.display}</p>
             </td>
             <td class="px-2 sm:px-4 md:px-6">
-              {claim.type}
+              {claim.display.type}
             </td>
             <td class="px-2 sm:px-4 md:px-6">
-              {claim.proof}
+              {claim.display.proof}
             </td>
             <td>
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
                 icon={DownloadIcon}
                 href={claim.json}
-                download={`${claim.display}.json`}
+                download={`${claim.display.display}.json`}
               />
             </td>
           </tr>
