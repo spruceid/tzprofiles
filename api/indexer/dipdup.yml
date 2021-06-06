@@ -1,0 +1,58 @@
+spec_version: 0.1
+package: tzprofiles_indexer
+
+database:
+  kind: postgres
+  host: db
+  port: 5432
+  user: dipdup
+  password: ${POSTGRES_PASSWORD:-changeme}
+  database: dipdup
+
+# database:
+#   kind: sqlite
+#   path: tzprofiles.sqlite3
+
+hasura:
+  url: http://hasura:8080
+  admin_secret: ${ADMIN_SECRET:-changeme}
+
+contracts:
+  tzprofile_old:
+    address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
+    typename: tzprofile
+  tzprofile:
+    address: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
+    typename: tzprofile
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: https://api.tzkt.io
+
+templates:
+  tzprofiles:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - <contract>
+    types:
+      - transaction
+      - origination
+    handlers:
+      - callback: on_origination
+        pattern:
+          - type: origination
+            originated_contract: <contract>
+      - callback: on_update
+        pattern:
+          - destination: <contract>
+            entrypoint: default
+
+indexes:
+  tzprofiles:
+    template: tzprofiles
+    similar_to: tzprofile
+  tzprofiles_old:
+    template: tzprofiles
+    similar_to: tzprofile_old

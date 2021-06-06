@@ -610,7 +610,26 @@ const searchRetry = async (
   opts: searchRetryOpts
 ): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
   try {
-    let found = await contractClient.retrieve(addr);
+    let found;
+    if (networkStrTemp === "mainnet") {
+      let data = {
+        query: `query MyQuery { tzprofiles_by_pk(account: \"${addr}\") { invalid_claims valid_claims contract } }`,
+        variables: null,
+        operationName: "MyQuery"
+      }
+      found = await fetch("https://indexer.tzprofiles.com/v1/graphql", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      found = await found.json()
+      found = found.data.tzprofiles_by_pk
+      found = {address: found.contract, valid: found.valid_claims, invalid: found.invalid_claims}
+    } else {
+      found = await contractClient.retrieve(addr);
+    }
 
     return found;
   } catch (err) {

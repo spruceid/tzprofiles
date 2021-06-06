@@ -15,14 +15,22 @@ const port = 8080;
 const app = express();
 app.use(cors());
 
-app.get('/:address', async function (req, res) {
-    const content = await retrieve(req.params.address, "mainnet", req.query);
-    res.send(content)
+app.get('/:address', async function (req, res, next) {
+    try {
+        const content = await retrieve(req.params.address, "mainnet", req.query);
+        res.send(content)
+    } catch (err) {
+        next(err)
+    }
 })
 
-app.get('/:address/:network', async function (req, res) {
-    const content = await retrieve(req.params.address, req.params.network, req.query);
-    res.send(content)
+app.get('/:address/:network', async function (req, res, next) {
+    try {
+        const content = await retrieve(req.params.address, req.params.network, req.query);
+        res.send(content)
+    } catch (err) {
+        next(err)
+    }
 })
 
 function network_string(network) {
@@ -49,7 +57,7 @@ async function retrieve(address, network, query) {
         betterCallDevConfig: bcdOpts,
         keplerClient: localKepler,
         hashContent: hashFunc,
-        nodeURL: "https://api.tez.ie/rpc/" + network,
+        nodeURL: `https://${network}.smartpy.io`,
         signer: false,
         validateType: async (c, t) => {
             // Validate VC
@@ -69,7 +77,7 @@ async function retrieve(address, network, query) {
 
     let res = await client.retrieve(address);
     if (res === false) {
-        return [];
+        res = {valid: [], invalid: []}
     }
 
     // TODO better UX for both the query and the results
@@ -87,7 +95,7 @@ app.use(function (req, res, next) {
 })
 
 app.use(function (err, req, res, next) {
-    console.error(err.stack)
+    console.error(err)
     res.status(500).send(err)
 })
 
