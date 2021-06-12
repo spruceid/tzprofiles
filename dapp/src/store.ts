@@ -531,8 +531,8 @@ network.subscribe((network) => {
     networkStrTemp = network === NetworkType.EDONET ? 'edo2net' : network;
     strNetwork = network;
 
-    nodeUrl.set(`https://api.tez.ie/rpc/${network}`);
-    urlNode = `https://api.tez.ie/rpc/${network}`;
+    urlNode = `https://${network}.smartpy.io/`;
+    nodeUrl.set(urlNode);
 
     urlBetterCallDev = 'https://api.better-call.dev';
     betterCallDevUrl.set('https://api.better-call.dev');

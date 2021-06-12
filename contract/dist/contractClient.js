@@ -147,7 +147,8 @@ class ContractClient {
     validateItem(item) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!((item === null || item === void 0 ? void 0 : item.type) &&
-                (item.type === "contract" || item.type === "contracts") && (item === null || item === void 0 ? void 0 : item.value))) {
+                (item.type === "contract" || item.type === "contracts") &&
+                (item === null || item === void 0 ? void 0 : item.value))) {
                 return false;
             }
             try {
@@ -201,21 +202,31 @@ class ContractClient {
             return [r, h, t];
         });
     }
+    retrieveAllContracts(offset, walletAddress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let prefix = this.bcdPrefix();
+            let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager&o=${offset}`);
+            if (searchRes.status !== 200) {
+                throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+            }
+            let { data } = searchRes;
+            let totalCount = data.count;
+            let pageCount = data.items.length;
+            if (pageCount + offset < totalCount) {
+                return data.items.concat(yield this.retrieveAllContracts(offset + pageCount, walletAddress));
+            }
+            return data.items;
+        });
+    }
     // retrieve finds a smart contract from it's owner's wallet address, returns a 
     // result including the contract address and valid / invalid claims if found, 
     // false if not, or throws an error if the network fails
     retrieve(walletAddress) {
         return __awaiter(this, void 0, void 0, function* () {
-            let prefix = this.bcdPrefix();
-            let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
-            if (searchRes.status !== 200) {
-                throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
-            }
-            let { data } = searchRes;
-            if (data.count == 0) {
+            let items = yield this.retrieveAllContracts(0, walletAddress);
+            if (items.length === 0) {
                 return false;
             }
-            let items = data.items;
             let possibleAddresses = [];
             for (let i = 0, n = items.length; i < n; i++) {
                 let item = items[i];

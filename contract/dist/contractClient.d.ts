@@ -64,6 +64,7 @@ export declare class ContractClient<Content, ContentType, Hash, Reference> {
     private retrieveAndScreenContract;
     private contentListFromStorage;
     private referenceToTriple;
+    private retrieveAllContracts;
     retrieve(walletAddress: string): Promise<ContentResult<Content, ContentType, Hash, Reference> | false>;
     originate(contentReferenceList: Array<[ContentType, Reference]>): Promise<string>;
     getContract(address: string): Promise<ContractAbstraction<ContractProvider | taquito.Wallet>>;

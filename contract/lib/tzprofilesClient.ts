@@ -12,7 +12,7 @@ export type ClaimContent = string;
 export interface TZProfilesClientOpts {
 	betterCallDevConfig: BetterCallDevOpts,
 
-	keplerClient: Kepler<any>;
+	keplerClient: Kepler;
 
 	// hashContent should take stringified JSON and return a hash for content validation.
 	hashContent: (input: ClaimContent) => Promise<ClaimHash>,
@@ -28,7 +28,7 @@ export interface TZProfilesClientOpts {
 export class TZProfilesClient {
 	contractClient: ContractClient<ClaimContent, ClaimType, ClaimHash, ClaimReference>;
 
-	keplerClient: Kepler<any>;
+	keplerClient: Kepler;
 
 	constructor(opts: TZProfilesClientOpts) {
 		this.keplerClient = opts.keplerClient;

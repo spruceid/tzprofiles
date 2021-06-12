@@ -358,6 +358,21 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		return [r, h, t];
 	}
 
+	private async retrieveAllContracts(offset: number, walletAddress: string): Promise<Array<ContractStorageItem>> {
+		let prefix = this.bcdPrefix();
+		let searchRes = await axios.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager&o=${offset}`);
+		if (searchRes.status !== 200) {
+			throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
+		}
+		let {data} = searchRes;
+		let totalCount = data.count;
+		let pageCount = data.items.length;
+		if (pageCount + offset < totalCount) {
+			return data.items.concat(await this.retrieveAllContracts(offset + pageCount, walletAddress));
+		}
+		return data.items;
+	}
+
 	// retrieve finds a smart contract from it's owner's wallet address, returns a 
 	// result including the contract address and valid / invalid claims if found, 
 	// false if not, or throws an error if the network fails
@@ -365,20 +380,12 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		ContentResult<Content, ContentType, Hash, Reference>
 		| false
 	> {
-		let prefix = this.bcdPrefix();
-		let searchRes = await axios.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager`);
-		if (searchRes.status !== 200) {
-			throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
-		}
-
-		let {data} = searchRes;
-		if (data.count == 0) {
+		let items: Array<ContractStorageItem> = await this.retrieveAllContracts(0, walletAddress);
+		if (items.length === 0) {
 			return false;
 		}
 
-		let items: Array<ContractStorageItem> = data.items;
 		let possibleAddresses: Array<string> = [];
-
 		for (let i = 0, n = items.length; i < n; i++) {
 			let item = items[i];
 			if (await this.validateItem(item)) {
