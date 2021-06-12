@@ -6,7 +6,7 @@ export declare type ClaimType = "VerifiableCredential";
 export declare type ClaimContent = string;
 export interface TZProfilesClientOpts {
     betterCallDevConfig: BetterCallDevOpts;
-    keplerClient: Kepler<any>;
+    keplerClient: Kepler;
     hashContent: (input: ClaimContent) => Promise<ClaimHash>;
     nodeURL: string;
     signer: Signer | false;
@@ -14,7 +14,7 @@ export interface TZProfilesClientOpts {
 }
 export declare class TZProfilesClient {
     contractClient: ContractClient<ClaimContent, ClaimType, ClaimHash, ClaimReference>;
-    keplerClient: Kepler<any>;
+    keplerClient: Kepler;
     constructor(opts: TZProfilesClientOpts);
     retrieve(walletAddress: string): Promise<ContentResult<ClaimContent, ClaimType, ClaimHash, ClaimReference> | false>;
     originate(contentReferenceList: Array<[ClaimType, ClaimReference]>): Promise<string>;
