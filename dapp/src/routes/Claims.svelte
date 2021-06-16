@@ -1,7 +1,10 @@
 <script type="ts">
-  import { AvailableCredentials, Profile, MyCredentials } from 'components';
+  import {
+    AvailableCredentials,
+    DownloadableCredentials,
+    Profile,
+  } from 'components';
   import { loadingContracts } from 'src/store';
-
 </script>
 
 <div class="flex flex-wrap justify-center w-full h-full">
@@ -13,7 +16,11 @@
       <p>Looking for contract...</p>
     {:else}
       <AvailableCredentials />
-      <MyCredentials />
+      <DownloadableCredentials
+        heading="Unsaved Credentials"
+        filterType="preparedContent"
+      />
+      <DownloadableCredentials heading="My Credentials" filterType="content" />
     {/if}
   </div>
 </div>

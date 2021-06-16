@@ -66,6 +66,7 @@
   import { Router, Route } from 'svelte-navigator';
   import {
     Connect,
+    Ethereum,
     Faq,
     Twitter,
     BasicProfile,
@@ -79,10 +80,11 @@
     Timestamp,
     TweetId,
     BasicProfileContext,
+    EthereumControl,
+    Wallet,
     TwitterVerification,
     TwitterVerificationPublicTweet,
   } from './routes';
-
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =
@@ -120,6 +122,9 @@
   <Route path="basic-profile">
     <BasicProfile />
   </Route>
+  <Route path="ethereum">
+    <Ethereum />
+  </Route>
   <Route path="terms-of-service">
     <TermsOfService />
   </Route>
@@ -155,5 +160,11 @@
   </Route>
   <Route path="tweetId">
     <TweetId />
+  </Route>
+  <Route path="EthereumControl">
+    <EthereumControl />
+  </Route>
+  <Route path="ethereumWallet">
+    <Wallet />
   </Route>
 </Router>

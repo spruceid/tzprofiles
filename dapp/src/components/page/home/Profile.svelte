@@ -32,19 +32,6 @@
 
   $: isAddingClaims = false;
 
-  const isAllOnChain = (cMap: ClaimMap): boolean => {
-    let keys = Object.keys(cMap);
-    let found = 0;
-    for (let i = 0, n = keys.length; i < n; i++) {
-      let claim = cMap[keys[i]];
-      if (claim.onChain) {
-        found++;
-      }
-    }
-
-    return keys.length === found;
-  };
-
   const getCurrentOrbit = (cMap: ClaimMap) => {
     let keys = Object.keys(cMap);
     for (let i = 0, n = keys.length; i < n; i++) {
@@ -174,45 +161,42 @@
     </div>
   {/if}
 
-  {#if canUpload()}
-    {#if $contractAddress !== null}
-      <!-- TODO: Stylize -->
-      <span class="py-2 text-white rounded bg-green-550">
-        {'Tezos Profile deployed at '}
-        <a
-          class="text-green-900 underline"
-          target="_blank"
-          href={`https://${
-            currentNetwork
-              ? currentNetwork === 'edonet.'
-                ? 'edo2net.'
-                : `${currentNetwork}.`
-              : ''
-          }tzkt.io/${$userData.account.address}`}
-        >
-          {'tzkt.io'}
-        </a>
-      </span>
-      {#if !isAllOnChain($claimsStream)}
-        {#if isAddingClaims}
-          Adding claims....
-        {:else}
-          <PrimaryButton
-            text="Add Claims to profile"
-            class="mx-auto mt-4 bottom-6"
-            onClick={async () => {
-              await uploadNewClaim();
-            }}
-          />
-        {/if}
-      {/if}
+  {#if $contractAddress !== null}
+    <!-- TODO: Stylize -->
+    <span class="py-2 text-white rounded bg-green-550">
+      {'Tezos Profile deployed at '}
+      <a
+        class="text-green-900 underline"
+        target="_blank"
+        href={`https://${
+          currentNetwork
+            ? currentNetwork === 'edonet.'
+              ? 'edo2net.'
+              : `${currentNetwork}.`
+            : ''
+        }tzkt.io/${$userData.account.address}`}
+      >
+        {'tzkt.io'}
+      </a>
+    </span>
+    {#if isAddingClaims}
+      Adding claims....
     {:else}
       <PrimaryButton
-        text="Deploy Profile"
+        text="Add Claims to profile"
         class="mx-auto mt-4 bottom-6"
-        disabled={!agreement}
-        onClick={() => navigate('/deploy')}
+        disabled={!canUpload()}
+        onClick={async () => {
+          await uploadNewClaim();
+        }}
       />
     {/if}
+  {:else}
+    <PrimaryButton
+      text="Deploy Profile"
+      class="mx-auto mt-4 bottom-6"
+      disabled={!agreement}
+      onClick={() => navigate('/deploy')}
+    />
   {/if}
 </Card>
