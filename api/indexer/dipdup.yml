@@ -1,4 +1,4 @@
-spec_version: 0.1
+spec_version: 1.0
 package: tzprofiles_indexer
 
 database:
@@ -50,9 +50,18 @@ templates:
             entrypoint: default
 
 indexes:
-  tzprofiles:
-    template: tzprofiles
-    similar_to: tzprofile
-  tzprofiles_old:
-    template: tzprofiles
-    similar_to: tzprofile_old
+  factory:
+    kind: operation
+    datasource: tzkt
+    types:
+      - origination
+    handlers:
+      - callback: on_factory_origination
+        pattern:
+          - type: origination
+            similar_to: tzprofile
+      - callback: on_factory_origination
+        pattern:
+          - type: origination
+            similar_to: tzprofile_old
+    stateless: True

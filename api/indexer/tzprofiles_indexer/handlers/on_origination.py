@@ -1,9 +1,12 @@
 from dipdup.models import (
     OperationData,
-    OperationHandlerContext,
-    OriginationContext,
-    TransactionContext,
+    Transaction,
+    Origination,
+    BigMapDiff,
+    BigMapData,
+    BigMapAction,
 )
+from dipdup.context import HandlerContext, RollbackHandlerContext
 
 import tzprofiles_indexer.models as models
 
@@ -13,21 +16,24 @@ from tzprofiles_indexer.handlers import resolve_tzp
 
 
 async def on_origination(
-    ctx: OperationHandlerContext,
-    tzprofile_origination: OriginationContext[TzprofileStorage],
+    ctx: HandlerContext,
+    tzprofile_origination: Origination[TzprofileStorage],
 ) -> None:
-    profile = models.TZProfile(
+    profile, created = await models.TZProfile.get_or_create(
         account=tzprofile_origination.storage.owner,
-        contract=tzprofile_origination.data.originated_contract_address,
-        valid_claims=[],
-        invalid_claims=[],
-        errored=False,
+        defaults={
+            "contract": tzprofile_origination.data.originated_contract_address,
+            "valid_claims": [],
+            "invalid_claims": [],
+            "errored": False,
+        },
     )
-    try:
-        claims = resolve_tzp(tzprofile_origination.storage.owner)
-        profile.valid_claims = claims["valid"]
-        profile.invalid_claims = claims["invalid"]
-    except Exception as e:
-        print(e)
-        profile.errored = True
-    await profile.save()
+    if created:
+        try:
+            claims = await resolve_tzp(tzprofile_origination.storage.owner)
+            profile.valid_claims = claims["valid"]
+            profile.invalid_claims = claims["invalid"]
+        except Exception as e:
+            print(e)
+            profile.errored = True
+        await profile.save()
