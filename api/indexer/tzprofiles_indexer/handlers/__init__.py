@@ -1,11 +1,13 @@
 import os
-import requests
+import aiohttp
 
 TZP_API = os.environ["TZP_API"]
 
 
 # TODO need an infinite number of retries?
-def resolve_tzp(owner):
+async def resolve_tzp(owner):
     payload = {"invalid": "true", "valid": "true"}
     url = TZP_API + "/" + owner
-    return requests.get(url, params=payload).json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=payload) as response:
+            return await response.json()

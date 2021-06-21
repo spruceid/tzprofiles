@@ -1,9 +1,12 @@
 from dipdup.models import (
     OperationData,
-    OperationHandlerContext,
-    OriginationContext,
-    TransactionContext,
+    Transaction,
+    Origination,
+    BigMapDiff,
+    BigMapData,
+    BigMapAction,
 )
+from dipdup.context import HandlerContext, RollbackHandlerContext
 
 import tzprofiles_indexer.models as models
 
@@ -14,14 +17,14 @@ from tzprofiles_indexer.handlers import resolve_tzp
 
 
 async def on_update(
-    ctx: OperationHandlerContext,
-    tzprofile_update: TransactionContext[DefaultParameter, TzprofileStorage],
+    ctx: HandlerContext,
+    tzprofile_update: Transaction[DefaultParameter, TzprofileStorage],
 ) -> None:
     profile, _ = await models.TZProfile.get_or_create(
         account=tzprofile_update.storage.owner
     )
     try:
-        claims = resolve_tzp(tzprofile_update.storage.owner)
+        claims = await resolve_tzp(tzprofile_update.storage.owner)
         profile.valid_claims = claims["valid"]
         profile.invalid_claims = claims["invalid"]
     except Exception as e:

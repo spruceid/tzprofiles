@@ -1,6 +1,6 @@
 FROM python:3.9-slim-buster
 
-RUN pip install poetry dipdup
+RUN pip install poetry
 
 WORKDIR /demo
 COPY poetry.lock pyproject.toml /demo/
