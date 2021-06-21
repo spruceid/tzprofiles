@@ -80,13 +80,8 @@ fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
 fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
     info!("Verify tweet signature.");
     let micheline_data = ssi::tzkey::encode_tezos_signed_message(data)?;
-    let hashed = blake2b_simd::Params::new()
-        .hash_length(32)
-        .hash(&micheline_data)
-        .as_bytes()
-        .to_vec();
     let (algorithm, sig_bytes) = ssi::tzkey::decode_tzsig(sig)?;
-    Ok(verify_bytes(algorithm, &hashed, pk, &sig_bytes)?)
+    Ok(verify_bytes(algorithm, &micheline_data, pk, &sig_bytes)?)
 }
 
 #[wasm_bindgen]
