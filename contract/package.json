@@ -1,6 +1,6 @@
 {
   "name": "tzprofiles",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "description": "",
   "main": "dist/tzprofiles.js",
   "types": "dist/tzprofiles.d.ts",

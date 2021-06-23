@@ -30,7 +30,7 @@ async def on_origination(
     )
     if created:
         try:
-            claims = await resolve_tzp(tzprofile_origination.storage.owner)
+            claims = await resolve_tzp(tzprofile_origination.data.originated_contract_address)
             profile.valid_claims = claims["valid"]
             profile.invalid_claims = claims["invalid"]
         except Exception as e:

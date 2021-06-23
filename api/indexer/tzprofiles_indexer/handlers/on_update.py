@@ -24,7 +24,7 @@ async def on_update(
         account=tzprofile_update.storage.owner
     )
     try:
-        claims = await resolve_tzp(tzprofile_update.storage.owner)
+        claims = await resolve_tzp(tzprofile_update.data.target_address)
         profile.valid_claims = claims["valid"]
         profile.invalid_claims = claims["invalid"]
     except Exception as e:

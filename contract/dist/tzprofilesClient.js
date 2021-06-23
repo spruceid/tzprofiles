@@ -40,6 +40,11 @@ class TZProfilesClient {
             return yield this.contractClient.retrieve(walletAddress);
         });
     }
+    retrieveClaims(contractAddress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.contractClient.retrieveClaims(contractAddress);
+        });
+    }
     // originate creates a new tzprofiles contract from an optional, original set of 
     // claims. returns the address of the created contract or throws an err
     originate(contentReferenceList) {
