@@ -1,4 +1,5 @@
 module.exports = {
+  tableLayout: false,
   purge: [
     './src/**/*.html',
     './src/**/*.js',

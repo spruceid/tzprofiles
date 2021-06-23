@@ -1,8 +1,9 @@
 <script type="ts">
-  import { Claims } from './';
+  import Claims from '../Claims.svelte';
   import { BasePage, PrimaryButton, TextBody2 } from 'components';
   import { userData } from 'src/store';
   import { useNavigate } from 'svelte-navigator';
+  import './splash.scss';
 
   $: errorMessage = '';
   const navigate = useNavigate();
@@ -21,26 +22,28 @@
 {/if}
 <BasePage class="flex-col flex-wrap items-center justify-center">
   {#if !$userData}
-    <h1 class="text-6xl lg:text-8xl sm:text-7xl">Tezos Profiles</h1>
+    <div class="splash-container">
+      <div class="text-4xl lg:text-6xl sm:text-5xl font-bold">
+        Tezos Profiles
+      </div>
 
-    <TextBody2
-      value="Tezos Profiles enables you to associate your online identity with
+      <TextBody2
+        value="Tezos Profiles enables you to associate your online identity with
   your Tezos account"
-      class="my-8 text-center"
-    />
-    <div class="flex flex-col items-center">
-      <p>
+        class="my-12"
+      />
+      <div>
         <PrimaryButton
           class="my-4 mx-2.5"
           onClick={() => connect()}
-          text="Connect Profile"
+          text="Connect wallet"
         />
         <PrimaryButton
           class="my-4 mx-2.5"
           onClick={() => search()}
           text="View Profile"
         />
-      </p>
+      </div>
     </div>
   {:else}
     <Claims />

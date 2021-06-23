@@ -15,7 +15,6 @@
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    color: black;
   }
 
   h1,
@@ -24,11 +23,13 @@
   h4,
   h5 {
     font-family: 'Poppins';
-    text-transform: capitalize;
-    font-weight: 700;
-    text-align: center;
+    font-weight: 800;
+    color: #043a75;
   }
 
+  body {
+    color: #043a75;
+  }
   td,
   th {
     font-family: 'Poppins';

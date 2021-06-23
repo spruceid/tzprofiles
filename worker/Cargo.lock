@@ -270,7 +270,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "771fe0050b883fcc3ea2359b1a96bcfbc090b7116eae7c3c512c7a083fdf23d3"
 dependencies = [
- "sha2 0.9.5",
+ "sha2",
 ]
 
 [[package]]
@@ -598,7 +598,7 @@ dependencies = [
  "ed25519",
  "rand 0.7.3",
  "serde",
- "sha2 0.9.5",
+ "sha2",
  "zeroize",
 ]
 
@@ -1075,7 +1075,7 @@ dependencies = [
  "cfg-if 1.0.0",
  "ecdsa",
  "elliptic-curve",
- "sha2 0.9.5",
+ "sha2",
  "sha3",
 ]
 
@@ -1317,7 +1317,7 @@ checksum = "2f05f5287453297c4c16af5e2b04df8fd2a3008d70f252729650bc6d7ace5844"
 dependencies = [
  "ecdsa",
  "elliptic-curve",
- "sha2 0.9.5",
+ "sha2",
 ]
 
 [[package]]
@@ -1737,18 +1737,6 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a256f46ea78a0c0d9ff00077504903ac881a1dafdc20da66545699e7776b3e69"
-dependencies = [
- "block-buffer 0.7.3",
- "digest 0.8.1",
- "fake-simd",
- "opaque-debug 0.2.3",
-]
-
-[[package]]
-name = "sha2"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b362ae5752fd2137731f9fa25fd4d9058af34666ca1966fb969119cc35719f12"
@@ -1826,17 +1814,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sshkeys"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c69bf9da628c9a435416cc06f64445c8fa467efe52100bec0912c820ac80fc8"
-dependencies = [
- "base64 0.12.3",
- "byteorder",
- "sha2 0.8.2",
-]
-
-[[package]]
 name = "ssi"
 version = "0.2.2"
 dependencies = [
@@ -1873,9 +1850,8 @@ dependencies = [
  "serde_jcs",
  "serde_json",
  "serde_urlencoded",
- "sha2 0.9.5",
+ "sha2",
  "simple_asn1",
- "sshkeys",
  "ssi-contexts",
  "thiserror",
 ]

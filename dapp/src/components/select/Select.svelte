@@ -13,12 +13,6 @@
 
 <!-- see https://github.com/sveltejs/svelte/issues/4946 for the warning -->
 <!-- svelte-ignore a11y-no-onchange -->
-<select
-  {name}
-  {id}
-  class="bg-blue-550 {clazz}"
-  bind:value
-  on:change={(e) => onChange(e)}
->
+<select {name} {id} class={clazz} bind:value on:change={(e) => onChange(e)}>
   <slot />
 </select>

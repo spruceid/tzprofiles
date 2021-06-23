@@ -6,8 +6,10 @@
 </script>
 
 <Nav {backHome} />
-<div class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x {clazz}">
+<div>
   <slot />
+  <!-- <Footer /> -->
 </div>
-<Alert />
-<Footer />
+<!-- <Alert /> -->
+
+<!-- class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x {clazz}" -->

@@ -8,6 +8,6 @@ export { default as TermsOfService } from './TermsOfService.svelte';
 export { default as PrivacyPolicy } from './PrivacyPolicy.svelte';
 export { default as Deploy } from './Deploy.svelte';
 export { default as Search } from './Search.svelte';
-export { default as Splash } from './Splash.svelte';
+export { default as Splash } from './Splash/Splash.svelte';
 export { default as View } from './View.svelte';
 export * from './context';
