@@ -11,10 +11,11 @@
     padding: 0px;
     font-size: 16px;
     font-family: 'Inter';
-    background: linear-gradient(151.67deg, #3a83a3 42.84%, #429383 103.49%);
+    background: #ecf2fe;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    color: black;
   }
 
   h1,

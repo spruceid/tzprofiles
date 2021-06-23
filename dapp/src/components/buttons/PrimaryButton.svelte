@@ -1,5 +1,7 @@
 <script lang="ts">
   import { ButtonText } from 'components';
+  import './button.scss';
+
   let clazz: string = '';
   export { clazz as class };
   export let text: string;
@@ -11,7 +13,7 @@
 
 <button
   {disabled}
-  class={`shadow-xl bg-green-550 rounded-lg px-6 transition-all ease-in-out duration-500 ${clazz}`}
+  class={`${clazz} button-container`}
   class:py-4={!small}
   class:py-1={small}
   class:opacity-50={disabled}
