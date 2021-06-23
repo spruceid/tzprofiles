@@ -395,18 +395,28 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 
 		for (let i = 0, n = possibleAddresses.length; i < n; i++) {
 			let address = possibleAddresses[i];
-			let storage = await this.retrieveAndScreenContract(address);
-			if (storage) {
-				let cl = await this.contentListFromStorage(storage);
-				let [invalid, valid] = await this.processContentList(cl);
-				return {
-					address,
-					invalid,
-					valid
-				};
-			}
+			let claims = this.retrieveClaims(address);
+			if (claims)
+				return claims;
 		}
 
+		return false;
+	}
+
+	async retrieveClaims(contractAddress: string): Promise<
+		ContentResult<Content, ContentType, Hash, Reference>
+		| false
+	> {
+		let storage = await this.retrieveAndScreenContract(contractAddress);
+		if (storage) {
+			let cl = await this.contentListFromStorage(storage);
+			let [invalid, valid] = await this.processContentList(cl);
+			return {
+				address: contractAddress,
+				invalid,
+				valid
+			};
+		}
 		return false;
 	}
 

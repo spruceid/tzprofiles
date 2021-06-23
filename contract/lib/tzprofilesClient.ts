@@ -68,6 +68,13 @@ export class TZProfilesClient {
 		return await this.contractClient.retrieve(walletAddress);
 	}
 
+async retrieveClaims(contractAddress: string): Promise<
+ContentResult<ClaimContent, ClaimType, ClaimHash, ClaimReference>
+| false
+> {
+	return await this.contractClient.retrieveClaims(contractAddress);
+}
+
     // originate creates a new tzprofiles contract from an optional, original set of 
     // claims. returns the address of the created contract or throws an err
 	async originate(contentReferenceList: Array<[ClaimType, ClaimReference]>): Promise<string> {

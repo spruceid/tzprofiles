@@ -17,6 +17,7 @@ export declare class TZProfilesClient {
     keplerClient: Kepler;
     constructor(opts: TZProfilesClientOpts);
     retrieve(walletAddress: string): Promise<ContentResult<ClaimContent, ClaimType, ClaimHash, ClaimReference> | false>;
+    retrieveClaims(contractAddress: string): Promise<ContentResult<ClaimContent, ClaimType, ClaimHash, ClaimReference> | false>;
     originate(contentReferenceList: Array<[ClaimType, ClaimReference]>): Promise<string>;
     addClaims(contractAddress: string, newClaims: Array<[ClaimType, ClaimReference]>): Promise<string>;
     removeClaims(contractAddress: string, targetClaims: Array<[ClaimType, ClaimReference]>): Promise<string>;

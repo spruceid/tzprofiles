@@ -236,16 +236,24 @@ class ContractClient {
             }
             for (let i = 0, n = possibleAddresses.length; i < n; i++) {
                 let address = possibleAddresses[i];
-                let storage = yield this.retrieveAndScreenContract(address);
-                if (storage) {
-                    let cl = yield this.contentListFromStorage(storage);
-                    let [invalid, valid] = yield this.processContentList(cl);
-                    return {
-                        address,
-                        invalid,
-                        valid
-                    };
-                }
+                let claims = this.retrieveClaims(address);
+                if (claims)
+                    return claims;
+            }
+            return false;
+        });
+    }
+    retrieveClaims(contractAddress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let storage = yield this.retrieveAndScreenContract(contractAddress);
+            if (storage) {
+                let cl = yield this.contentListFromStorage(storage);
+                let [invalid, valid] = yield this.processContentList(cl);
+                return {
+                    address: contractAddress,
+                    invalid,
+                    valid
+                };
             }
             return false;
         });

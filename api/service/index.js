@@ -75,7 +75,12 @@ async function retrieve(address, network, query) {
     };
     let client = new tzprofiles.TZProfilesClient(clientOpts);
 
-    let res = await client.retrieve(address);
+    let res;
+    if (address.toLowerCase().startsWith("kt1")) {
+        res = await client.retrieveClaims(address);
+    } else {
+        res = await client.retrieve(address);
+    }
     if (res === false) {
         res = {valid: [], invalid: []}
     }
