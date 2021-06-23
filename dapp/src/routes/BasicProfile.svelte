@@ -79,7 +79,7 @@
       title="Fill in Basic Information"
       description="Self-attest to your brand’s information and link it to other identifiers that have been provided."
     >
-      <Label fieldName="alias" value="Alias" class="mt-6 text-white" />
+      <Label fieldName="alias" value="Alias" class="mt-6" />
       <Input
         bind:value={alias}
         name="alias"
@@ -87,11 +87,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label
-        fieldName="description"
-        value="Description"
-        class="mt-2 text-white"
-      />
+      <Label fieldName="description" value="Description" class="mt-2" />
       <Input
         bind:value={description}
         name="description"
@@ -99,7 +95,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label fieldName="website" value="Website" class="mt-2 text-white" />
+      <Label fieldName="website" value="Website" class="mt-2" />
       <Input
         bind:value={website}
         name="website"
@@ -107,7 +103,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label fieldName="logo" value="Logo" class="mt-2 text-white" />
+      <Label fieldName="logo" value="Logo" class="mt-2" />
       {#if currentStep === 1}
         <Input
           bind:value={logo}

@@ -23,9 +23,9 @@
   {:else}
     <table class="table-auto">
       <thead>
-        <th>NAME</th>
-        <th>TYPE</th>
-        <th>PROOF</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Proof</th>
       </thead>
       <tbody>
         {#each Object.values($claimsStream).filter((claim) => claim[filterType]) as claim}

@@ -37,7 +37,7 @@
     id={name}
     {name}
     {placeholder}
-    class="flex w-full p-2 text-sm rounded-lg bg-transparent border border-green-550 focus:outline-green font-montserrat bg-white {clazz}"
+    class="flex w-full py-3 px-4 text-sm rounded-lg bg-transparent focus:outline-none font-montserrat bg-white {clazz}"
     class:lg:w-80={!fluid}
     class:italic={!value}
     class:text-gray-350={!value}

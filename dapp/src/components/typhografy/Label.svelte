@@ -7,7 +7,7 @@
 
 <label
   for={fieldName}
-  class="text-left font-monserrat font-bold text-sm mb-2 {clazz}"
+  class="text-left font-monserrat text-sm mb-2 {clazz}"
   class:text-gray-370={!clazz}
 >
   {value}

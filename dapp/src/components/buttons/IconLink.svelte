@@ -4,7 +4,7 @@
 
   export let icon: typeof SvelteComponent;
   export let title: string = '';
-  export let color: string = 'white';
+  export let color: string = 'black';
   export let href: string;
   export let download: string = '';
   export { clazz as class };

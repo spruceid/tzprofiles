@@ -8,7 +8,7 @@
 </script>
 
 <div class="flex flex-wrap justify-center w-full h-full">
-  <!-- <Profile /> -->
+  <Profile />
   <div
     class="flex flex-col self-center justify-around overflow-hidden md:mx-10"
   >
