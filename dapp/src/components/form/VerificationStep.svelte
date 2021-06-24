@@ -32,7 +32,7 @@
   <div class="flex flex-col w-full overflow-hidden">
     <h3 class="mb-2 text-2xl text-left">{title}</h3>
     {#if description}
-      <p class="font-inter">{description}</p>
+      <div class="font-inter body">{description}</div>
     {/if}
     <slot />
   </div>

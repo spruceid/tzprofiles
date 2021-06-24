@@ -30,7 +30,9 @@
   const next = () => (currentStep = currentStep + 1);
 </script>
 
-<BasePage class="flex-wrap items-center justify-center">
+<BasePage
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center"
+>
   <VerificationDescription
     icon={display.icon}
     title={display.title}

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { useNavigate } from 'svelte-navigator';
-  import { claimsStream, loadingContracts } from 'src/store';
+  import { claimsStream, loadingContracts, contractAddress } from 'src/store';
   import './availablecredentials.scss';
   import { IconLink, DownloadIcon } from 'components';
+  import { PrimaryButton } from 'components/buttons';
+  import { canUpload } from './uploadHelpers';
 
   const makeDownloadable = (obj: any): string => {
     let stringify = JSON.stringify(obj, null, 2);
@@ -17,12 +19,10 @@
   onMount(async () => {
     try {
       if (
-        Object.values($claimsStream).every(
+        !Object.values($claimsStream).every(
           (claim) => !claim.content && !claim.preparedContent
         )
       ) {
-        data = [];
-      } else {
         data = await Promise.all(
           Object.values($claimsStream)
             // TODO: Distinguish between content and preparedContent in UI
@@ -35,8 +35,6 @@
               return { ...claim, json };
             })
         );
-
-        console.log('Data', data);
       }
     } catch (err) {
       console.error(`Died in MyCredentials OnMount ${err.message}`);
@@ -46,12 +44,22 @@
 
 <div class="table-container">
   <div class="header-row-container">
-    <div class="body">My Credentials</div>
+    <div class="body flex flex-row items-center w-full justify-between">
+      My Credentials <div>
+        {#if canUpload($claimsStream)}
+          {#if !$contractAddress}
+            <PrimaryButton
+              text="Deploy Profile"
+              small
+              onClick={() => navigate('/deploy')}
+            />
+          {/if}
+        {/if}
+      </div>
+    </div>
   </div>
   {#if $loadingContracts}
     Loading...
-    <!-- {:else if Object.values($claimsStream).every((claim) => claim.irl)}
-    <h4>None Currently Available</h4> -->
   {:else}
     <table id="credential" class="w-full">
       <tr>
@@ -94,15 +102,12 @@
         {#each Object.values($claimsStream) as claim}
           {#if !claim.content && !claim.preparedContent}
             <tr>
-              <td
-                class="px-2 my-1 cursor-pointer sm:px-4 md:px-6 text-left flex flex-row items-center"
-                on:click={() => navigate(claim.display.route)}
-              >
+              <td class="px-2 sm:px-4 md:px-6 text-left flex">
                 <svelte:component
                   this={claim.display.icon}
                   class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
                 />
-                <p>{claim.display.display}</p>
+                <div>{claim.display.display}</div>
               </td>
               <td class="px-2 sm:px-4 md:px-6">
                 {claim.display.type}
@@ -115,7 +120,11 @@
               {#if claim.preparedContent}
                 <td class="px-2 sm:px-4 md:px-6"> (Unsaved changes) </td>
               {:else}
-                <td />
+                <td class="primary-action font-semibold cursor-pointer">
+                  <div on:click={() => navigate(claim.display.route)}>
+                    Verify
+                  </div>
+                </td>
               {/if}
             </tr>
           {/if}

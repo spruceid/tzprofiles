@@ -15,7 +15,7 @@
   {disabled}
   class={`${clazz} button-container`}
   class:py-4={!small}
-  class:py-1={small}
+  class:py-3={small}
   class:opacity-50={disabled}
   class:cursor-not-allowed={disabled}
   on:click|preventDefault={disabled ? null : onClick}

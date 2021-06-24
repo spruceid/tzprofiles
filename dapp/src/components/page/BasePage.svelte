@@ -6,7 +6,7 @@
 </script>
 
 <Nav {backHome} />
-<div>
+<div class={clazz}>
   <slot />
   <!-- <Footer /> -->
 </div>

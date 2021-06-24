@@ -4,7 +4,7 @@
   export let title: string;
   export let description: string = '';
   export let icon: typeof SvelteComponentDev;
-  export let iconColor: string = 'white';
+  export let iconColor: string = 'black';
   export { clazz as class };
   let clazz: string = '';
 </script>
@@ -15,7 +15,7 @@
   <svelte:component this={icon} color={iconColor} class="w-1/3 m-auto" />
   <h3 class="my-4 text-2xl">{title}</h3>
   {#if description}
-    <p class="text-sm text-center">{description}</p>
+    <div class="text-sm text-center body">{description}</div>
   {/if}
   <slot />
 </div>

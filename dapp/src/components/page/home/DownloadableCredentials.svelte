@@ -15,10 +15,17 @@
 </script>
 
 <div class="flex flex-col my-8">
+<<<<<<< HEAD:dapp/src/components/page/home/DownloadableCredentials.svelte
   <h3 class="mb-4 text-xl">{heading}</h3>
   {#if $loadingContracts}
     <h4>{'Loading...'}</h4>
   {:else if Object.values($claimsStream).filter((claim) => claim[filterType]).length === 0}
+=======
+  <h3 class="mb-4 text-xl">My Credentials</h3>
+  {#if $loadingContracts}
+    <h4>Loading...</h4>
+  {:else if data.length === 0}
+>>>>>>> Add deploy profile button on table:dapp/src/components/page/home/MyCredentials.svelte
     <h4>{'None Currently Available'}</h4>
   {:else}
     <table class="table-auto">
