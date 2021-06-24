@@ -5,13 +5,7 @@
   import './availablecredentials.scss';
   import { IconLink, DownloadIcon } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  import { canUpload } from './uploadHelpers';
-
-  const makeDownloadable = (obj: any): string => {
-    let stringify = JSON.stringify(obj, null, 2);
-    let encoded = encodeURIComponent(stringify);
-    return `data:application/json;charset=utf-8,${encoded}`;
-  };
+  import { canUpload, makeDownloadable } from './uploadHelpers';
 
   let navigate = useNavigate();
   let data: any[] = [];
@@ -79,7 +73,7 @@
                 this={claim.display.icon}
                 class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
               />
-              <p class="font-bold">{claim.display.display}</p>
+              <div>{claim.display.display}</div>
             </td>
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.type}
