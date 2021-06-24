@@ -10,6 +10,7 @@
   export let prefix: string = '';
   export let fluid: boolean = false;
   let inputElement;
+
   onMount(() => {
     inputElement.type = type;
   });
@@ -37,7 +38,7 @@
     id={name}
     {name}
     {placeholder}
-    class="flex w-full py-3 px-4 text-sm rounded-lg bg-transparent focus:outline-none font-montserrat bg-white {clazz}"
+    class="flex w-full py-3 px-4 text-sm rounded-lg bg-transparent focus:outline-none font-montserrat bg-white {clazz} input-container"
     class:lg:w-80={!fluid}
     class:italic={!value}
     class:text-gray-350={!value}

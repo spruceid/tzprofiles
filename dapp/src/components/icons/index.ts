@@ -11,3 +11,5 @@ export { default as ClipboardIcon } from './ClipboardIcon.svelte';
 export { default as DownloadIcon } from './DownloadIcon.svelte';
 export { default as SpinnerIcon } from './SpinnerIcon.svelte';
 export { default as ErrorIcon } from './ErrorIcon.svelte';
+export { default as ViewIcon } from "./Eye.svelte";
+// export { default as CloseIcon } from "./Cross.svelte";

@@ -8,9 +8,9 @@
 </script>
 
 <div class="flex flex-wrap justify-center w-full h-full">
-  <Profile />
+  <!-- <Profile /> -->
   <div
-    class="flex flex-col self-center justify-around overflow-hidden md:mx-10"
+    class="flex flex-col self-center justify-around overflow-visible md:mx-10"
   >
     {#if $loadingContracts}
       <p>Looking for contract...</p>

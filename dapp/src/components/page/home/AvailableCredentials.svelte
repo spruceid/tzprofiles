@@ -3,11 +3,23 @@
   import { useNavigate } from 'svelte-navigator';
   import { claimsStream, loadingContracts, contractAddress } from 'src/store';
   import './availablecredentials.scss';
-  import { IconLink, DownloadIcon } from 'components';
+  import {
+    IconLink,
+    DownloadIcon,
+    FileModal,
+    ViewIcon,
+    ClaimDisplay,
+  } from 'components';
   import { PrimaryButton } from 'components/buttons';
   import { canUpload, makeDownloadable } from './uploadHelpers';
+  import Profile from './Profile.svelte';
+  import 'src/common/style/animation.scss';
 
   let navigate = useNavigate();
+
+  let modalOpen = false;
+  let isCredentialModalOpen = false;
+  let selectedClaimToView = null;
   let data: any[] = [];
 
   onMount(async () => {
@@ -34,18 +46,27 @@
       console.error(`Died in MyCredentials OnMount ${err.message}`);
     }
   });
+
+  const closeModal = () => {
+    modalOpen = false;
+  };
+
+  const openModal = () => {
+    modalOpen = true;
+  };
 </script>
 
-<div class="table-container">
+<div class="table-container fade-in">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
-      My Credentials <div>
+      <h3>My Credentials</h3>
+      <div>
         {#if canUpload($claimsStream)}
           {#if !$contractAddress}
             <PrimaryButton
               text="Deploy Profile"
               small
-              onClick={() => navigate('/deploy')}
+              onClick={() => openModal()}
             />
           {/if}
         {/if}
@@ -82,13 +103,23 @@
               {claim.display.proof}
             </td>
             <td><div class="status-tag status-complete">Complete</div></td>
-            <td>
+            <td class="flex flex-row items-center">
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
                 icon={DownloadIcon}
                 href={claim.json}
                 download={`${claim.display.display}.json`}
               />
+              <div
+                on:click={() => {
+                  isCredentialModalOpen = true;
+                  selectedClaimToView = claim;
+                  console.log(claim);
+                }}
+                class="cursor-pointer"
+              >
+                <ViewIcon />
+              </div>
             </td>
           </tr>
         {/each}
@@ -127,3 +158,18 @@
     </table>
   {/if}
 </div>
+
+{#if modalOpen}
+  <FileModal onClose={() => closeModal()}
+    ><div class="flex flex-column items-center"><Profile /></div></FileModal
+  >
+{/if}
+
+{#if isCredentialModalOpen}
+  <FileModal onClose={() => (isCredentialModalOpen = false)}
+    ><div class="flex flex-column items-center">
+      <!-- <div>Hello</div> -->
+      <ClaimDisplay claim={selectedClaimToView} />
+    </div></FileModal
+  >
+{/if}

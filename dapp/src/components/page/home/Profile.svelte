@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     Card,
-    Cat,
     ClaimDisplay,
     PrimaryButton,
     Spacer,
@@ -17,6 +16,7 @@
     addToKepler,
     addClaims,
   } from 'src/store';
+  import { canUpload, getCurrentOrbit } from './uploadHelpers';
 
   import { contentToDraft } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
@@ -32,29 +32,17 @@
 
   $: isAddingClaims = false;
 
-  const getCurrentOrbit = (cMap: ClaimMap) => {
+  const isAllOnChain = (cMap: ClaimMap): boolean => {
     let keys = Object.keys(cMap);
+    let found = 0;
     for (let i = 0, n = keys.length; i < n; i++) {
       let claim = cMap[keys[i]];
-      if (claim.irl && claim.irl.startsWith('kepler')) {
-        let irl = claim.irl;
-        let prefixless = irl.slice(9);
-        let orbitPath = prefixless.split('/');
-        return orbitPath[0];
-      }
-    }
-  };
-
-  const canUpload = (): boolean => {
-    let claims = Object.values($claimsStream);
-    for (let i = 0, n = claims.length; i < n; i++) {
-      let claim = claims[i];
-      if (claim.preparedContent) {
-        return true;
+      if (claim.onChain) {
+        found++;
       }
     }
 
-    return false;
+    return keys.length === found;
   };
 
   const uploadNewClaim = async () => {
@@ -109,24 +97,9 @@
 <Card
   class="relative self-center w-full text-center break-all md:max-w-md lg:max-w-md"
 >
-  <Cat class="absolute left-0 right-0 w-20 h-20 mx-auto text-center -top-10" />
-  <h5 class="text-xl font-poppins">Connected As:</h5>
-  <div
-    class="flex items-center justify-center w-full mb-4 overflow-hidden break-all overflow-ellipsis"
-  >
-    <p class="inline font-poppins">{$userData.account.address}</p>
-    <CopyButton
-      text={$userData.account.address}
-      color="gray"
-      class="w-4 h-4 ml-2"
-    />
-  </div>
-
   {#each Object.values($claimsStream) as c}
     <ClaimDisplay claim={c} />
   {/each}
-
-  <Spacer class="min-h-8" />
 
   {#if $contractAddress === null}
     <div class="flex items-center w-full text-gray-650">
@@ -161,6 +134,7 @@
     </div>
   {/if}
 
+<<<<<<< HEAD
   {#if $contractAddress !== null}
     <!-- TODO: Stylize -->
     <span class="py-2 text-white rounded bg-green-550">
@@ -181,6 +155,40 @@
     </span>
     {#if isAddingClaims}
       Adding claims....
+=======
+  {#if canUpload($claimsStream)}
+    {#if $contractAddress !== null}
+      <!-- TODO: Stylize -->
+      <span class="py-2 text-white rounded bg-green-550">
+        {'Tezos Profile deployed at '}
+        <a
+          class="text-green-900 underline"
+          target="_blank"
+          href={`https://${
+            currentNetwork
+              ? currentNetwork === 'edonet.'
+                ? 'edo2net.'
+                : `${currentNetwork}.`
+              : ''
+          }tzkt.io/${$userData.account.address}`}
+        >
+          {'tzkt.io'}
+        </a>
+      </span>
+      {#if !isAllOnChain($claimsStream)}
+        {#if isAddingClaims}
+          Adding claims....
+        {:else}
+          <PrimaryButton
+            text="Add Claims to profile"
+            class="mx-auto mt-4 bottom-6"
+            onClick={async () => {
+              await uploadNewClaim();
+            }}
+          />
+        {/if}
+      {/if}
+>>>>>>> Reform nav bar
     {:else}
       <PrimaryButton
         text="Add Claims to profile"

@@ -22,13 +22,13 @@
   h3,
   h4,
   h5 {
-    font-family: 'Poppins';
-    font-weight: 800;
-    color: #043a75;
+    font-family: 'Inter';
+    font-weight: 600;
+    color: #222222;
   }
 
   body {
-    color: #043a75;
+    color: #222222;
   }
   td,
   th {

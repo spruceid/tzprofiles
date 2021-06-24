@@ -11,4 +11,6 @@
 .button-container:hover{
     background-color: $primary-dark;
     transition: 0.1s;
+    transform: scale(1.05);
+
 }
