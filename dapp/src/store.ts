@@ -19,6 +19,8 @@ import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 // Global Constants
 // The kepler server hostname
 export const keplerInstance = process.env.KEPLER_URL;
+// The kepler server hostname
+export const explainerInstance = process.env.EXPLAINER_URL;
 // The witness worker hostname
 export const witnessUrl = process.env.WITNESS_URL;
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Modal } from 'components';
   import { CopyTextArea } from 'components';
+  import { explainerInstance } from 'src/store';
 
   let textAreaValue = '';
 
@@ -25,10 +26,8 @@
   >
     <h2 class="normal-case">
       Copy the signature bellow and paste it in the
-      <a
-        target="_blank"
-        href="https://explainer.spruceid.com"
-        class="text-blue-400">Explainer Tool</a
+      <a target="_blank" href={explainerInstance} class="text-blue-400"
+        >Explainer Tool</a
       >
     </h2>
     <CopyTextArea bind:value={textAreaValue} fluid />
