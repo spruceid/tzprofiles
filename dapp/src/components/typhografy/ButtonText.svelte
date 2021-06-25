@@ -4,6 +4,6 @@
   export let value: string;
 </script>
 
-<h5 class={`text-sm font-semibold text-white ${clazz}`}>
+<h5 class={`text-sm font-semibold ${clazz}`}>
   {value}
 </h5>

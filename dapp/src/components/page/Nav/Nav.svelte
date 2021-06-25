@@ -44,7 +44,13 @@
 <nav
   class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14 mb-6"
 >
-  <!-- <TZProfileLogo class="sm:h-12 h-8 mr-2" /> -->
+  <div
+    on:click={() => navigate('/')}
+    class="cursor-pointer flex flex-row items-center"
+  >
+    <TZProfileLogo class="sm:h-12 h-8" />
+    <div class="body font-semibold ml-6">Tezos Profile</div>
+  </div>
   <div />
   <div class="flex flex-row items-center">
     {#if $userData}
@@ -52,7 +58,7 @@
     {/if}
 
     <Link to="/search" class="mx-4 body font-semibold">Search Profiles</Link>
-    {#if path !== '/faq' && !$wallet}
+    {#if !$wallet}
       <Link to="/faq" class="mx-4 body font-semibold">FAQ</Link>
     {/if}
 

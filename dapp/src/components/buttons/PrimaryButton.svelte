@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { ButtonText } from 'components';
   import './button.scss';
 
   let clazz: string = '';
   export { clazz as class };
+  export let secondary: boolean = false;
   export let text: string;
   export let title: string = '';
   export let onClick: (() => void) | null;
@@ -18,9 +18,10 @@
   class:py-3={small}
   class:opacity-50={disabled}
   class:cursor-not-allowed={disabled}
+  class:secondary-button-container={secondary}
   on:click|preventDefault={disabled ? null : onClick}
   aria-label={title}
   {title}
 >
-  <ButtonText value={text} />
+  {text}
 </button>

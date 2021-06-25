@@ -13,14 +13,13 @@
 </script>
 
 <Card
-  class="relative self-center w-full text-center break-all md:max-w-md lg:max-w-md"
+  class="relative self-center w-full text-center break-all md:max-w-md lg:max-w-md p-6"
 >
-  <Cat class="absolute left-0 right-0 w-20 h-20 mx-auto text-center -top-10" />
-  <h5 class="text-xl font-poppins">Contract Owner</h5>
+  <h5 class="text-xl">Contract Owner</h5>
   <div
     class="flex items-center justify-center w-full mb-4 overflow-hidden break-all overflow-ellipsis"
   >
-    <p class="inline font-poppins">{address}</p>
+    <p class="inline">{address}</p>
     <CopyButton text={address} color="gray" class="w-4 h-4 ml-2" />
   </div>
 

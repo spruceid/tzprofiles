@@ -23,26 +23,31 @@
 <BasePage class="flex-col flex-wrap items-center justify-center">
   {#if !$userData}
     <div class="splash-container">
-      <div class="text-4xl lg:text-6xl sm:text-5xl font-bold">
-        Tezos Profiles
-      </div>
+      <div class="flex flex-col items-center">
+        <div
+          class="text-5xl lg:text-7xl sm:text-6xl font-bold text-center mb-12"
+        >
+          Protect your identity on Tezos
+        </div>
 
-      <TextBody2
-        value="Tezos Profiles enables you to associate your online identity with
-  your Tezos account"
-        class="my-12"
-      />
-      <div>
-        <PrimaryButton
-          class="my-4 mx-2.5"
-          onClick={() => connect()}
-          text="Connect wallet"
-        />
-        <PrimaryButton
-          class="my-4 mx-2.5"
-          onClick={() => search()}
-          text="View Profile"
-        />
+        <div class="mb-12 text-center body1 subtitle-container">
+          Tezos Profiles enables you to associate your online identity with your
+          Tezos account
+        </div>
+
+        <div class="text-center">
+          <PrimaryButton
+            class="my-4 mx-2.5"
+            onClick={() => connect()}
+            text="Connect wallet"
+          />
+          <PrimaryButton
+            class="my-4 mx-2.5"
+            onClick={() => search()}
+            text="Search Profiles"
+            secondary
+          />
+        </div>
       </div>
     </div>
   {:else}
