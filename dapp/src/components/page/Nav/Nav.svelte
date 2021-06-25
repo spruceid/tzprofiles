@@ -44,21 +44,14 @@
 <nav
   class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14 mb-6"
 >
-  <!-- <div>
-    {#if path !== '/'}
-      <BackButton home={backHome} />
-    {/if}
-  </div> -->
   <!-- <TZProfileLogo class="sm:h-12 h-8 mr-2" /> -->
   <div />
   <div class="flex flex-row items-center">
     {#if $userData}
-      <Link to="/connect" class="mx-4 body font-semibold">View My Profile</Link>
+      <Link to="/connect" class="mx-4 body font-semibold">My Profile</Link>
     {/if}
 
-    <!-- {#if path !== '/search'} -->
     <Link to="/search" class="mx-4 body font-semibold">Search Profiles</Link>
-    <!-- {/if} -->
     {#if path !== '/faq' && !$wallet}
       <Link to="/faq" class="mx-4 body font-semibold">FAQ</Link>
     {/if}
