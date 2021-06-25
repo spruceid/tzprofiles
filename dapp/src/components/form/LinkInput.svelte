@@ -8,9 +8,9 @@
 </script>
 
 <div
-  class="flex justify-center w-full p-2 text-sm rounded-lg bg-transparent border border-green-550 focus:outline-green font-montserrat bg-white {clazz}"
+  class="flex justify-center w-full p-2 text-sm rounded-lg bg-transparent border border-gray-200 focus:outline-green font-montserrat bg-white {clazz}"
 >
-  <span class="italic text-gray-550">
+  <span class="text-gray-550">
     {'Available in '}
     <Link to={href} class="underline">{source}</Link>
   </span>

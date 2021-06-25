@@ -33,47 +33,6 @@
 <BasePage
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-visible flex-wrap items-center justify-center"
 >
-  <!-- <VerificationDescription
-    icon={display.icon}
-    title={display.title}
-    description={display.description}
-  >
-    {#if currentStep == 2}
-      <PrimaryButton
-        text="Sign Profile"
-        class="mt-8"
-        onClick={() => {
-          lock = true;
-          let profile = {
-            alias,
-            description,
-            website,
-            logo,
-          };
-          signBasicProfile($userData, $wallet, $networkStr, profile)
-            .then((vc) => {
-              let nextClaimMap = verification;
-              nextClaimMap.basic.preparedContent = JSON.parse(vc);
-              nextClaimMap.basic.draft = contentToDraft(
-                'basic',
-                nextClaimMap.basic.preparedContent
-              );
-              claimsStream.set(nextClaimMap);
-              next();
-            })
-            .catch(console.error)
-            .finally(() => (lock = false));
-        }}
-        disabled={lock}
-      />
-    {:else if currentStep > 2}
-      <PrimaryButton
-        text="Return to Profile"
-        class="mt-8"
-        onClick={() => navigate('/')}
-      />
-    {/if}
-  </VerificationDescription> -->
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationStep
       step={1}
@@ -138,8 +97,8 @@
 
       {#if currentStep == 2}
         <PrimaryButton
-          text="Sign Profile"
-          class="mt-8"
+          text="Review and sign"
+          class="mt-8 lg:w-60"
           onClick={() => {
             lock = true;
             let profile = {
@@ -157,20 +116,12 @@
                   nextClaimMap.basic.preparedContent
                 );
                 claimsStream.set(nextClaimMap);
-                next();
+                navigate('/');
               })
               .catch(console.error)
               .finally(() => (lock = false));
           }}
           disabled={lock}
-        />
-      {/if}
-
-      {#if currentStep > 2}
-        <PrimaryButton
-          text="Return to Profile"
-          class="mt-8"
-          onClick={() => navigate('/')}
         />
       {/if}
     </VerificationStep>

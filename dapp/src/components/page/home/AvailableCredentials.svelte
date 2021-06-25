@@ -59,7 +59,7 @@
 <div class="table-container fade-in dropshadow-default">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
-      <h3>My Credentials</h3>
+      <div class="text-2xl font-bold body">My Credentials</div>
       <div>
         {#if canUpload($claimsStream)}
           {#if !$contractAddress}

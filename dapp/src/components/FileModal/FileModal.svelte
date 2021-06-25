@@ -13,7 +13,7 @@
     background-color: white;
     z-index: 10;
     position: absolute;
-    min-width: 400px;
+    min-width: 500px;
     padding: 24px;
     border-radius: 6px;
     left: calc(50% - 200px);

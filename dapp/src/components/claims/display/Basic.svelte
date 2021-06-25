@@ -67,7 +67,7 @@
 
   <div class="flex items-center justify-between">
     <div
-      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
+      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-gray-200 text-gray-350"
       class:opacity-60={true}
     >
       {#if draft.logo}

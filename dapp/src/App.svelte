@@ -32,7 +32,7 @@
   }
   td,
   th {
-    font-family: 'Poppins';
+    font-family: 'Inter';
     font-weight: 400;
   }
 

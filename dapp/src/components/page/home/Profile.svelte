@@ -102,7 +102,7 @@
   {/each}
 
   {#if $contractAddress === null}
-    <div class="flex items-center w-full text-gray-650">
+    <div class="flex items-center w-full text-gray-650 mt-8">
       <input id="agreement" on:change={toggle} type="checkbox" />
       <label
         for="agreement"
@@ -113,20 +113,12 @@
         {' and '}
         <span class="font-bold">{'agree'}</span>
         {' with the '}
-        <a
-          class="underline text-blue-550"
-          target="_blank"
-          href="/privacy-policy"
-        >
+        <a class="primary-action" target="_blank" href="/privacy-policy">
           {'Privacy Policy'}
         </a>
         {' and the '}
         <br />
-        <a
-          class="underline text-blue-550"
-          target="_blank"
-          href="/terms-of-service"
-        >
+        <a class="primary-actio" target="_blank" href="/terms-of-service">
           {'Terms of Service'}
         </a>
         {'.'}
