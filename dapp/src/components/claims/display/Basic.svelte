@@ -16,17 +16,9 @@
     {/if}
   </div>
   {#if draft.alias}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-alias"
-        value={draft.alias}
-        disabled
-      />
-    </div>
+    <Input fluid name="basic-alias" class="mb-3" value={draft.alias} disabled />
   {:else}
-    <ClaimLinkInput display={display} />
+    <ClaimLinkInput {display} />
   {/if}
 
   <div class="flex justify-between items-center">
@@ -37,17 +29,15 @@
   </div>
 
   {#if draft.description}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-description"
-        value={draft.description}
-        disabled
-      />
-    </div>
+    <Input
+      fluid
+      name="basic-description"
+      class="mb-3"
+      value={draft.description}
+      disabled
+    />
   {:else}
-    <ClaimLinkInput display={display} />
+    <ClaimLinkInput {display} />
   {/if}
 
   <div class="flex justify-between items-center">
@@ -58,17 +48,15 @@
   </div>
 
   {#if draft.website}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-website"
-        value={draft.website}
-        disabled
-      />
-    </div>
+    <Input
+      fluid
+      name="basic-website"
+      class="mb-3"
+      value={draft.website}
+      disabled
+    />
   {:else}
-    <ClaimLinkInput display={display} />
+    <ClaimLinkInput {display} />
   {/if}
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-logo" value="Logo" />

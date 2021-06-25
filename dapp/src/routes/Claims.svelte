@@ -3,17 +3,18 @@
     AvailableCredentials,
     DownloadableCredentials,
     Profile,
+    MyCredentials,
+    LoadingSpinner,
   } from 'components';
   import { loadingContracts } from 'src/store';
 </script>
 
 <div class="flex flex-wrap justify-center w-full h-full">
-  <!-- <Profile /> -->
   <div
     class="flex flex-col self-center justify-around overflow-visible md:mx-10"
   >
     {#if $loadingContracts}
-      <p>Looking for contract...</p>
+      <LoadingSpinner class="rotating" />
     {:else}
       <AvailableCredentials />
       <!-- <DownloadableCredentials

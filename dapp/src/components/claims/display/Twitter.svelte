@@ -28,7 +28,6 @@
       <Input
         prefix="@"
         fluid
-        class="font-bold"
         name="basic-twitter-handle"
         value={draft.handle}
         disabled

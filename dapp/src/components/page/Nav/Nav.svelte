@@ -25,7 +25,7 @@
     '/view',
   ];
   const path = window.location.pathname;
-  let isAdminDropdownOpen = true;
+  let isAdminDropdownOpen = false;
   // export let backHome: boolean = false;
 
   let isUnprotected = false;
@@ -53,23 +53,32 @@
   <div />
   <div class="flex flex-row items-center">
     {#if $userData}
-      <Link to="/connect" class="mx-4 body">View My Profile</Link>
+      <Link to="/connect" class="mx-4 body font-semibold">View My Profile</Link>
     {/if}
 
     <!-- {#if path !== '/search'} -->
-    <Link to="/search" class="mx-4 body">Search Profiles</Link>
+    <Link to="/search" class="mx-4 body font-semibold">Search Profiles</Link>
     <!-- {/if} -->
     {#if path !== '/faq' && !$wallet}
-      <Link to="/faq" class="mx-4 body">FAQ</Link>
+      <Link to="/faq" class="mx-4 body font-semibold">FAQ</Link>
     {/if}
 
     {#if $userData}
       <div class="relative">
         <div
-          class="address-container py-3 px-4 cursor-pointer"
-          on:click={() => (isAdminDropdownOpen = !isAdminDropdownOpen)}
+          class="flex flex-row items-center address-container py-3 px-4 cursor-pointer"
         >
-          {$userData.account.address}
+          <div
+            class="address-text-container cursor-pointer"
+            on:click={() => (isAdminDropdownOpen = !isAdminDropdownOpen)}
+          >
+            {$userData.account.address}
+          </div>
+          <CopyButton
+            text={$userData.account.address}
+            color="gray"
+            class="w-4 h-4 ml-2"
+          />
         </div>
         {#if isAdminDropdownOpen && $wallet}
           <div class="admin-dropdown-pane">

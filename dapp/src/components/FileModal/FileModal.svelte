@@ -33,7 +33,10 @@
 
 <div class="bg">
   <div class="modal-container">
-    <div class="primary cursor-pointer text-bold" on:click={() => onClose()}>
+    <div
+      class="primary cursor-pointer text-bold mb-4 inline-block"
+      on:click={() => onClose()}
+    >
       <CloseIcon class="fill-current h-6 w-6" />
     </div>
     <slot />

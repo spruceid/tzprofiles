@@ -1,13 +1,24 @@
 .address-container{
-  overflow: hidden;
-  max-width: 15ch;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   border-radius: 100px;
   background: white;
   box-shadow: 0px 0px 60px rgba(82, 82, 82, 0.1);
-  color: black
+  color: black;
+  transition: 0.1s;
 
+  .address-text-container{
+    overflow: hidden;
+    max-width: 15ch;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+  }
+  
+
+}
+
+.address-container:hover{
+    transform: scale(1.05);
+    transition: 0.1s;
 }
 
 .admin-dropdown-pane {
@@ -16,6 +27,7 @@
     left: 0px;
     width: 150px;
     background-color: rgb(252, 252, 252);
+    border: 1px solid rgb(235, 235, 235);
     box-shadow: 0px 0px 60px rgba(82, 82, 82, 0.1);
     border-radius: 12px;
     padding: 20px 12px;

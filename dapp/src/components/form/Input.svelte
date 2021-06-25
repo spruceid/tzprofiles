@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import './Input.scss';
   let clazz: string = '';
   export { clazz as class };
   export let name: string;
@@ -38,11 +39,10 @@
     id={name}
     {name}
     {placeholder}
-    class="flex w-full py-3 px-4 text-sm rounded-lg bg-transparent focus:outline-none font-montserrat bg-white {clazz} input-container"
+    class="disabled:opacity-100 flex w-full py-3 px-4 text-sm rounded-lg focus:outline-none {clazz} body input-container"
     class:lg:w-80={!fluid}
     class:italic={!value}
     class:text-gray-350={!value}
-    class:text-gray-500={value}
     class:pl-6={prefix}
     {disabled}
     readonly={disabled}
