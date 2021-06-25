@@ -1,14 +1,16 @@
 import SvelteComponentDev from '*.svelte';
 import { BeaconWallet } from '@taquito/beacon-wallet';
-import { signClaim } from 'src/utils';
 import {
-  PersonOutlined,
-  TwitterIcon,
-  EthereumIcon,
+  PersonOutlined, 
+  TwitterIcon, 
+  EthereumIcon, 
   DiscordIcon,
   GlobeIcon,
   GitHubIcon,
+  InstagramIcon
 } from 'components';
+
+import { signClaim } from 'src/utils';
 import * as tzp from 'tzprofiles';
 import { makeAttestation, Subject } from './publicAttestation';
 import type {variant as Attestation} from './publicAttestation'
@@ -20,12 +22,6 @@ export const exhaustiveCheck = (arg: never) => {
 };
 
 // The types of claims supported by the UI.
-export type ClaimType = 'basic' 
-  | 'twitter' 
-  | 'ethereum' 
-  | 'discord' 
-  | 'dns'
-  | 'github';
 
 // NOTE: Ethereum backwards compatibility
 export type ClaimVCType =
@@ -35,7 +31,28 @@ export type ClaimVCType =
   | 'EthereumAddressControl'
   | 'DiscordVerification'
   | 'DnsVerification'
-  | 'GitHubVerification';
+  | 'GitHubVerification'
+  | 'InstagramVerification';
+
+// The types of claims supported by the UI.
+export type ClaimType = 'basic' 
+  | 'discord'
+  | 'dns'
+  | 'github'
+  | 'ethereum' 
+  | 'instagram'
+  | 'twitter';
+
+// All of the claim types to allow searching for exisitence in a collection.
+const claimTypes: Array<ClaimType> = [
+  'basic', 
+  'discord',
+  'dns',
+  'github',
+  'ethereum',
+  'instagram',
+  'twitter'  
+];
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -53,6 +70,8 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
       case 'EthereumControl':
       case 'EthereumAddressControl':
         return 'ethereum';
+      case 'InstagramVerification':
+        return 'instagram';
       case 'TwitterVerification':
         return 'twitter';
       case 'DiscordVerification':
@@ -68,22 +87,16 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
   return false;
 };
 
-// All of the claim types to allow searching for exisitence in a collection.
-// NOTE: This actually determines the order on the screen?
-const claimTypes: Array<ClaimType> = [
-  'basic',
-  'twitter',
-  'ethereum',
-  'discord',
-  'dns',
-  'github',
-];
-
 export interface BasicDraft {
   alias: string;
   description: string;
   logo: string;
   website: string;
+}
+
+export interface InstagramDraft {
+  postUrl: string,
+  handle: string
 }
 
 export interface EthereumDraft {
@@ -115,7 +128,8 @@ export type ClaimDraft =
   | EthereumDraft
   | DiscordDraft
   | DnsDraft
-  | GitHubDraft;
+  | GitHubDraft
+  | InstagramDraft;
 
 /*
  * UI Text & Assets
@@ -164,6 +178,17 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         proof: 'Address Signature',
         title: 'Ethereum Address Ownership',
         type: 'Address Ownership',
+      };
+    case 'instagram':
+      return  {
+        description: 'This process is used to link your Instagram account to your Tezos account by posting a caption with a signature from your private key, entering your Instagram handle, and finally entering the link to the post.',
+        display: 'Instagram Account Verification',
+        icon: InstagramIcon,
+        route: '/instagram',
+        routeDescription: 'Instagram Account Information',
+        proof: 'Post Caption',
+        title: 'Instagram Verification',
+        type: 'Social Media',
       };
     case 'twitter':
       return {
@@ -240,7 +265,11 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
         address: '',
         sameAs: '',
       };
-
+    case 'instagram':
+      return {
+        postUrl: '',
+        handle: ''
+      };
     case 'twitter':
       return {
         handle: '',
@@ -251,7 +280,17 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
       return {
         handle: '',
         gistId: ''
-      }
+      };
+
+    case 'discord':
+      return {
+        handle: '',
+      };
+
+    case 'dns': 
+      return {
+        address: '',
+      };
   }
 
   exhaustiveCheck(ct);
@@ -336,10 +375,18 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
         sameAs,
       };
     }
-    case 'twitter': {
-      const { evidence, credentialSubject } = content;
-      const { sameAs } = credentialSubject;
-      const { tweetId } = evidence;
+    case 'instagram': {
+      const {evidence} = content;
+      const {handle, postUrl} = evidence;
+      return {
+        postUrl,
+        handle,
+      }
+    }
+    case "twitter": {
+      const {evidence, credentialSubject} = content;
+      const {sameAs} = credentialSubject;
+      const {tweetId} = evidence;
       const handle = sameAs.replace('https://twitter.com/', '');
       const tweetUrl = `https://twitter.com/${handle}/status/${tweetId}`;
 
@@ -396,6 +443,7 @@ export const formatWebsite = (url: string): string => {
   return 'http://' + url;
 };
 
+// TODO: ADD DISCORD/DNS TO THIS FUNCTION?
 export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
   if (!c.content) {
     throw new Error('Cannot make outlink without content');
@@ -416,6 +464,10 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
       draft = draft as EthereumDraft;
       return `https://etherscan.io/address/${draft.address}`;
     }
+    case 'instagram': {
+      draft = draft as InstagramDraft;
+      return `https://www.instagram.com/${draft.handle}`;
+    }
     case 'twitter': {
       draft = draft as TwitterDraft;
       return `https://www.twitter.com/${draft.handle}`;
@@ -426,6 +478,9 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
     }
     // TODO: Add DNS/Discord/Github
   }
+
+  // TODO: Figure out the rest and use an exhaustiveness check?
+  return '';
 };
 
 // Create claim from a ClaimType and the result of tzprofilesClient's calls

@@ -69,7 +69,6 @@
         message: e.message || JSON.stringify(e),
         variant: 'error',
       });
-      console.error(e);
       retry = true;
     }
   };

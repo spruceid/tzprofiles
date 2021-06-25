@@ -357,14 +357,12 @@ wallet.subscribe((w) => {
               message: 'No contract detected, starting new one',
               variant: 'info',
             });
-            console.warn('No contract detected, starting new one');
           }
         } catch (e) {
           alert.set({
             message: e.message || JSON.stringify(e),
             variant: 'error',
           });
-          console.error('store::load_contracts::', e);
         } finally {
           loadingContracts.set(false);
         }
@@ -491,12 +489,9 @@ const searchRetry = async (
     return found;
   } catch (err) {
     if (opts.current >= opts.max) {
-      console.warn(
-        new Error(
-          `Found contract, encountered repeated network errors, gave up on: ${err.message}`
-        )
+      throw new Error(
+        `Found contract, encountered repeated network errors, gave up on: ${err.message}`
       );
-      return;
     }
     opts.current += opts.step;
 
@@ -591,24 +586,44 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
         searchClaims.set(nextSearchClaims);
         return;
       } else {
-        alert.set({
-          message: 'Profile not found',
-          variant: 'error',
-        });
         throw Error('Profile not found');
       }
     } catch (err) {
-      alert.set({
-        message: err.message || 'Network error',
-        variant: 'error',
-      });
       throw err;
     }
   }
 
-  alert.set({
-    message: `No contract found for ${wallet}`,
-    variant: 'error',
-  });
   throw new Error(`No contract found for ${wallet}`);
+};
+
+export const findAddressFromDomain = async (
+  domain: string
+): Promise<string> => {
+  try {
+    let searchParams =
+      '{\n  domain(validity: VALID, name: ' +
+      `"${domain}"` +
+      ') {\n    owner\n  }\n}\n';
+
+    const res = await fetch('https://api.tezos.domains/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        operationName: null,
+        variables: {},
+        query: searchParams,
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.data.domain) {
+      throw new Error(`No valid address found for ${domain}`);
+    } else {
+      return data.data.domain.owner;
+    }
+  } catch (err) {
+    throw new Error(`No valid address found for ${domain}`);
+  }
 };

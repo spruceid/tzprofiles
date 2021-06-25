@@ -78,7 +78,8 @@
 </style>
 
 <script lang="ts">
-import { Router, Route } from 'svelte-navigator';
+
+  import { Router, Route } from 'svelte-navigator';
   import {
     Address,
     Connect,
@@ -88,6 +89,7 @@ import { Router, Route } from 'svelte-navigator';
     GitHub,
     GitHubVerification,
     GitHubVerificationMessage,
+    Instagram,
     Faq,
     Twitter,
     BasicProfile,
@@ -103,6 +105,9 @@ import { Router, Route } from 'svelte-navigator';
     BasicProfileContext,
     EthereumAddressControl,
     EthereumControl,
+    InstagramVerification,
+    InstagramVerificationPublicPost,
+    PostUrl,
     Wallet,
     TwitterVerification,
     TwitterVerificationPublicTweet,
@@ -134,23 +139,32 @@ import { Router, Route } from 'svelte-navigator';
   <Route path="/">
     <Splash />
   </Route>
-  <Route path="/connect">
-    <Connect />
-  </Route>
   <Route path="faq">
     <Faq />
   </Route>
+  <Route path="terms-of-service">
+    <TermsOfService />
+  </Route>
+  <Route path="privacy-policy">
+    <PrivacyPolicy />
+  </Route>
+
+  <Route path="/connect">
+    <Connect />
+  </Route>
+  <Route path="deploy">
+    <Deploy />
+  </Route>
+
+  <Route path="basic-profile">
+    <BasicProfile />
+  </Route>
+
   <Route path="discord">
     <DiscordVerification />
   </Route>
   <Route path="dns">
     <DnsVerification />
-  </Route>
-  <Route path="twitter">
-    <Twitter />
-  </Route>
-  <Route path="basic-profile">
-    <BasicProfile />
   </Route>
   <Route path="ethereum">
     <Ethereum />
@@ -164,9 +178,13 @@ import { Router, Route } from 'svelte-navigator';
   <Route path="privacy-policy">
     <PrivacyPolicy />
   </Route>
-  <Route path="deploy">
-    <Deploy />
+  <Route path="instagram">
+    <Instagram />
   </Route>
+  <Route path="twitter">
+    <Twitter />
+  </Route>
+
   <Route path="search">
     <Search />
   </Route>
@@ -176,6 +194,7 @@ import { Router, Route } from 'svelte-navigator';
   <Route path="/view/:address">
     <View />
   </Route>
+
   <Route path="BasicProfile">
     <BasicProfileContext />
   </Route>
@@ -185,6 +204,13 @@ import { Router, Route } from 'svelte-navigator';
   <Route path="GitHubVerificationMessage">
     <GitHubVerificationMessage />
   </Route>
+  <Route path="InstagramVerification">
+    <InstagramVerification />
+  </Route>
+  <Route path="InstagramVerificationPublicPost">
+    <InstagramVerificationPublicPost />
+  </Route>
+
   <Route path="TwitterVerification">
     <TwitterVerification />
   </Route>
@@ -206,13 +232,15 @@ import { Router, Route } from 'svelte-navigator';
   <Route path="gistVersion">
     <GistVersion />
   </Route>
+  <Route path="postUrl">
+    <PostUrl />
+  </Route>
   <Route path="EthereumAddressControl">
     <EthereumAddressControl />
   </Route>
   <Route path="ethereumWallet">
     <Address />
   </Route>
-  <!-- NOTE: Eth claim backwards compat -->
   <Route path="EthereumControl">
     <EthereumControl />
   </Route>

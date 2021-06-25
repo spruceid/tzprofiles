@@ -1,6 +1,7 @@
 <script lang="ts">
   import Basic from './Basic.svelte';
   import Ethereum from './Ethereum.svelte';
+  import Instagram from './Instagram.svelte';
   import Twitter from './Twitter.svelte';
   import Discord from './Discord.svelte';
   import Dns from './Dns.svelte';
@@ -14,6 +15,8 @@
   <Basic basicClaim={claim} />
 {:else if claim?.type === 'ethereum'}
   <Ethereum ethereumClaim={claim} />
+{:else if claim?.type === 'instagram'}
+  <Instagram instagramClaim={claim} />
 {:else if claim?.type === 'twitter'}
   <Twitter twitterClaim={claim} />
 {:else if claim?.type === 'discord'}

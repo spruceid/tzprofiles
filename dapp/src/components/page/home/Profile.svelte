@@ -60,7 +60,6 @@
         nextClaimStream[profile.type] = next;
       }
 
-      // TODO: FIx here
       await addClaims(newClaims);
       claimsStream.set(nextClaimStream);
 
