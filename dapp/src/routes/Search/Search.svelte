@@ -32,10 +32,10 @@
 <BasePage class="flex flex-col items-center justify-center">
   <div class="search-container dropshadow-default fade-in">
     <div class="mb-4 text-2xl text-left font-bold body">
-      Tezos Profiles Viewer
+      Tezos Profiles Explorer
     </div>
     <div class="mb-12">
-      Tezos Profiles Viewer enables you to search for a Tezos Profile using a
+      Tezos Profiles Explorer enables you to search for a Tezos Profile using a
       Tezos Address
     </div>
     <div class="flex items-center mt-8">

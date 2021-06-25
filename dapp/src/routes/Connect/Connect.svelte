@@ -1,12 +1,6 @@
 <script type="ts">
   import Claims from '../Claims.svelte';
-  import {
-    BasePage,
-    PrimaryButton,
-    TextBody2,
-    Select,
-    Option,
-  } from 'components';
+  import { PrimaryButton, Select, Option } from 'components';
   import { initWallet, network, userData, wallet } from 'src/store';
   import NetworkType from 'enums/NetworkType';
   import { onMount } from 'svelte';

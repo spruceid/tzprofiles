@@ -30,6 +30,10 @@
   body {
     color: #222222;
   }
+
+  a {
+    text-decoration: none;
+  }
   td,
   th {
     font-family: 'Inter';

@@ -12,7 +12,7 @@
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-alias" value="Alias" />
     {#if draft.alias}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
   {#if draft.alias}
@@ -24,7 +24,7 @@
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-description" value="Description" />
     {#if draft.description}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
 
@@ -43,7 +43,7 @@
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-website" value="Website" />
     {#if draft.website}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
 
@@ -61,7 +61,7 @@
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-logo" value="Logo" />
     {#if draft.logo}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
 
