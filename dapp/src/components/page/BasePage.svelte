@@ -11,5 +11,3 @@
   <!-- <Footer /> -->
 </div>
 <!-- <Alert /> -->
-
-<!-- class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x {clazz}" -->

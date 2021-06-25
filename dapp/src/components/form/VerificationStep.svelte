@@ -12,12 +12,12 @@
 </script>
 
 <div
-  class="flex mb-12 transition-all ease-in-out duration-500"
+  class="flex mb-12 transition-all ease-in-out duration-500 bg-white p-12 rounded-lg dropshadow-default"
   class:opacity-50={!isFilled}
 >
   <div
-    class="w-8 h-8 mr-4 border-2 rounded-full inline-table border-green-550 text-bold"
-    class:bg-green-550={isFilled}
+    class="w-8 h-8 mr-4 border-2 rounded-full inline-table border-black text-bold"
+    class:bg-black={isFilled}
   >
     {#if error}
       <ErrorIcon class="w-8 h-8 text-center" />

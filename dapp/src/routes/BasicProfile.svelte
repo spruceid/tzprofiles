@@ -31,9 +31,9 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center"
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-visible flex-wrap items-center justify-center"
 >
-  <VerificationDescription
+  <!-- <VerificationDescription
     icon={display.icon}
     title={display.title}
     description={display.description}
@@ -73,7 +73,7 @@
         onClick={() => navigate('/')}
       />
     {/if}
-  </VerificationDescription>
+  </VerificationDescription> -->
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationStep
       step={1}
@@ -133,6 +133,44 @@
           disabled={alias.length < 1 ||
             description.length < 1 ||
             logo.length < 1}
+        />
+      {/if}
+
+      {#if currentStep == 2}
+        <PrimaryButton
+          text="Sign Profile"
+          class="mt-8"
+          onClick={() => {
+            lock = true;
+            let profile = {
+              alias,
+              description,
+              website,
+              logo,
+            };
+            signBasicProfile($userData, $wallet, $networkStr, profile)
+              .then((vc) => {
+                let nextClaimMap = verification;
+                nextClaimMap.basic.preparedContent = JSON.parse(vc);
+                nextClaimMap.basic.draft = contentToDraft(
+                  'basic',
+                  nextClaimMap.basic.preparedContent
+                );
+                claimsStream.set(nextClaimMap);
+                next();
+              })
+              .catch(console.error)
+              .finally(() => (lock = false));
+          }}
+          disabled={lock}
+        />
+      {/if}
+
+      {#if currentStep > 2}
+        <PrimaryButton
+          text="Return to Profile"
+          class="mt-8"
+          onClick={() => navigate('/')}
         />
       {/if}
     </VerificationStep>

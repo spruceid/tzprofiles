@@ -13,10 +13,10 @@
     background-color: white;
     z-index: 10;
     position: absolute;
-    width: 800px;
+    min-width: 400px;
     padding: 24px;
     border-radius: 6px;
-    left: calc(50% - 400px);
+    left: calc(50% - 200px);
     right: 50%;
     top: 100px;
     max-height: 70vh;

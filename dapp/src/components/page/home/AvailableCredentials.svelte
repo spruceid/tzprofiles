@@ -56,7 +56,7 @@
   };
 </script>
 
-<div class="table-container fade-in">
+<div class="table-container fade-in dropshadow-default">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
       <h3>My Credentials</h3>
@@ -145,8 +145,11 @@
               {#if claim.preparedContent}
                 <td class="px-2 sm:px-4 md:px-6"> (Unsaved changes) </td>
               {:else}
-                <td class="primary-action font-semibold cursor-pointer">
-                  <div on:click={() => navigate(claim.display.route)}>
+                <td>
+                  <div
+                    on:click={() => navigate(claim.display.route)}
+                    class="primary-action cursor-pointer inline-block font-medium"
+                  >
                     Verify
                   </div>
                 </td>
@@ -161,15 +164,16 @@
 
 {#if modalOpen}
   <FileModal onClose={() => closeModal()}
-    ><div class="flex flex-column items-center"><Profile /></div></FileModal
+    ><div class="flex flex-column items-center">
+      <Profile />
+    </div></FileModal
   >
 {/if}
 
 {#if isCredentialModalOpen}
   <FileModal onClose={() => (isCredentialModalOpen = false)}
-    ><div class="flex flex-column items-center">
-      <!-- <div>Hello</div> -->
+    ><div class="w-full">
       <ClaimDisplay claim={selectedClaimToView} />
-    </div></FileModal
-  >
+    </div>
+  </FileModal>
 {/if}
