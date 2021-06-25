@@ -4,7 +4,10 @@
       opacity = !opacity;
       setTimeout(() => (hidden = !hidden), 200);
     });
+    onToggle();
   }
+  export let onToggle = () => {};
+  export let backgroundColor: string = 'bg-white';
 
   let opacity = true;
   let hidden = false;
@@ -27,6 +30,7 @@
       class:opacity-0={opacity}
       class:opacity-100={!opacity}
       aria-hidden="true"
+      on:click={toggle}
     />
     <span
       class="hidden sm:inline-block sm:align-middle sm:h-screen"
@@ -35,7 +39,7 @@
     <div
       class="inline-block align-bottom bg-white rounded-lg text-left
       shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl
-      md:max-w-2xl sm:w-full max-h-5/6 overflow-hidden h-full"
+      md:max-w-2xl lg:max-w-4xl xl:max-w-7xl sm:w-full max-h-5/6 overflow-hidden h-full"
       class:opacity-100={!opacity}
       class:translate-y-0={!opacity}
       class:sm:scale-100={!opacity}
@@ -44,9 +48,9 @@
       class:sm:translate-y-0={opacity}
       class:sm:scale-95={opacity}
     >
-      <div class="bg-white py-6 px-6 h-full">
-        <div on:click={() => toggle()} class="cursor-pointer">Close</div>
+      <div class={`${backgroundColor} py-6 h-full`}>
         <div class="flex flex-col sm:items-start h-full">
+          <p on:click={toggle} class="underline pl-6 cursor-pointer">Close</p>
           <slot id="modal-title" name="title" />
           <slot id="modal-body" name="body" />
           <div class="flex-grow" />

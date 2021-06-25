@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { ClipboardIcon } from 'components';
 
-  export let text: string = '';
+  export let text: string | Promise<any> | (() => Promise<any>) = '';
   export let color: string = '#d1d1d1';
   export { clazz as class };
   let clazz: string = 'w-8 h-8';
@@ -10,7 +10,10 @@
   let copyToClipboard: () => void;
 
   onMount(() => {
-    copyToClipboard = () => navigator.clipboard.writeText(text);
+    copyToClipboard = async () =>
+      navigator.clipboard.writeText(
+        typeof text === 'function' ? await text() : await text
+      );
   });
 </script>
 
@@ -20,5 +23,8 @@
   on:click={copyToClipboard}
   class={clazz}
 >
-  <ClipboardIcon {color} />
+  <div class="flex">
+    <ClipboardIcon class={clazz} {color} />
+    <slot />
+  </div>
 </button>

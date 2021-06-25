@@ -6,6 +6,7 @@
     PrimaryButton,
     VerificationDescription,
     VerificationStep,
+    CopyTextArea,
   } from 'components';
 
   import { alert, claimsStream, wallet, userData } from 'src/store';
@@ -107,15 +108,7 @@
       description="Sign the message presented to you containing your Twitter handle and additional information."
     >
       {#if currentStep >= 2}
-        <div class="flex items-center w-full py-2 mt-8">
-          <textarea
-            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
-            bind:value={twitterClaim}
-            readonly
-            disabled
-          />
-          <CopyButton text={twitterClaim} />
-        </div>
+        <CopyTextArea bind:value={twitterClaim} />
       {/if}
       {#if currentStep === 2}
         <PrimaryButton
@@ -144,15 +137,7 @@
       description="Tweet out your signed messaged to create a link between your Tezos account and your Twitter profile."
     >
       {#if currentStep > 2}
-        <div class="flex items-center w-full py-2 mt-8">
-          <textarea
-            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
-            bind:value={tweetMessage}
-            readonly
-            disabled
-          />
-          <CopyButton text={tweetMessage} />
-        </div>
+        <CopyTextArea bind:value={tweetMessage} />
       {/if}
       {#if currentStep === 3}
         <div class="flex flex-col lg:flex-row">
