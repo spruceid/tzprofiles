@@ -15,7 +15,7 @@
     position: absolute;
     min-width: 500px;
     padding: 24px;
-    border-radius: 6px;
+    border-radius: 12px;
     left: calc(50% - 200px);
     right: 50%;
     top: 100px;
@@ -31,7 +31,7 @@
   export let onClose: () => void;
 </script>
 
-<div class="bg">
+<div class="bg fade-in">
   <div class="modal-container">
     <div
       class="primary cursor-pointer text-bold mb-4 inline-block"

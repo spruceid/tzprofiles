@@ -26,7 +26,6 @@
   ];
   const path = window.location.pathname;
   let isAdminDropdownOpen = false;
-  // export let backHome: boolean = false;
 
   let isUnprotected = false;
 
@@ -45,7 +44,11 @@
   class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14 mb-6"
 >
   <div
-    on:click={() => navigate('/')}
+    on:click={() => {
+      if ($userData === null) {
+        navigate('/');
+      }
+    }}
     class="cursor-pointer flex flex-row items-center"
   >
     <TZProfileLogo class="sm:h-12 h-8" />
