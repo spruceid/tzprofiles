@@ -16,7 +16,7 @@
     min-width: 500px;
     padding: 24px;
     border-radius: 12px;
-    left: calc(50% - 200px);
+    left: calc(50% - 250px);
     right: 50%;
     top: 100px;
     max-height: 70vh;

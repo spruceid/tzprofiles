@@ -1,21 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { searchAddress } from 'src/store';
-  import { CopyButton, TwitterIcon } from 'components';
+  import { CopyButton, TwitterIcon, ProfileImagePlaceholder } from 'components';
+  import type { ClaimMap } from 'src/helpers';
+
   import './publicProfileView.scss';
 
-  export let claimsMap;
+  export let claimsMap: ClaimMap;
 
   let basicDisplay;
   let twitterDisplay;
 
-  const websiteLinkFormatter = (url: string): string => {
-    if (!url.startsWith('https://')) return `https://www.${url}`;
-    if (!url.includes('www')) return `https://www.${url}}`;
-    return url;
-  };
-
   onMount(() => {
+    console.log(claimsMap.basic);
     if (claimsMap.basic) basicDisplay = claimsMap.basic.draft;
     if (claimsMap.twitter) twitterDisplay = claimsMap.twitter.draft;
   });
@@ -24,7 +21,14 @@
 <div
   class="self-center w-full break-all md:max-w-md lg:max-w-md p-6 fade-in rounded-xl bg-white dropshadow-default"
 >
-  {#if basicDisplay}<div class="text-2xl font-bold body mb-2">
+  {#if basicDisplay}
+    {#if basicDisplay.logo}
+      <img src={basicDisplay.logo || ''} class="img-self" alt="profile-image" />
+    {:else}
+      <ProfileImagePlaceholder />
+    {/if}
+
+    <div class="text-2xl font-bold body mb-2 mt-4">
       {basicDisplay.alias || ''}
     </div>
     <div class="flex flex-row items-center">
@@ -46,7 +50,7 @@
         </a>
       {/if}
     </div>
-    <a href={websiteLinkFormatter(basicDisplay.website) || ''} target="_blank">
+    <a href={basicDisplay.website || ''} target="_blank">
       <div class="my-6">{basicDisplay.website || ''}</div>
     </a>
     <div>{basicDisplay.description || ''}</div>{/if}

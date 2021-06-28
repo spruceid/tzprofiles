@@ -52,7 +52,7 @@
     class="cursor-pointer flex flex-row items-center"
   >
     <TZProfileLogo class="sm:h-12 h-8" />
-    <div class="body font-semibold ml-6">Tezos Profile</div>
+    <div class="body font-semibold ml-6">Tezos Profiles</div>
   </div>
   <div />
   <div class="flex flex-row items-center">
