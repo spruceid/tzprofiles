@@ -4,8 +4,8 @@
     CopyButton,
     Input,
     PrimaryButton,
-    VerificationDescription,
     VerificationStep,
+    TwitterIcon,
   } from 'components';
 
   import { claimsStream, wallet, userData } from 'src/store';
@@ -55,6 +55,21 @@
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
+    <div
+      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+    >
+      <div
+        class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
+      >
+        <div class="mr-3">Twitter Verification</div>
+        <TwitterIcon class="h-6 w-6" color="#00ACEE" />
+      </div>
+      <div class="body">
+        This process is used to generate some basic profile information about
+        yourself by filling in an alias, description, and logo for your profile.
+      </div>
+    </div>
+
     <VerificationStep
       step={1}
       bind:currentStep
