@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Link, useNavigate } from 'svelte-navigator';
-  import { BackButton, FlatButton } from 'components';
+  import { FlatButton } from 'components';
   import { claimsStream, contractAddress, userData, wallet } from 'src/store';
   import { addDefaults } from 'src/helpers';
   import { TZProfileLogo } from 'components';

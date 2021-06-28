@@ -5,9 +5,9 @@
   export { clazz as class };
 </script>
 
-<Nav {backHome} />
+<Nav />
 <div class={clazz}>
   <slot />
   <!-- <Footer /> -->
 </div>
-<!-- <Alert /> -->
+<Alert />
