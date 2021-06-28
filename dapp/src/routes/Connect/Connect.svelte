@@ -5,10 +5,9 @@
   import NetworkType from 'enums/NetworkType';
   import { onMount } from 'svelte';
   import { useNavigate } from 'svelte-navigator';
+  import './connect.scss';
 
   const navigate = useNavigate();
-
-  import './connect.scss';
 
   $: errorMessage = '';
   $: statusMessage = '';

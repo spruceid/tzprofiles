@@ -212,7 +212,7 @@
       <PrimaryButton
         text="Return to Profile"
         class="mt-8"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/connect')}
       />
     {/if}
   </div>

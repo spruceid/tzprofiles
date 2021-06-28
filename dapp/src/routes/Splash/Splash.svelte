@@ -2,6 +2,7 @@
   import Connect from '../Connect/Connect.svelte';
   import { BasePage, PrimaryButton, FileModal } from 'components';
   import { useNavigate } from 'svelte-navigator';
+  import { userData } from 'src/store';
   import './splash.scss';
 
   let isWalletModalOpen = false;
@@ -14,6 +15,10 @@
   };
 
   const connect = () => {
+    if ($userData) {
+      navigate('/connect');
+    }
+
     isWalletModalOpen = true;
   };
 </script>
@@ -21,7 +26,7 @@
 {#if errorMessage}
   <p>{errorMessage}</p>
 {/if}
-<BasePage class="flex-col flex-wrap items-center justify-center">
+<BasePage class="flex-col flex-wrap items-center justify-center w-full">
   <div class="splash-container fade-in">
     <div class="flex flex-col items-center">
       <div class="text-5xl lg:text-7xl sm:text-6xl font-bold text-center mb-12">

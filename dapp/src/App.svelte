@@ -93,7 +93,6 @@
     TwitterVerification,
     TwitterVerificationPublicTweet,
   } from './routes';
-  import './common/style/card.scss';
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =
