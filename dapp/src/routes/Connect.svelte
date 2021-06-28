@@ -55,9 +55,10 @@
           onChange={setSelectedNetwork}
         >
           <Option value="mainnet" text="mainnet" selected />
+          <Option value="granadanet" text="granadanet" />
           <Option value="edonet" text="edonet" />
           <Option value="florencenet" text="florencenet" />
-          <Option value="custom" text="localhost" />
+          <Option value="custom" text="custom" />
         </Select>
       </p>
       <p>

@@ -11,12 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TZProfilesClient = void 0;
 const contractClient_1 = require("./contractClient");
-// Client exposes operations on a TZP contract and queries to better-call.dev
+// Client exposes operations on a TZP contract and queries to TzKT
 class TZProfilesClient {
     constructor(opts) {
         this.keplerClient = opts.keplerClient;
         let clientOpts = {
-            betterCallDevConfig: opts.betterCallDevConfig,
+            tzktBase: opts.tzktBase,
             contractType: "tzprofiles",
             dereferenceContent: (r) => __awaiter(this, void 0, void 0, function* () {
                 let res = yield this.keplerClient.resolve(r, false);

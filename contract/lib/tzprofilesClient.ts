@@ -1,4 +1,4 @@
-import { BetterCallDevOpts, ContractClient, ContractClientOpts, ContentResult, Signer} from "./contractClient";
+import { TzKTBase, ContractClient, ContractClientOpts, ContentResult, Signer} from "./contractClient";
 import { Kepler } from 'kepler-sdk';
 
 // NOTE: Could add pattern here.
@@ -10,7 +10,7 @@ export type ClaimContent = string;
 
 // Opts are used to create new ContractClients
 export interface TZProfilesClientOpts {
-	betterCallDevConfig: BetterCallDevOpts,
+	tzktBase: TzKTBase,
 
 	keplerClient: Kepler;
 
@@ -24,7 +24,7 @@ export interface TZProfilesClientOpts {
 	validateType: (c: ClaimContent, t: ClaimType) => Promise<void>
 }
 
-// Client exposes operations on a TZP contract and queries to better-call.dev
+// Client exposes operations on a TZP contract and queries to TzKT
 export class TZProfilesClient {
 	contractClient: ContractClient<ClaimContent, ClaimType, ClaimHash, ClaimReference>;
 
@@ -39,7 +39,7 @@ export class TZProfilesClient {
 			ClaimHash, 
 			ClaimReference
 			> = {
-				betterCallDevConfig: opts.betterCallDevConfig,
+				tzktBase: opts.tzktBase,
 				contractType: "tzprofiles",
 				dereferenceContent: async (r: ClaimReference): Promise<ClaimContent> => {
 					let res = await this.keplerClient.resolve(r, false);

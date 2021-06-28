@@ -18,13 +18,7 @@ export interface KeySigner {
     };
 }
 export declare type Signer = WalletSigner | SecretSigner | KeySigner;
-export declare type BetterCallDevVersions = 1;
-export declare type BetterCallDevNetworks = 'mainnet' | 'delphinet' | 'edonet' | 'florencenet' | 'sandboxnet';
-export interface BetterCallDevOpts {
-    base: string;
-    network: BetterCallDevNetworks;
-    version: BetterCallDevVersions;
-}
+export declare type TzKTBase = string;
 export declare type ContentTriple<ContentType, Hash, Reference> = [Reference, Hash, ContentType];
 export declare type ContentList<ContentType, Hash, Reference> = Array<ContentTriple<ContentType, Hash, Reference>>;
 export declare type InvalidContent<ContentType, Hash, Reference> = [Reference, Hash, ContentType, any, Error];
@@ -35,7 +29,7 @@ export declare type ContentResult<Content, ContentType, Hash, Reference> = {
     valid: Array<ValidContent<Content, ContentType, Reference>>;
 };
 export interface ContractClientOpts<Content, ContentType, Hash, Reference> {
-    betterCallDevConfig?: BetterCallDevOpts;
+    tzktBase?: TzKTBase;
     contractType: string;
     dereferenceContent: (r: Reference) => Promise<Content>;
     hashContent: (c: Content) => Promise<Hash>;
@@ -44,7 +38,7 @@ export interface ContractClientOpts<Content, ContentType, Hash, Reference> {
     validateType: (c: Content, t: ContentType) => Promise<void>;
 }
 export declare class ContractClient<Content, ContentType, Hash, Reference> {
-    bcd: BetterCallDevOpts;
+    tzktBase: TzKTBase;
     contractType: string;
     dereferenceContent: (r: Reference) => Promise<Content>;
     hashContent: (c: Content) => Promise<Hash>;
@@ -57,10 +51,10 @@ export declare class ContractClient<Content, ContentType, Hash, Reference> {
     private setSigner;
     private getPKH;
     private trailingSlash;
-    private bcdPrefix;
+    private tzktPrefix;
     private processTriple;
     private processContentList;
-    private validateItem;
+    private isTZP;
     private retrieveAndScreenContract;
     private contentListFromStorage;
     private referenceToTriple;
