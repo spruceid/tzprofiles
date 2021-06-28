@@ -116,7 +116,7 @@
                   nextClaimMap.basic.preparedContent
                 );
                 claimsStream.set(nextClaimMap);
-                navigate('/');
+                navigate('/connect');
               })
               .catch(console.error)
               .finally(() => (lock = false));
