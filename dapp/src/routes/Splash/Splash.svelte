@@ -30,12 +30,12 @@
   <div class="splash-container fade-in">
     <div class="flex flex-col items-center">
       <div class="text-5xl lg:text-7xl sm:text-6xl font-bold text-center mb-12">
-        Protect your identity on Tezos
+        Protect Your Identity on Tezos
       </div>
 
       <div class="mb-12 text-center body1 subtitle-container">
         Tezos Profiles enables you to associate your online identity with your
-        Tezos account
+        Tezos account.
       </div>
 
       <div class="text-center">

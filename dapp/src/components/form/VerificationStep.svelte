@@ -22,7 +22,7 @@
 </script>
 
 <div
-  class="flex mb-4 transition-all ease-in-out duration-500 bg-white p-12 rounded-lg dropshadow-default"
+  class="flex mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
   class:opacity-50={!isFilled}
 >
   <div
