@@ -109,17 +109,17 @@ const argv = yargs
 		description: 'Secret key.',
 		type: 'string',
 	})
-	.option('bcd_base', {
+	.option('tzkt_base', {
 		alias: 'b',
-		description: 'Base url for better-call.dev API endpoints',
+		description: 'Base url for TzKT API endpoints',
 		type: 'string',
-		default: 'https://api.better-call.dev'
+		default: 'https://api.mainnet.tzkt.io'
 	})
 	.option('kepler_base', {
 		alias: 'k',
 		description: 'Base url for kepler API server',
 		type: 'string',
-		default: 'https://localhost:8000'
+		default: 'https://kepler.tzprofiles.com'
 	})
 	.strict()
 	.help()
@@ -148,7 +148,7 @@ function getClient() {
 	}
 
 	let clientOpts = {
-		betterCallDevConfig: getBCDOpts(),
+		tzktBase: argv.tzkt_base,
 		keplerClient: new kepler.Kepler(
 			argv.kepler_base
 		),
@@ -171,14 +171,6 @@ function getClient() {
 	};
 
 	return new lib.TZProfilesClient(clientOpts);
-}
-
-function getBCDOpts() {
-	return {
-		base: argv.bcd_base || "https://api.better-call.dev",
-		network: argv.network || "mainnet",
-		version: 1,
-	};
 }
 
 async function retrieve_tzp() {

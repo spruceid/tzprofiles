@@ -1,11 +1,11 @@
-import { BetterCallDevOpts, ContractClient, ContentResult, Signer } from "./contractClient";
+import { TzKTBase, ContractClient, ContentResult, Signer } from "./contractClient";
 import { Kepler } from 'kepler-sdk';
 export declare type ClaimReference = string;
 export declare type ClaimHash = string;
 export declare type ClaimType = "VerifiableCredential";
 export declare type ClaimContent = string;
 export interface TZProfilesClientOpts {
-    betterCallDevConfig: BetterCallDevOpts;
+    tzktBase: TzKTBase;
     keplerClient: Kepler;
     hashContent: (input: ClaimContent) => Promise<ClaimHash>;
     nodeURL: string;

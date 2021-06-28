@@ -46,21 +46,8 @@ export interface KeySigner {
 // on behalf of a wallet
 export type Signer = WalletSigner | SecretSigner | KeySigner;
 
-export type BetterCallDevVersions = 1;
-export type BetterCallDevNetworks = 'mainnet' | 'delphinet' | 'edonet' | 'florencenet' | 'sandboxnet';
-
-// Configurable Better Call Dev to allow local development.
-// Defaults to:
-// {
-//     base: "https://api.better-call.dev",
-//     network: "mainnet",
-//     version: 1
-// }
-export interface BetterCallDevOpts {
-	base: string,
-	network: BetterCallDevNetworks,
-	version: BetterCallDevVersions,
-}
+// Base URL for TzKT, defaults to https://api.tzkt.io.
+export type TzKTBase = string;
 
 export type ContentTriple<
 	ContentType,
@@ -105,20 +92,8 @@ interface ContentChild {
 	value: any
 }
 
-interface ContractStorageItem {
-	type: string,
-	value: string,
-	body: {
-		annotations: Array<string>
-	}
-}
-
-function defaultBCD(): BetterCallDevOpts {
-	return {
-		base: "https://api.better-call.dev",
-		network: 'mainnet',
-		version: 1
-	}
+function defaultTzKT(): TzKTBase {
+	return "https://api.tzkt.io";
 }
 
 export interface ContractClientOpts<Content, ContentType, Hash, Reference> {
@@ -128,7 +103,7 @@ export interface ContractClientOpts<Content, ContentType, Hash, Reference> {
 	//     network: "mainnet",
 	//     version: 1
 	// }
-	betterCallDevConfig?: BetterCallDevOpts,
+	tzktBase?: TzKTBase,
 
 	// An entry in the contract's metadata that allows it to be identified, used to 
 	// prevent duplicate contracts of the same type from being originated under the
@@ -156,7 +131,7 @@ export interface ContractClientOpts<Content, ContentType, Hash, Reference> {
 }
 
 export class ContractClient<Content, ContentType, Hash, Reference> {
-	bcd: BetterCallDevOpts;
+	tzktBase: TzKTBase;
 	contractType: string;
 	dereferenceContent: (r: Reference) => Promise<Content>;
 	hashContent: (c: Content) => Promise<Hash>;
@@ -167,7 +142,7 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 	validateType: (c: Content, t: ContentType) => Promise<void>;
 
 	constructor(opts: ContractClientOpts<Content, ContentType, Hash, Reference>) {
-		this.bcd = opts.betterCallDevConfig || defaultBCD();
+		this.tzktBase = opts.tzktBase || defaultTzKT();
 		this.contractType = opts.contractType;
 		this.dereferenceContent = opts.dereferenceContent;
 		this.hashContent = opts.hashContent;
@@ -247,8 +222,8 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 	}
 
 	// Create a standard base URL for all future calls.
-	private bcdPrefix(): string {
-		return `${this.bcd.base}${this.trailingSlash(this.bcd.base)}v${this.bcd.version}/`
+	private tzktPrefix(): string {
+		return `${this.tzktBase}${this.trailingSlash(this.tzktBase)}v1/`
 	}
 
 	private processTriple(claimChildren: [ContentChild, ContentChild, ContentChild]): ContentTriple<ContentType, Hash, Reference> {
@@ -300,16 +275,9 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		return [invalid, valid];
 	}
 
-	private async validateItem(item: ContractStorageItem): Promise<boolean> {
-		if (!(
-			item?.type &&
-			(item.type === "contract" || item.type === "contracts") &&
-			item?.value
-		)) {
-			return false;
-		}
+	private async isTZP(contractAddress: string): Promise<boolean> {
 		try {
-			const contract = await this.tezos.contract.at(item.value, tzip16.tzip16);
+			const contract = await this.tezos.contract.at(contractAddress, tzip16.tzip16);
 			const metadata = await contract.tzip16().getMetadata();
 			if (metadata.metadata.interfaces.includes("TZIP-023")) {
 				return true;
@@ -358,19 +326,22 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		return [r, h, t];
 	}
 
-	private async retrieveAllContracts(offset: number, walletAddress: string): Promise<Array<ContractStorageItem>> {
-		let prefix = this.bcdPrefix();
-		let searchRes = await axios.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager&o=${offset}`);
+	private async retrieveAllContracts(offset: number, walletAddress: string): Promise<Array<string>> {
+		let pageLimit = 100;
+		let prefix = this.tzktPrefix();
+		let searchRes = await axios.get(`${prefix}contracts?creator=${walletAddress}&offset=${offset}&limit=${pageLimit}&sort=firstActivity&select=address`);
 		if (searchRes.status !== 200) {
 			throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
 		}
-		let {data} = searchRes;
-		let totalCount = data.count;
-		let pageCount = data.items.length;
-		if (pageCount + offset < totalCount) {
-			return data.items.concat(await this.retrieveAllContracts(offset + pageCount, walletAddress));
+		if (!searchRes.data || searchRes.data.length === 0) {
+			return [];
 		}
-		return data.items;
+		let {data} = searchRes;
+		let pageCount = data.length;
+		if (pageCount == pageLimit) {
+			return data.concat(await this.retrieveAllContracts(offset + pageCount, walletAddress));
+		}
+		return data;
 	}
 
 	// retrieve finds a smart contract from it's owner's wallet address, returns a 
@@ -380,26 +351,19 @@ export class ContractClient<Content, ContentType, Hash, Reference> {
 		ContentResult<Content, ContentType, Hash, Reference>
 		| false
 	> {
-		let items: Array<ContractStorageItem> = await this.retrieveAllContracts(0, walletAddress);
-		if (items.length === 0) {
+		let contracts: Array<string> = await this.retrieveAllContracts(0, walletAddress);
+		if (contracts.length === 0) {
 			return false;
 		}
 
-		let possibleAddresses: Array<string> = [];
-		for (let i = 0, n = items.length; i < n; i++) {
-			let item = items[i];
-			if (await this.validateItem(item)) {
-				possibleAddresses.push(item.value);
+		for (let i = 0, n = contracts.length; i < n; i++) {
+			let contract = contracts[i];
+			if (await this.isTZP(contract)) {
+				let claims = this.retrieveClaims(contract);
+				if (claims)
+					return claims;
 			}
 		}
-
-		for (let i = 0, n = possibleAddresses.length; i < n; i++) {
-			let address = possibleAddresses[i];
-			let claims = this.retrieveClaims(address);
-			if (claims)
-				return claims;
-		}
-
 		return false;
 	}
 

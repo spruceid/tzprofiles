@@ -20,16 +20,12 @@ const axios_1 = require("axios");
 // Magic Number controlling how long to wait before confirming success.
 // Seems to be an art more than a science, 3 was suggested by a help thread.
 const CONFIRMATION_CHECKS = 3;
-function defaultBCD() {
-    return {
-        base: "https://api.better-call.dev",
-        network: 'mainnet',
-        version: 1
-    };
+function defaultTzKT() {
+    return "https://api.tzkt.io";
 }
 class ContractClient {
     constructor(opts) {
-        this.bcd = opts.betterCallDevConfig || defaultBCD();
+        this.tzktBase = opts.tzktBase || defaultTzKT();
         this.contractType = opts.contractType;
         this.dereferenceContent = opts.dereferenceContent;
         this.hashContent = opts.hashContent;
@@ -99,8 +95,8 @@ class ContractClient {
         return s[s.length - 1] === "/" ? "" : "/";
     }
     // Create a standard base URL for all future calls.
-    bcdPrefix() {
-        return `${this.bcd.base}${this.trailingSlash(this.bcd.base)}v${this.bcd.version}/`;
+    tzktPrefix() {
+        return `${this.tzktBase}${this.trailingSlash(this.tzktBase)}v1/`;
     }
     processTriple(claimChildren) {
         let [rc, hc, tc] = claimChildren;
@@ -144,15 +140,10 @@ class ContractClient {
             return [invalid, valid];
         });
     }
-    validateItem(item) {
+    isTZP(contractAddress) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!((item === null || item === void 0 ? void 0 : item.type) &&
-                (item.type === "contract" || item.type === "contracts") &&
-                (item === null || item === void 0 ? void 0 : item.value))) {
-                return false;
-            }
             try {
-                const contract = yield this.tezos.contract.at(item.value, tzip16.tzip16);
+                const contract = yield this.tezos.contract.at(contractAddress, tzip16.tzip16);
                 const metadata = yield contract.tzip16().getMetadata();
                 if (metadata.metadata.interfaces.includes("TZIP-023")) {
                     return true;
@@ -204,18 +195,21 @@ class ContractClient {
     }
     retrieveAllContracts(offset, walletAddress) {
         return __awaiter(this, void 0, void 0, function* () {
-            let prefix = this.bcdPrefix();
-            let searchRes = yield axios_1.default.get(`${prefix}search?q=${walletAddress}&n=${this.bcd.network}&i=contract&f=manager&o=${offset}`);
+            let pageLimit = 100;
+            let prefix = this.tzktPrefix();
+            let searchRes = yield axios_1.default.get(`${prefix}contracts?creator=${walletAddress}&offset=${offset}&limit=${pageLimit}&sort=firstActivity&select=address`);
             if (searchRes.status !== 200) {
                 throw new Error(`Failed in explorer request: ${searchRes.statusText}`);
             }
-            let { data } = searchRes;
-            let totalCount = data.count;
-            let pageCount = data.items.length;
-            if (pageCount + offset < totalCount) {
-                return data.items.concat(yield this.retrieveAllContracts(offset + pageCount, walletAddress));
+            if (!searchRes.data || searchRes.data.length === 0) {
+                return [];
             }
-            return data.items;
+            let { data } = searchRes;
+            let pageCount = data.length;
+            if (pageCount == pageLimit) {
+                return data.concat(yield this.retrieveAllContracts(offset + pageCount, walletAddress));
+            }
+            return data;
         });
     }
     // retrieve finds a smart contract from it's owner's wallet address, returns a 
@@ -223,22 +217,17 @@ class ContractClient {
     // false if not, or throws an error if the network fails
     retrieve(walletAddress) {
         return __awaiter(this, void 0, void 0, function* () {
-            let items = yield this.retrieveAllContracts(0, walletAddress);
-            if (items.length === 0) {
+            let contracts = yield this.retrieveAllContracts(0, walletAddress);
+            if (contracts.length === 0) {
                 return false;
             }
-            let possibleAddresses = [];
-            for (let i = 0, n = items.length; i < n; i++) {
-                let item = items[i];
-                if (yield this.validateItem(item)) {
-                    possibleAddresses.push(item.value);
+            for (let i = 0, n = contracts.length; i < n; i++) {
+                let contract = contracts[i];
+                if (yield this.isTZP(contract)) {
+                    let claims = this.retrieveClaims(contract);
+                    if (claims)
+                        return claims;
                 }
-            }
-            for (let i = 0, n = possibleAddresses.length; i < n; i++) {
-                let address = possibleAddresses[i];
-                let claims = this.retrieveClaims(address);
-                if (claims)
-                    return claims;
             }
             return false;
         });

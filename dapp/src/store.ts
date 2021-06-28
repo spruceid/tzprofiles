@@ -55,8 +55,8 @@ export const network: Writable<NetworkType> = writable<NetworkType>(
 );
 
 // URL Prefix of the block explorer to be used.
-export const betterCallDevUrl: Writable<string> = writable<string>(
-  'https://api.better-call.dev'
+export const tzktBase: Writable<string> = writable<string>(
+  'https://api.mainnet.tzkt.io'
 );
 
 // The UI element for poping toast-like alerts
@@ -245,7 +245,7 @@ export const removeClaims = async (
 let urlNode = '';
 let strNetwork = '';
 let networkStrTemp = '';
-let urlBetterCallDev = '';
+let tzktBaseTemp = '';
 
 // TODO: Specifically type?
 function getVCType(vc: any): string {
@@ -285,19 +285,13 @@ wallet.subscribe((w) => {
           await authenticator(w.client as any, process.env.KEPLER_URL)
         );
 
-        let bcdOpts: contractLib.BetterCallDevOpts = {
-          base: urlBetterCallDev,
-          network: networkStrTemp as contractLib.BetterCallDevNetworks,
-          version: 1 as contractLib.BetterCallDevVersions,
-        };
-
         let signerOpts: contractLib.WalletSigner = {
           type: 'wallet',
           wallet: w,
         };
 
         let clientOpts: contractLib.TZProfilesClientOpts = {
-          betterCallDevConfig: bcdOpts,
+          tzktBase: tzktBaseTemp,
           keplerClient: localKepler,
           hashContent: hashFunc,
           nodeURL: urlNode,
@@ -388,16 +382,16 @@ wallet.subscribe((w) => {
 
 network.subscribe((network) => {
   if (network === NetworkType.CUSTOM) {
-    networkStr.set('sandboxnet');
+    networkStr.set('custom');
     // TODO can't read from writeable, but then I don't understand why others work.
-    networkStrTemp = 'sandboxnet';
+    networkStrTemp = 'custom';
     strNetwork = 'custom';
 
     nodeUrl.set('http://localhost:8732');
     urlNode = 'http://localhost:8732';
 
-    urlBetterCallDev = 'http://localhost:14000';
-    betterCallDevUrl.set('http://localhost:14000');
+    tzktBaseTemp = 'http://localhost:5000';
+    tzktBase.set(tzktBaseTemp);
   } else {
     networkStr.set(network === NetworkType.EDONET ? 'edo2net' : network);
     // TODO can't read from writeable, but then I don't understand why others work.
@@ -407,8 +401,8 @@ network.subscribe((network) => {
     urlNode = `https://${network}.smartpy.io/`;
     nodeUrl.set(urlNode);
 
-    urlBetterCallDev = 'https://api.better-call.dev';
-    betterCallDevUrl.set('https://api.better-call.dev');
+    tzktBaseTemp = `https://api.${networkStrTemp}.tzkt.io`;
+    tzktBase.set(tzktBaseTemp);
   }
 });
 
@@ -529,12 +523,6 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
     try {
       searchClaims.set(addDefaults({}));
 
-      let bcdOpts: contractLib.BetterCallDevOpts = {
-        base: urlBetterCallDev,
-        network: networkStrTemp as contractLib.BetterCallDevNetworks,
-        version: 1 as contractLib.BetterCallDevVersions,
-      };
-
       let dummyAuthenticator = {
         content: async (orbit: string, cids: string[], action: Action) => '',
         createOrbit: async (cids: string[]) => '',
@@ -544,7 +532,7 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
       let searchKepler = new Kepler(keplerInstance, dummyAuthenticator);
 
       let clientOpts: contractLib.TZProfilesClientOpts = {
-        betterCallDevConfig: bcdOpts,
+        tzktBase: tzktBaseTemp,
         keplerClient: searchKepler,
         hashContent: hashFunc,
         nodeURL: urlNode,
