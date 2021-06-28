@@ -40,10 +40,6 @@
   {/if}
 
   {#if !fetching}
-    <ViewProfile
-      claimsMap={searchClaims}
-      address={$searchAddress}
-      network={$params.network}
-    />
+    <ViewProfile claimsMap={searchClaims} network={$params.network} />
   {/if}
 </BasePage>

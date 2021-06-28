@@ -28,6 +28,9 @@
 
   onMount(() => {
     selectedNetwork = $network;
+    if (!$userData) {
+      navigate('/');
+    }
   });
 </script>
 

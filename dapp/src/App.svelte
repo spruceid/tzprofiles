@@ -33,6 +33,7 @@
 
   a {
     text-decoration: none;
+    color: #1a75ff;
   }
   td,
   th {
