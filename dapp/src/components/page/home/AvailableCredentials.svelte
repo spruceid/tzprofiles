@@ -57,6 +57,10 @@
   const openModal = () => {
     modalOpen = true;
   };
+
+  const displayPendingStatus = (claim) => {
+    return !claim.content && claim.preparedContent;
+  };
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -68,6 +72,7 @@
           {#if $contractAddress !== null}
             {#if !isAllOnChain($claimsStream)}
               <PrimaryButton
+                small
                 text="Add Claims to profile"
                 class="mx-auto mt-4 bottom-6"
                 onClick={async () => {
@@ -78,18 +83,10 @@
           {:else}
             <PrimaryButton
               text="Deploy Profile"
-              class="mx-auto mt-4 bottom-6"
               onClick={() => navigate('/deploy')}
+              small
             />
           {/if}
-        {/if}
-
-        {#if canUpload($claimsStream) && !$contractAddress}
-          <PrimaryButton
-            text="Deploy Profile"
-            small
-            onClick={() => openModal()}
-          />
         {/if}
       </div>
     </div>
@@ -123,7 +120,17 @@
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.proof}
             </td>
-            <td><div class="status-tag status-complete">Complete</div></td>
+            <td
+              ><div
+                class={`status-tag ${
+                  displayPendingStatus(claim)
+                    ? 'status-pending'
+                    : 'status-complete'
+                }`}
+              >
+                {displayPendingStatus(claim) ? 'Pending' : 'Complete'}
+              </div></td
+            >
             <td class="flex flex-row items-center">
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"

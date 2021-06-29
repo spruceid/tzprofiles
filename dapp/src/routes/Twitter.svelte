@@ -52,7 +52,7 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center"
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
     <div

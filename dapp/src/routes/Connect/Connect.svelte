@@ -52,9 +52,10 @@
       <Option value="florencenet" text="florencenet" />
       <Option value="custom" text="localhost" />
     </Select>
-    <p>
+    <div>
       {#if showWalletButton}
         <PrimaryButton
+          small
           class="my-4"
           onClick={async () => {
             await initWallet();
@@ -65,7 +66,7 @@
       {:else}
         <button on:click={resetWallet}>Reset Tezos Wallet Connection</button>
       {/if}
-    </p>
+    </div>
   </div>
 {:else}
   <Claims />

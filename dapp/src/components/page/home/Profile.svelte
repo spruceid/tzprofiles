@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { Card, ClaimDisplay, PrimaryButton } from 'components';
+  import {
+    Card,
+    ClaimDisplay,
+    PrimaryButton,
+    LoadingSpinner,
+  } from 'components';
 
   import {
     alert,
@@ -54,8 +59,9 @@
       }
 
       await addClaims(newClaims);
-
+      console.log('NextClaimStream', nextClaimStream);
       claimsStream.set(nextClaimStream);
+      navigate('/connect');
     } catch (e) {
       alert.set({
         message: `Error in add claim ${e?.message || e}`,
@@ -131,7 +137,7 @@
     {#if $contractAddress !== null}
       {#if !isAllOnChain($claimsStream)}
         {#if isAddingClaims}
-          <div class="my-4">Adding claims....</div>
+          <LoadingSpinner class="rotating" />
         {:else}
           <PrimaryButton
             text="Add Claims to profile"

@@ -154,12 +154,9 @@
 
     <VerificationStep step={3} bind:currentStep title="Profile Deployed">
       {#if currentStep > 2}
-        <p class="inline font-poppins">
-          {'View on '}
-          <Link to={`/view/${currentNetwork}/${$userData.account.address}`}>
-            {'Tezos Profiles Viewer'}
-          </Link>
-        </p>
+        <div>
+          <Link to="/connect">Return to Profile</Link>
+        </div>
       {/if}
     </VerificationStep>
   </div>

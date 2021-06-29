@@ -81,7 +81,7 @@
         <p class="m-2 italic break-words select-none">
           {'Available in '}
           <a href="/basic-profile" class="underline">
-            {'Basic profile Information'}
+            Basic profile Information
           </a>
         </p>
       {/if}
