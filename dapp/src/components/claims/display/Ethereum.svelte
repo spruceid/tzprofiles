@@ -10,24 +10,24 @@
 
 <div>
   <div class="flex justify-between items-center">
-    <Label class="mt-4" fieldName="ethereum-wallet" value="Ethereum Wallet" />
-    {#if draft.wallet}
+    <Label class="mt-4" fieldName="ethereum-address" value="Ethereum Address" />
+    {#if draft.address}
       <p class="text-sm text-gray-350 italic mt-2">
-        (signed by Ethereum wallet)
+        (signed by Ethereum address)
       </p>
     {/if}
   </div>
-  {#if draft.wallet}
+  {#if draft.address}
     <div class="flex items-center">
       <Input
         fluid
         class="font-bold"
-        name="ethereum-wallet"
-        value={draft.wallet}
+        name="ethereum-address"
+        value={draft.address}
         disabled
       />
       <a
-        href={`https://www.etherscan.com/address/${draft.wallet}`}
+        href={`https://www.etherscan.com/address/${draft.address}`}
         title="View tweet"
         target="_blank"
       >
