@@ -42,7 +42,7 @@
         <PrimaryButton
           class="my-4 mx-2.5"
           onClick={() => connect()}
-          text="Connect wallet"
+          text="Connect Wallet"
         />
         <PrimaryButton
           class="my-4 mx-2.5"
