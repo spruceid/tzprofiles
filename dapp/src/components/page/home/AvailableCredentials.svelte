@@ -61,14 +61,12 @@
     <div class="body flex flex-row items-center w-full justify-between">
       <div class="text-2xl font-bold body">My Credentials</div>
       <div>
-        {#if canUpload($claimsStream)}
-          {#if !$contractAddress}
-            <PrimaryButton
-              text="Deploy Profile"
-              small
-              onClick={() => openModal()}
-            />
-          {/if}
+        {#if canUpload($claimsStream) && !$contractAddress}
+          <PrimaryButton
+            text="Deploy Profile"
+            small
+            onClick={() => openModal()}
+          />
         {/if}
       </div>
     </div>
@@ -102,7 +100,15 @@
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.proof}
             </td>
-            <td><div class="status-tag status-complete">Complete</div></td>
+            <td
+              ><div
+                class="status-tag {!$contractAddress
+                  ? 'status-pending'
+                  : 'status-complete'}"
+              >
+                {!$contractAddress ? 'Pending' : 'Complete'}
+              </div></td
+            >
             <td class="flex flex-row items-center">
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"

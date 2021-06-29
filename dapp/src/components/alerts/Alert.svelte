@@ -6,11 +6,10 @@
 
   let resetTimeout: NodeJS.Timeout = null;
   let subscriptionTimeout: NodeJS.Timeout = null;
-  let error: string = 'bg-red-100 border border-red-400 text-red-700';
-  let warning: string =
-    'bg-orange-100 border border-orange-400 text-orange-700';
-  let success: string = 'bg-green-100 border border-green-400 text-green-700';
-  let info: string = 'bg-blue-100 border border-blue-400 text-blue-700';
+  let error: string = 'bg-red-100 border text-red-700';
+  let warning: string = 'bg-orange-100 border text-orange-700';
+  let success: string = 'bg-green-100 border text-green-700';
+  let info: string = 'bg-blue-100 border text-blue-700';
   let style: string = '';
   let iconColor: string = '';
   let fade: boolean = false;
