@@ -11,7 +11,11 @@ export const exhaustiveCheck = (arg: never) => {
 
 // The types of claims supported by the UI.
 export type ClaimType = "basic" | "twitter" | "ethereum"
-export type ClaimVCType = "BasicProfile" | 'TwitterVerification' | 'EthereumControl'
+// NOTE: Ethereum backwards compatibility
+export type ClaimVCType = "BasicProfile" 
+  | 'TwitterVerification' 
+  | 'EthereumControl' 
+  | 'EthereumAddressControl'
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -23,7 +27,9 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
     let type = vc.type[i] as ClaimVCType;
 
     switch (type) {
+      // NOTE: Ethereum backwards compatibility
       case 'EthereumControl':
+      case 'EthereumAddressControl':
         return 'ethereum';
       case 'TwitterVerification':
         return 'twitter'
@@ -53,7 +59,7 @@ export interface TwitterDraft {
 
 export interface EthereumDraft {
   sameAs: string,
-  wallet: string,
+  address: string,
 }
 
 export type ClaimDraft = BasicDraft | TwitterDraft | EthereumDraft;
@@ -94,15 +100,15 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
       }
     case 'ethereum': 
       return {
-        description: 'This process is used to link your Ethereum account to your Tezos account by connecting to MetaMask, signing using your Ethereum wallet, and finally receiving the verification.',
-        display: 'Ethereum Wallet Ownership',
+        description: 'This process is used to link your Ethereum address to your Tezos account by connecting to MetaMask, signing using your Ethereum address, and finally receiving the verification.',
+        display: 'Ethereum Address Ownership',
         icon: EthereumIcon,
         route: '/ethereum',
-        routeDescription: 'Ethereum Wallet Ownership',
+        routeDescription: 'Ethereum Address Ownership',
         // TODO: Is this a good description of the proof?
-        proof: 'Wallet Signature',
-        title: 'Ethereum Wallet Ownership',
-        type: 'Wallet Ownership',
+        proof: 'Address Signature',
+        title: 'Ethereum Address Ownership',
+        type: 'Address Ownership',
       }
     case 'twitter':
       return  {
@@ -132,7 +138,7 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
       };
     case 'ethereum':
       return {
-        wallet: '',
+        address: '',
         sameAs: '',
       };
     case 'twitter':
@@ -220,9 +226,10 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
     }
     case 'ethereum': {
       const {credentialSubject} = content;
-      const {wallet, sameAs} = credentialSubject;
+      // NOTE: Ethereum backwards compat.
+      const {address, wallet, sameAs} = credentialSubject;
       return {
-        wallet,
+        address: address || wallet,
         sameAs
       }
     }

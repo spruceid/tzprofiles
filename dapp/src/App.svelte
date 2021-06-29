@@ -65,6 +65,7 @@
 <script lang="ts">
   import { Router, Route } from 'svelte-navigator';
   import {
+    Address,
     Connect,
     Ethereum,
     Faq,
@@ -80,6 +81,7 @@
     Timestamp,
     TweetId,
     BasicProfileContext,
+    EthereumAddressControl,
     EthereumControl,
     Wallet,
     TwitterVerification,
@@ -161,6 +163,13 @@
   <Route path="tweetId">
     <TweetId />
   </Route>
+  <Route path="EthereumAddressControl">
+    <EthereumAddressControl />
+  </Route>
+  <Route path="ethereumWallet">
+    <Address />
+  </Route>
+  <!-- NOTE: Eth claim backwards compat -->
   <Route path="EthereumControl">
     <EthereumControl />
   </Route>

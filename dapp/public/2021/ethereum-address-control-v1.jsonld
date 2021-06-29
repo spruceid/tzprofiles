@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "@protected": true,
+    "sameAs": "https://www.w3.org/TR/owl-ref/#sameAs-def",
+    "EthereumControl": "https://tzprofiles.com/EthereumAddressControl",
+    "wallet": "https://tzprofiles.com/ethereumWallet"
+  }
+}

@@ -1,8 +1,6 @@
 <script lang="ts">
   import {
     BasePage,
-    Select,
-    Option,
     PrimaryButton,
     VerificationDescription,
     VerificationStep,
@@ -27,15 +25,15 @@
 
   let display = readClaimMap?.ethereum?.display;
 
-  $: account = false;
-  $: accounts = [];
+  $: address = false;
+  $: addresses = [];
   $: eth = false;
   $: currentStep = 1;
 
   const connectMetaMask = async () => {
     eth = await detectEthereumProvider();
     if (eth) {
-      accounts = await eth.request({ method: 'eth_requestAccounts' });
+      addresses = await eth.request({ method: 'eth_requestAccounts' });
     } else {
       alert.set({
         message: 'No metamask extension found',
@@ -45,22 +43,22 @@
       return;
     }
 
-    if (accounts.length) {
-      account = accounts[0];
+    if (addresses.length) {
+      address = addresses[0];
       currentStep = currentStep + 1;
       return;
     }
 
     alert.set({
-      message: 'No ethereum account selected',
+      message: 'No ethereum address selected',
       variant: 'error',
     });
   };
 
   const issue = async () => {
-    if (!account) {
+    if (!address) {
       alert.set({
-        message: 'No ethereum account selected',
+        message: 'No ethereum address selected',
         variant: 'error',
       });
       return;
@@ -87,28 +85,28 @@
   };
 
   const signEthereumClaim = async (): Promise<string> => {
-    if (!account) {
+    if (!address) {
       alert.set({
-        message: 'No ethereum account selected',
+        message: 'No ethereum address selected',
         variant: 'error',
       });
       return;
     }
 
     try {
-      const did = `did:pkh:eth:${account}`;
+      const did = `did:pkh:eth:${address}`;
 
       const credential = {
         '@context': [
           'https://www.w3.org/2018/credentials/v1',
-          'https://tzprofiles.com/2021/ethereum-control-v1.jsonld',
+          'https://tzprofiles.com/2021/ethereum-address-control-v1.jsonld',
         ],
         id: 'urn:uuid:' + uuid(),
         issuer: did,
         issuanceDate: new Date().toISOString(),
-        type: ['VerifiableCredential', 'EthereumControl'],
+        type: ['VerifiableCredential', 'EthereumAddressControl'],
         credentialSubject: {
-          wallet: account,
+          address: address,
           sameAs: $userData.account.address,
         },
       };
@@ -133,7 +131,7 @@
               { name: 'proof', type: 'Proof' },
             ],
             CredentialSubject: [
-              { name: 'wallet', type: 'string' },
+              { name: 'address', type: 'string' },
               { name: 'sameAs', type: 'string' },
             ],
             Proof: [
@@ -171,7 +169,7 @@
 
       const signature = await eth.request({
         method: 'eth_signTypedData_v4',
-        params: [account, JSON.stringify(typedData)],
+        params: [address, JSON.stringify(typedData)],
       });
 
       return await completeIssueCredential(credStr, prepStr, signature);
@@ -203,7 +201,7 @@
       step={1}
       bind:currentStep
       title="Connect using Metamask"
-      description="Connect to your Ethereum wallet using MetaMask."
+      description="Connect to your Ethereum address using MetaMask."
     >
       <div class="flex flex-col">
         {#if currentStep === 1}
@@ -215,7 +213,7 @@
           />
         {/if}
         {#if currentStep > 1}
-          <div class="mt-4">Connected to {account}</div>
+          <div class="mt-4">Connected to {address}</div>
         {/if}
       </div>
     </VerificationStep>
@@ -223,7 +221,7 @@
       step={2}
       bind:currentStep
       title="Signature Challenge"
-      description="Sign an EIP712 signature challenge in order to demonstrate control over your selection wallet and issue a credential."
+      description="Sign an EIP712 signature challenge in order to demonstrate control over your selection address and issue a credential."
     >
       <div class="flex flex-col lg:flex-row">
         {#if currentStep === 2}
