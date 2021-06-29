@@ -1,6 +1,5 @@
 <script lang="ts">
   import { CloseIcon } from 'components';
-
   import { alert } from 'src/store';
   import { onMount } from 'svelte';
 
