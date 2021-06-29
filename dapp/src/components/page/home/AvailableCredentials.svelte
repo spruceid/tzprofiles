@@ -20,37 +20,6 @@
   let modalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
-  let data: any[] = [];
-
-  console.log('CLAIMSTREAM', $claimsStream);
-
-  onMount(async () => {
-    try {
-      console.log($claimsStream);
-      if (
-        !Object.values($claimsStream).every(
-          (claim) => !claim.content && !claim.preparedContent
-        )
-      ) {
-        data = await Promise.all(
-          Object.values($claimsStream)
-            // TODO: Distinguish between content and preparedContent in UI
-            .filter((claim) => claim.content || claim.preparedContent)
-            .map(async (claim) => {
-              // TODO: Distinguish between content and preparedContent in UI
-              let json = makeDownloadable(
-                claim.content || claim.preparedContent
-              );
-              return { ...claim, json };
-            })
-        );
-
-        console.log('Data', data);
-      }
-    } catch (err) {
-      console.error(`Died in MyCredentials OnMount ${err.message}`);
-    }
-  });
 
   const closeModal = () => {
     modalOpen = false;
@@ -60,7 +29,7 @@
     modalOpen = true;
   };
 
-  const displayPendingStatus = (claim) => {
+  const shouldDisplayPendingStatus = (claim) => {
     return !claim.content && claim.preparedContent;
   };
 </script>
@@ -105,7 +74,7 @@
         <th class="text-left">Action</th>
       </tr>
       <tbody>
-        {#each data as claim}
+        {#each Object.values($claimsStream).filter((claim) => claim.content || claim.preparedContent) as claim}
           <tr>
             <td
               class="flex items-center px-2 my-1 cursor-pointer sm:px-4 md:px-6"
@@ -125,12 +94,12 @@
             <td
               ><div
                 class={`status-tag ${
-                  displayPendingStatus(claim)
+                  shouldDisplayPendingStatus(claim)
                     ? 'status-pending'
                     : 'status-complete'
                 }`}
               >
-                {displayPendingStatus(claim) ? 'Pending' : 'Complete'}
+                {shouldDisplayPendingStatus(claim) ? 'Pending' : 'Complete'}
               </div></td
             >
             <td class="flex flex-row items-center">
@@ -144,7 +113,6 @@
                 on:click={() => {
                   isCredentialModalOpen = true;
                   selectedClaimToView = claim;
-                  console.log(claim);
                 }}
                 class="cursor-pointer"
               >
