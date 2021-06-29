@@ -1,25 +1,17 @@
 <script lang="ts">
-  import {
-    Card,
-    ClaimDisplay,
-    PrimaryButton,
-    Spacer,
-    CopyButton,
-  } from 'components';
+  import { Card, ClaimDisplay, PrimaryButton } from 'components';
 
   import {
     alert,
     claimsStream,
-    userData,
     networkStr,
     contractAddress,
     addToKepler,
     addClaims,
   } from 'src/store';
-  import { canUpload, getCurrentOrbit } from './uploadHelpers';
+  import { canUpload, getCurrentOrbit, isAllOnChain } from './uploadHelpers';
 
   import { contentToDraft } from 'src/helpers';
-  import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
 
   let navigate = useNavigate();
@@ -31,19 +23,6 @@
   });
 
   $: isAddingClaims = false;
-
-  const isAllOnChain = (cMap: ClaimMap): boolean => {
-    let keys = Object.keys(cMap);
-    let found = 0;
-    for (let i = 0, n = keys.length; i < n; i++) {
-      let claim = cMap[keys[i]];
-      if (claim.onChain) {
-        found++;
-      }
-    }
-
-    return keys.length === found;
-  };
 
   const uploadNewClaim = async () => {
     isAddingClaims = true;
@@ -150,30 +129,13 @@
 =======
   {#if canUpload($claimsStream)}
     {#if $contractAddress !== null}
-      <!-- TODO: Stylize -->
-      <span class="py-2 text-white rounded bg-green-550">
-        {'Tezos Profile deployed at '}
-        <a
-          class="text-green-900 underline"
-          target="_blank"
-          href={`https://${
-            currentNetwork
-              ? currentNetwork === 'edonet.'
-                ? 'edo2net.'
-                : `${currentNetwork}.`
-              : ''
-          }tzkt.io/${$userData.account.address}`}
-        >
-          {'tzkt.io'}
-        </a>
-      </span>
       {#if !isAllOnChain($claimsStream)}
         {#if isAddingClaims}
-          Adding claims....
+          <div class="my-4">Adding claims....</div>
         {:else}
           <PrimaryButton
             text="Add Claims to profile"
-            class="mx-auto mt-4 bottom-6"
+            class="mx-auto mt-4 bottom-6 w-full"
             onClick={async () => {
               await uploadNewClaim();
             }}

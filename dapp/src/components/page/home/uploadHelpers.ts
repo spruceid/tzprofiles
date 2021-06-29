@@ -32,3 +32,17 @@ export const makeDownloadable = (obj: any): string => {
       }
     }
   };
+
+
+export const isAllOnChain = (cMap: ClaimMap): boolean => {
+    let keys = Object.keys(cMap);
+    let found = 0;
+    for (let i = 0, n = keys.length; i < n; i++) {
+      let claim = cMap[keys[i]];
+      if (claim.onChain) {
+        found++;
+      }
+    }
+
+    return keys.length === found;
+  };

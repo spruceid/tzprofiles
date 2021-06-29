@@ -11,7 +11,7 @@
     ClaimDisplay,
   } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  import { canUpload, makeDownloadable } from './uploadHelpers';
+  import { canUpload, makeDownloadable, isAllOnChain } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
 
@@ -64,6 +64,26 @@
     <div class="body flex flex-row items-center w-full justify-between">
       <div class="text-2xl font-bold body">My Credentials</div>
       <div>
+        {#if canUpload($claimsStream)}
+          {#if $contractAddress !== null}
+            {#if !isAllOnChain($claimsStream)}
+              <PrimaryButton
+                text="Add Claims to profile"
+                class="mx-auto mt-4 bottom-6"
+                onClick={async () => {
+                  openModal();
+                }}
+              />
+            {/if}
+          {:else}
+            <PrimaryButton
+              text="Deploy Profile"
+              class="mx-auto mt-4 bottom-6"
+              onClick={() => navigate('/deploy')}
+            />
+          {/if}
+        {/if}
+
         {#if canUpload($claimsStream) && !$contractAddress}
           <PrimaryButton
             text="Deploy Profile"
