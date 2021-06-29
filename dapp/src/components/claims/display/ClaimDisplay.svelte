@@ -1,5 +1,6 @@
 <script lang="ts">
   import Basic from './Basic.svelte';
+  import Ethereum from './Ethereum.svelte';
   import Twitter from './Twitter.svelte';
   import type { Claim } from 'src/helpers';
 
@@ -8,6 +9,8 @@
 
 {#if claim?.type === 'basic'}
   <Basic basicClaim={claim} />
+{:else if claim?.type === 'ethereum'}
+  <Ethereum ethereumClaim={claim} />
 {:else if claim?.type === 'twitter'}
   <Twitter twitterClaim={claim} />
 {:else}

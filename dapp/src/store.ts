@@ -10,7 +10,7 @@ import * as helpers from './helpers/index';
 
 import {Kepler, authenticator, Action, getOrbitId} from 'kepler-sdk';
 import {verifyCredential} from 'didkit-wasm';
-import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
+import { addDefaults, claimFromTriple, claimTypeFromVC, ClaimVCType, exhaustiveCheck } from './helpers/index';
 
 /*
 * Global Variables
@@ -247,31 +247,6 @@ let strNetwork = '';
 let networkStrTemp = '';
 let tzktBaseTemp = '';
 
-// TODO: Specifically type?
-function getVCType(vc: any): string {
-  let nextVC = vc;
-  if (typeof nextVC === 'string') {
-    nextVC = JSON.parse(vc);
-  }
-  if (!nextVC || !nextVC?.type) {
-    alert.set({
-      message: 'Could not find property "type" in vc',
-      variant: 'error',
-    });
-    throw new Error('Could not find property "type" in vc');
-  }
-
-  if (!Array.isArray(nextVC.type) || nextVC.type.length < 1) {
-    alert.set({
-      message: 'VC "type" property must be an array',
-      variant: 'error',
-    });
-    throw new Error('VC "type" property must be an array');
-  }
-
-  return nextVC.type[nextVC.type.length - 1];
-}
-
 wallet.subscribe((w) => {
   if (w) {
     w.client.subscribeToEvent(
@@ -332,27 +307,16 @@ wallet.subscribe((w) => {
               let [url, content, contentType] = result.valid[i];
               // TODO: Handle other types?
               if (contentType === 'VerifiableCredential') {
-                let vcType = getVCType(content);
-                switch (vcType) {
-                  case 'TwitterVerification':
-                    nextClaims['twitter'] = helpers.claimFromTriple(
-                      'twitter', 
-                      [url, content, contentType]
-                    );
-                    break;
-                  case 'BasicProfile':
-                    nextClaims['basic'] = helpers.claimFromTriple(
-                      'basic',
-                      [url, content, contentType]
-                    )
-                    break;
-                  default:
-                    alert.set({
-                      message: `Unknown VC Type: ${vcType}`,
-                      variant: 'error',
-                    });
-                    throw new Error(`Unknown VC Type: ${vcType}`);
+                let parsed = JSON.parse(content);
+                let claimType = claimTypeFromVC(parsed);
+                if (!claimType) {
+                  throw new Error(`Unknown claim type: ${parsed?.type?.length && parsed.type[parsed.type.length - 1]}`)
                 }
+
+                nextClaims[claimType] = helpers.claimFromTriple(
+                  claimType, 
+                  [url, content, contentType]
+                );
               }
 
               nextClaims = addDefaults(nextClaims)

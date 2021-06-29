@@ -56,6 +56,20 @@
     retry = false;
     try {
       await originate();
+      const nextClaimStream = $claimsStream;
+      Object.values(nextClaimStream).forEach((claim) => {
+        if (claim.preparedContent) {
+          claim.content = claim.preparedContent;
+          claim.preparedContent = false;
+          claim.draft = contentToDraft(claim.type, claim.content);
+
+          nextClaimStream[claim.type] = claim;
+          claim.onChain = true;
+          nextClaimStream[claim.type] = claim;
+        }
+      });
+
+      claimsStream.set(nextClaimStream);
       next();
       next();
     } catch (e) {
@@ -81,14 +95,7 @@
 
       newClaims.reverse().forEach((profile) => {
         let next = nextClaimStream[profile.type];
-
         next.irl = urls.pop();
-        // Is a string because findNewClaims checked.
-        next.content = profile.preparedContent;
-        next.preparedContent = false;
-        next.draft = contentToDraft(next.type, next.content);
-
-        nextClaimStream[profile.type] = next;
       });
 
       claimsStream.set(nextClaimStream);

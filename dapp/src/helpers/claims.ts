@@ -1,15 +1,17 @@
 import SvelteComponentDev from '*.svelte';
-import {LinkInput, PersonOutlined, TwitterIcon} from 'components';
+import {PersonOutlined, TwitterIcon, EthereumIcon} from 'components';
 import * as tzp from 'tzprofiles';
 
 
-const exhaustiveCheck = (arg: never) => {
+// TODO: Move to store?
+export const exhaustiveCheck = (arg: never) => {
   // Forces the type checker to complain if you've missed a sum type.
   // See https://dev.to/babak/exhaustive-type-checking-with-typescript-4l3f
 }
 
 // The types of claims supported by the UI.
-export type ClaimType = "basic" | "twitter"
+export type ClaimType = "basic" | "twitter" | "ethereum"
+export type ClaimVCType = "BasicProfile" | 'TwitterVerification' | 'EthereumControl'
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -18,9 +20,11 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
   }
 
   for (let i = 0, n = vc.type.length; i < n; i++) {
-    let type = vc.type[i];
+    let type = vc.type[i] as ClaimVCType;
 
     switch (type) {
+      case 'EthereumControl':
+        return 'ethereum';
       case 'TwitterVerification':
         return 'twitter'
       case 'BasicProfile':
@@ -33,8 +37,7 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
 }
 
 // All of the claim types to allow searching for exisitence in a collection.
-const claimTypes: Array<ClaimType> = ['basic', 'twitter']
-
+const claimTypes: Array<ClaimType> = ['basic', 'twitter', 'ethereum']
 
 export interface BasicDraft {
   alias: string,
@@ -48,7 +51,12 @@ export interface TwitterDraft {
   tweetUrl: string
 }
 
-export type ClaimDraft = BasicDraft | TwitterDraft;
+export interface EthereumDraft {
+  sameAs: string,
+  wallet: string,
+}
+
+export type ClaimDraft = BasicDraft | TwitterDraft | EthereumDraft;
 
 /*
 * UI Text & Assets
@@ -84,6 +92,18 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         title: 'Basic Profile',
         type: 'Basic Profile'
       }
+    case 'ethereum': 
+      return {
+        description: 'This process is used to link your Ethereum account to your Tezos account by connecting to MetaMask, signing using your Ethereum wallet, and finally receiving the verification.',
+        display: 'Ethereum Wallet Ownership',
+        icon: EthereumIcon,
+        route: '/ethereum',
+        routeDescription: 'Ethereum Wallet Ownership',
+        // TODO: Is this a good description of the proof?
+        proof: 'Wallet Signature',
+        title: 'Ethereum Wallet Ownership',
+        type: 'Wallet Ownership',
+      }
     case 'twitter':
       return  {
         description: 'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
@@ -109,6 +129,11 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
         description: '',
         logo: '',
         website: '',
+      };
+    case 'ethereum':
+      return {
+        wallet: '',
+        sameAs: '',
       };
     case 'twitter':
       return {
@@ -193,6 +218,14 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
         website
       }
     }
+    case 'ethereum': {
+      const {credentialSubject} = content;
+      const {wallet, sameAs} = credentialSubject;
+      return {
+        wallet,
+        sameAs
+      }
+    }
     case "twitter": {
       const {evidence, credentialSubject} = content;
       const {sameAs} = credentialSubject;
@@ -239,7 +272,7 @@ export const isUnsavedDraft = (c: Claim): boolean => {
 */
 
 // Because === is referential equality and JSON stringify mixes up keys.
-const deepEqual = (object1, object2): boolean => {
+const deepEqual = (object1: object, object2: object): boolean => {
   const keys1 = Object.keys(object1);
   const keys2 = Object.keys(object2);
 
