@@ -22,6 +22,8 @@
   let selectedClaimToView = null;
   let data: any[] = [];
 
+  console.log('CLAIMSTREAM', $claimsStream);
+
   onMount(async () => {
     try {
       console.log($claimsStream);

@@ -115,7 +115,9 @@
     {#if $contractAddress !== null}
       {#if !isAllOnChain($claimsStream)}
         {#if isAddingClaims}
-          <LoadingSpinner class="rotating" />
+          <div class="w-full flex flex-col items-center">
+            <LoadingSpinner class="rotating my-6" />
+          </div>
         {:else}
           <PrimaryButton
             text="Add Claims to profile"
@@ -136,12 +138,12 @@
         }}
       />
     {/if}
-  {:else}
+    <!-- {:else}
     <PrimaryButton
       text="Deploy Profile"
       class="mx-auto mt-4 bottom-6"
       disabled={!agreement}
-      onClick={() => navigate('/deploy')}
-    />
+      onClick={() => navigate('/deploy')} 
+    />-->
   {/if}
 </Card>

@@ -19,7 +19,7 @@
 </script>
 
 <div
-  class="self-center w-full break-all md:max-w-md lg:max-w-md p-6 fade-in rounded-xl bg-white dropshadow-default"
+  class="self-center w-full break-all md:max-w-lg lg:max-w-lg p-6 fade-in rounded-xl bg-white dropshadow-default"
 >
   {#if basicDisplay}
     {#if basicDisplay.logo}

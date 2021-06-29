@@ -19,7 +19,7 @@
     left: calc(50% - 250px);
     right: 50%;
     top: 100px;
-    max-height: 70vh;
+    max-height: 80vh;
     overflow: auto;
   }
 </style>
