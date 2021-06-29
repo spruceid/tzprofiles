@@ -4,6 +4,7 @@
     PrimaryButton,
     VerificationDescription,
     VerificationStep,
+    EthereumIcon,
   } from 'components';
 
   import detectEthereumProvider from '@metamask/detect-provider';
@@ -182,8 +183,10 @@
   };
 </script>
 
-<BasePage class="flex-wrap items-center justify-center">
-  <VerificationDescription
+<BasePage
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
+>
+  <!-- <VerificationDescription
     icon={display.icon}
     title={display.title}
     description={display.description}
@@ -195,8 +198,25 @@
         onClick={() => navigate('/')}
       />
     {/if}
-  </VerificationDescription>
+  </VerificationDescription> -->
+
   <div class="flex flex-col justify-evenly md:w-1/2">
+    <div
+      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+    >
+      <div
+        class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
+      >
+        <div class="mr-3">Ethereum Wallet Ownership</div>
+        <EthereumIcon class="h-6 w-6" />
+      </div>
+      <div class="body">
+        This process is used to link your Ethereum account to your Tezos account
+        by connecting to MetaMask, signing using your Ethereum wallet, and
+        finally receiving the verification.
+      </div>
+    </div>
+
     <VerificationStep
       step={1}
       bind:currentStep
@@ -226,6 +246,14 @@
       <div class="flex flex-col lg:flex-row">
         {#if currentStep === 2}
           <PrimaryButton text="Sign" class="mt-8" onClick={issue} />
+        {/if}
+
+        {#if currentStep > 2}
+          <PrimaryButton
+            text="Return to Profile"
+            class="mt-8"
+            onClick={() => navigate('/connect')}
+          />
         {/if}
       </div>
     </VerificationStep>

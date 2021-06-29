@@ -10,11 +10,9 @@
 
 <div>
   <div class="flex justify-between items-center">
-    <Label class="mt-4" fieldName="ethereum-address" value="Ethereum Address" />
-    {#if draft.address}
-      <p class="text-sm text-gray-350 italic mt-2">
-        (signed by Ethereum address)
-      </p>
+    <Label class="mt-4" fieldName="ethereum-wallet" value="Ethereum Wallet" />
+    {#if draft.wallet}
+      <p class="text-sm text-gray-350 mt-2">(signed by Ethereum wallet)</p>
     {/if}
   </div>
   {#if draft.address}

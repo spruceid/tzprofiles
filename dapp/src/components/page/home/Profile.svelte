@@ -111,28 +111,6 @@
     </div>
   {/if}
 
-<<<<<<< HEAD
-  {#if $contractAddress !== null}
-    <!-- TODO: Stylize -->
-    <span class="py-2 text-white rounded bg-green-550">
-      {'Tezos Profile deployed at '}
-      <a
-        class="text-green-900 underline"
-        target="_blank"
-        href={`https://${
-          currentNetwork
-            ? currentNetwork === 'edonet.'
-              ? 'edo2net.'
-              : `${currentNetwork}.`
-            : ''
-        }tzkt.io/${$userData.account.address}`}
-      >
-        {'tzkt.io'}
-      </a>
-    </span>
-    {#if isAddingClaims}
-      Adding claims....
-=======
   {#if canUpload($claimsStream)}
     {#if $contractAddress !== null}
       {#if !isAllOnChain($claimsStream)}
@@ -148,12 +126,11 @@
           />
         {/if}
       {/if}
->>>>>>> Reform nav bar
     {:else}
       <PrimaryButton
         text="Add Claims to profile"
         class="mx-auto mt-4 bottom-6"
-        disabled={!canUpload()}
+        disabled={!canUpload($claimsStream)}
         onClick={async () => {
           await uploadNewClaim();
         }}

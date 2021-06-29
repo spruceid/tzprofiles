@@ -3,7 +3,6 @@
     AvailableCredentials,
     DownloadableCredentials,
     Profile,
-    MyCredentials,
     LoadingSpinner,
     BasePage,
   } from 'components';
