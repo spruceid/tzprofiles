@@ -65,8 +65,9 @@
         <TwitterIcon class="h-6 w-6" color="#00ACEE" />
       </div>
       <div class="body">
-        This process is used to generate some basic profile information about
-        yourself by filling in an alias, description, and logo for your profile.
+        This process is used to link your Twitter account to your Tezos account
+        by signing a message using your private key, entering your Twitter
+        handle, and finally, tweeting that message.
       </div>
     </div>
 

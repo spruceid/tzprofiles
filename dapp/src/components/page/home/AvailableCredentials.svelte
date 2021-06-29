@@ -24,6 +24,7 @@
 
   onMount(async () => {
     try {
+      console.log($claimsStream);
       if (
         !Object.values($claimsStream).every(
           (claim) => !claim.content && !claim.preparedContent
@@ -41,6 +42,8 @@
               return { ...claim, json };
             })
         );
+
+        console.log('Data', data);
       }
     } catch (err) {
       console.error(`Died in MyCredentials OnMount ${err.message}`);
@@ -100,15 +103,7 @@
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.proof}
             </td>
-            <td
-              ><div
-                class="status-tag {!$contractAddress
-                  ? 'status-pending'
-                  : 'status-complete'}"
-              >
-                {!$contractAddress ? 'Pending' : 'Complete'}
-              </div></td
-            >
+            <td><div class="status-tag status-complete">Complete</div></td>
             <td class="flex flex-row items-center">
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
