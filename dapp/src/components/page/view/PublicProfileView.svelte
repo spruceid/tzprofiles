@@ -10,7 +10,6 @@
   } from 'components';
   import type { ClaimMap } from 'src/helpers';
   import './publicProfileView.scss';
-  import { checkValidImageUrl } from 'src/common/helpers/profileUploadHelpers';
   const params = useParams();
 
   export let claimsMap: ClaimMap;
@@ -19,14 +18,14 @@
   let twitterDisplay;
   let ethereumDisplay;
 
-  checkValidImageUrl;
+  let shouldDisplayOriginalImage = true;
 
   onMount(() => {
-    console.log($params.address);
-    // console.log(claimsMap);
+    console.log(claimsMap);
     if (claimsMap.basic) basicDisplay = claimsMap.basic.draft;
     if (claimsMap.twitter) twitterDisplay = claimsMap.twitter.draft;
-    if (claimsMap.ethereum) ethereumDisplay = claimsMap.ethereum.draft;
+    if (claimsMap.ethereum && claimsMap.ethereum.draft.wallet)
+      ethereumDisplay = claimsMap.ethereum.draft;
   });
 </script>
 
@@ -34,8 +33,15 @@
   class="self-center w-full break-all md:max-w-lg lg:max-w-lg p-6 fade-in rounded-xl bg-white dropshadow-default"
 >
   {#if basicDisplay}
-    {#if basicDisplay.logo && checkValidImageUrl(basicDisplay.logo)}
-      <img src={basicDisplay.logo || ''} class="img-self" alt="profile-image" />
+    {#if basicDisplay.logo && shouldDisplayOriginalImage}
+      <img
+        src={basicDisplay.logo || ''}
+        class="img-self"
+        alt="profile-image"
+        on:error={() => {
+          shouldDisplayOriginalImage = false;
+        }}
+      />
     {:else}
       <ProfileImagePlaceholder />
     {/if}
