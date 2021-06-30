@@ -1,6 +1,6 @@
 ![tp header](/docs/tpheader.png)
 
-[![](https://img.shields.io/badge/License-Apache--2.0-green)](https://github.com/spruceid/didkit/blob/main/LICENSE) [![](https://img.shields.io/twitter/follow/sprucesystems?label=Follow&style=social)](https://twitter.com/sprucesystems)
+[![](https://img.shields.io/badge/License-Apache--2.0-green)](https://github.com/spruceid/didkit/blob/main/LICENSE) [![](https://img.shields.io/twitter/follow/tzprofiles?label=Follow&style=social)](https://twitter.com/tzprofiles)
 
 # Tezos Profiles
 
