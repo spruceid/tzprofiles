@@ -58,7 +58,7 @@
   const issue = async () => {
     if (!address) {
       alert.set({
-        message: 'No ethereum address selected',
+        message: 'No Ethereum address selected',
         variant: 'error',
       });
       return;
@@ -76,7 +76,7 @@
     claimsStream.set(nextClaimMap);
 
     alert.set({
-      message: "You've completed the Ethereum Control Claim successfully!",
+      message: "You've completed the Ethereum Address Control Claim successfully!",
       variant: 'success',
     });
 
@@ -87,7 +87,7 @@
   const signEthereumClaim = async (): Promise<string> => {
     if (!address) {
       alert.set({
-        message: 'No ethereum address selected',
+        message: 'No Ethereum address selected',
         variant: 'error',
       });
       return;
@@ -175,7 +175,7 @@
       return await completeIssueCredential(credStr, prepStr, signature);
     } catch (err) {
       alert.set({
-        message: `Failed to create ethereum claim: ${err?.message || err}`,
+        message: `Failed to create Ethereum claim: ${err?.message || err}`,
         variant: 'error',
       });
     }
@@ -200,7 +200,7 @@
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Connect using Metamask"
+      title="Connect using MetaMask"
       description="Connect to your Ethereum address using MetaMask."
     >
       <div class="flex flex-col">
@@ -221,7 +221,7 @@
       step={2}
       bind:currentStep
       title="Signature Challenge"
-      description="Sign an EIP712 signature challenge in order to demonstrate control over your selection address and issue a credential."
+      description="Sign an EIP712 signature challenge in order to demonstrate control over your selected address and issue a credential."
     >
       <div class="flex flex-col lg:flex-row">
         {#if currentStep === 2}
