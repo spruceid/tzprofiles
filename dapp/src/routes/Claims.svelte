@@ -1,11 +1,5 @@
 <script type="ts">
-  import {
-    AvailableCredentials,
-    DownloadableCredentials,
-    Profile,
-    LoadingSpinner,
-    BasePage,
-  } from 'components';
+  import { AvailableCredentials, LoadingSpinner, BasePage } from 'components';
   import { loadingContracts } from 'src/store';
 </script>
 

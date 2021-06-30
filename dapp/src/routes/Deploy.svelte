@@ -1,12 +1,5 @@
 <script lang="ts">
-  import {
-    BasePage,
-    VerificationStep,
-    VerificationDescription,
-    Cat,
-    PrimaryButton,
-  } from 'components';
-
+  import { BasePage, VerificationStep, PrimaryButton } from 'components';
   import {
     originate,
     userData,
@@ -16,13 +9,11 @@
     saveToKepler,
     alert,
   } from 'src/store';
-
   import type { ClaimMap } from 'src/helpers';
   import { contentToDraft } from 'src/helpers';
-
   import { Link } from 'svelte-navigator';
-
   import { useNavigate } from 'svelte-navigator';
+
   let navigate = useNavigate();
 
   let currentNetwork: string;
@@ -155,7 +146,9 @@
     <VerificationStep step={3} bind:currentStep title="Profile Deployed">
       {#if currentStep > 2}
         <div>
-          <Link to="/connect">Return to Profile</Link>
+          <Link to="/connect"
+            ><PrimaryButton text="Return to Profile" onClick={() => {}} /></Link
+          >
         </div>
       {/if}
     </VerificationStep>

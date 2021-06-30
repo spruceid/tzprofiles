@@ -59,7 +59,6 @@
       }
 
       await addClaims(newClaims);
-      console.log('NextClaimStream', nextClaimStream);
       claimsStream.set(nextClaimStream);
       navigate('/connect');
     } catch (e) {
@@ -138,12 +137,5 @@
         }}
       />
     {/if}
-    <!-- {:else}
-    <PrimaryButton
-      text="Deploy Profile"
-      class="mx-auto mt-4 bottom-6"
-      disabled={!agreement}
-      onClick={() => navigate('/deploy')} 
-    />-->
   {/if}
 </Card>

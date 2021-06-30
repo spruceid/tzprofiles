@@ -10,9 +10,10 @@
   } from 'components';
   import type { ClaimMap } from 'src/helpers';
   import './publicProfileView.scss';
-  const params = useParams();
 
   export let claimsMap: ClaimMap;
+
+  const params = useParams();
 
   let basicDisplay;
   let twitterDisplay;
@@ -21,7 +22,6 @@
   let shouldDisplayOriginalImage = true;
 
   onMount(() => {
-    console.log(claimsMap);
     if (claimsMap.basic) basicDisplay = claimsMap.basic.draft;
     if (claimsMap.twitter) twitterDisplay = claimsMap.twitter.draft;
     if (claimsMap.ethereum && claimsMap.ethereum.draft.wallet)

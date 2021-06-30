@@ -10,10 +10,6 @@
   $: errorMessage = '';
   const navigate = useNavigate();
 
-  const search = () => {
-    navigate('/search');
-  };
-
   const connect = () => {
     if ($userData) {
       navigate('/connect');
@@ -46,7 +42,7 @@
         />
         <PrimaryButton
           class="my-4 mx-2.5"
-          onClick={() => search()}
+          onClick={() => navigate('/search')}
           text="Search Profiles"
           secondary
         />

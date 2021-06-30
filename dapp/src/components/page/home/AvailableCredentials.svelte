@@ -21,7 +21,7 @@
   let selectedClaimToView = null;
 
   type contentType = 'content' | 'preparedContent';
-  export let filterType: contentType;
+  let filterType: contentType;
 
   const closeModal = () => {
     modalOpen = false;
