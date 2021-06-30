@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { useNavigate } from 'svelte-navigator';
   import { claimsStream, loadingContracts, contractAddress } from 'src/store';
   import './availablecredentials.scss';
@@ -20,6 +19,9 @@
   let modalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
+
+  type contentType = 'content' | 'preparedContent';
+  export let filterType: contentType;
 
   const closeModal = () => {
     modalOpen = false;
@@ -106,7 +108,7 @@
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
                 icon={DownloadIcon}
-                href={claim.json}
+                href={makeDownloadable(claim[filterType])}
                 download={`${claim.display.display}.json`}
               />
               <div

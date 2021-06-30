@@ -1,1 +1,1 @@
-export { default as ViewProfile } from './ViewProfile.svelte';
+export { default as PublicProfileView } from "./PublicProfileView.svelte";

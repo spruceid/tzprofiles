@@ -9,7 +9,7 @@
     network,
   } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
-  import { BasePage, ViewProfile, LoadingSpinner } from 'components';
+  import { BasePage, LoadingSpinner, PublicProfileView } from 'components';
 
   const params = useParams();
   if ($params.address) {
@@ -40,6 +40,6 @@
   {/if}
 
   {#if !fetching}
-    <ViewProfile claimsMap={searchClaims} network={$params.network} />
+    <PublicProfileView claimsMap={$searchClaims} />
   {/if}
 </BasePage>
