@@ -3,6 +3,7 @@ import type {Writable} from 'svelte/store';
 import {writable} from 'svelte/store';
 import {TezosToolkit} from '@taquito/taquito';
 import {Tzip16Module} from '@taquito/tzip16';
+import {encodeKey} from "@taquito/utils";
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
 import * as contractLib from 'tzprofiles';
@@ -252,7 +253,14 @@ wallet.subscribe((w) => {
     w.client.subscribeToEvent(
       BeaconEvent.PERMISSION_REQUEST_SUCCESS,
       async (data) => {
+        const pk = data.account.publicKey;
+        const pkh = data.account.address;
+        if (!pk.includes("pk")) {
+          const prefix = {"tz1": "00", "tz2": "01", "tz3": "02"};
+          data.account.publicKey = encodeKey(prefix[pkh.substring(0, 3)] + pk);
+        }
         userData.set(data);
+
         localKepler = new Kepler(
           keplerInstance,
           // NOTE: Ran into a typing err w/o any
