@@ -20,6 +20,7 @@
   let ethereumDisplay;
 
   let shouldDisplayOriginalImage = true;
+  let isCredentialSourceDropdownOpen = false;
 
   onMount(() => {
     if (claimsMap.basic) basicDisplay = claimsMap.basic.draft;
@@ -84,6 +85,31 @@
     <a href={basicDisplay.website || ''} target="_blank">
       <div class="my-6">{basicDisplay.website || ''}</div>
     </a>
-    <div>{basicDisplay.description || ''}</div>
+    <div class="break-normal">{basicDisplay.description || ''}</div>
+    <div class="mt-12 mb-4">
+      <hr />
+    </div>
+    <div
+      class="cursor-pointer font-semibold mb-4"
+      on:click={() =>
+        (isCredentialSourceDropdownOpen = !isCredentialSourceDropdownOpen)}
+    >
+      View Credential Sources
+    </div>
+
+    {#if isCredentialSourceDropdownOpen}
+      <div class="flex w-full justify-between	my-2">
+        <div>Basic Profile Information</div>
+        <div>Self-attested</div>
+      </div>
+      <div class="flex w-full justify-between	my-2">
+        <div>Twitter Profile</div>
+        <div>Signed by tzprofiles.com</div>
+      </div>
+      <div class="flex w-full justify-between	my-2">
+        <div>Ethereum Address</div>
+        <div>Signed by Ethereum Address</div>
+      </div>
+    {/if}
   {/if}
 </div>

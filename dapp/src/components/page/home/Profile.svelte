@@ -40,6 +40,7 @@
         orbit,
         ...newClaims.map((claim) => claim.preparedContent)
       );
+      console.log('Finished uploading claims to kepler ...');
 
       for (let i = newClaims.length, x = 0; i > x; i--) {
         let profile = newClaims[i - 1];
@@ -55,7 +56,9 @@
         nextClaimStream[profile.type] = next;
       }
 
+      console.log('Adding new claims');
       await addClaims(newClaims);
+      console.log('Added claims');
       claimsStream.set(nextClaimStream);
       onClose();
       // Close modal

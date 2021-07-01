@@ -5,9 +5,11 @@ export const canUpload = (claimStream: any): boolean => {
     for (let i = 0, n = claims.length; i < n; i++) {
       let claim: any = claims[i];
       if (claim.preparedContent) {
+        console.log("Can upload")
         return true;
       }
     }
+    console.log("Cannot upload", claimStream)
     return false;
 };
 
