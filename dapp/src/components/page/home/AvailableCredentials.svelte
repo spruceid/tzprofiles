@@ -47,7 +47,7 @@
             {#if !isAllOnChain($claimsStream)}
               <PrimaryButton
                 small
-                text="Add Claims to profile"
+                text="Add Claims to Profile"
                 class="mx-auto mt-4 bottom-6"
                 onClick={async () => {
                   openModal();

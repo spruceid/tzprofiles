@@ -128,7 +128,7 @@
           </div>
         {:else}
           <PrimaryButton
-            text="Add Claims to profile"
+            text="Add Claims to Profile"
             class="mx-auto mt-4 bottom-6 w-full"
             onClick={async () => {
               await uploadNewClaim();
@@ -138,7 +138,7 @@
       {/if}
     {:else}
       <PrimaryButton
-        text="Add Claims to profile"
+        text="Add Claims to Profile"
         class="mx-auto mt-4 bottom-6"
         disabled={!canUpload($claimsStream)}
         onClick={async () => {
