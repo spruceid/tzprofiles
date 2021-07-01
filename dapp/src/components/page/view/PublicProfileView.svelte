@@ -23,8 +23,9 @@
   let isCredentialSourceDropdownOpen = false;
 
   onMount(() => {
-    if (claimsMap.basic) basicDisplay = claimsMap.basic.draft;
-    if (claimsMap.twitter) twitterDisplay = claimsMap.twitter.draft;
+    console.log(claimsMap);
+    basicDisplay = claimsMap.basic.draft;
+    twitterDisplay = claimsMap.twitter.draft;
     if (claimsMap.ethereum && claimsMap.ethereum.draft.address)
       ethereumDisplay = claimsMap.ethereum.draft;
   });
@@ -58,7 +59,7 @@
         <CopyButton text={$searchAddress} color="gray" class="w-4 h-4 ml-2" />
       </div>
 
-      {#if twitterDisplay}
+      {#if claimsMap.twitter.content}
         <a
           href={`https://twitter.com/${twitterDisplay.handle}`}
           target="_blank"
@@ -85,7 +86,9 @@
     <a href={basicDisplay.website || ''} target="_blank">
       <div class="my-6">{basicDisplay.website || ''}</div>
     </a>
-    <div class="break-normal">{basicDisplay.description || ''}</div>
+    <div class="break-normal description-section">
+      {basicDisplay.description || ''}
+    </div>
     <div class="mt-12 mb-4">
       <hr />
     </div>
@@ -98,18 +101,26 @@
     </div>
 
     {#if isCredentialSourceDropdownOpen}
-      <div class="flex w-full justify-between	my-2">
-        <div>Basic Profile Information</div>
-        <div>Self-attested</div>
-      </div>
-      <div class="flex w-full justify-between	my-2">
-        <div>Twitter Profile</div>
-        <div>Signed by tzprofiles.com</div>
-      </div>
-      <div class="flex w-full justify-between	my-2">
-        <div>Ethereum Address</div>
-        <div>Signed by Ethereum Address</div>
-      </div>
+      {#if claimsMap.basic.content}
+        <div class="flex w-full justify-between	my-2">
+          <div>Basic Profile Information</div>
+          <div>Self-attested</div>
+        </div>
+      {/if}
+
+      {#if claimsMap.twitter.content}
+        <div class="flex w-full justify-between	my-2">
+          <div>Twitter Profile</div>
+          <div>Signed by tzprofiles.com</div>
+        </div>
+      {/if}
+
+      {#if claimsMap.ethereum.content}
+        <div class="flex w-full justify-between	my-2">
+          <div>Ethereum Address</div>
+          <div>Signed by Ethereum Address</div>
+        </div>
+      {/if}
     {/if}
   {/if}
 </div>
