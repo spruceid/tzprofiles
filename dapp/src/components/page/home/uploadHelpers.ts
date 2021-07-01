@@ -16,7 +16,7 @@ export const makeDownloadable = (obj: any): string => {
     let stringify = JSON.stringify(obj, null, 2);
     let encoded = encodeURIComponent(stringify);
     return `data:application/json;charset=utf-8,${encoded}`;
-  };
+};
 
 
 
@@ -31,7 +31,7 @@ export const makeDownloadable = (obj: any): string => {
         return orbitPath[0];
       }
     }
-  };
+};
 
 
 export const isAllOnChain = (cMap: ClaimMap): boolean => {
@@ -45,4 +45,9 @@ export const isAllOnChain = (cMap: ClaimMap): boolean => {
     }
 
     return keys.length === found;
-  };
+};
+
+
+export const shouldDisplayPendingStatus = (claim): boolean => {
+    return !claim.content && claim.preparedContent;
+};

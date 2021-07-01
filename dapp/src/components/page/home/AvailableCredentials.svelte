@@ -10,7 +10,12 @@
     ClaimDisplay,
   } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  import { canUpload, makeDownloadable, isAllOnChain } from './uploadHelpers';
+  import {
+    canUpload,
+    makeDownloadable,
+    isAllOnChain,
+    shouldDisplayPendingStatus,
+  } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
 
@@ -29,10 +34,6 @@
 
   const openModal = () => {
     modalOpen = true;
-  };
-
-  const shouldDisplayPendingStatus = (claim) => {
-    return !claim.content && claim.preparedContent;
   };
 </script>
 

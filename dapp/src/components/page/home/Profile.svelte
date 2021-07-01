@@ -1,11 +1,5 @@
 <script lang="ts">
-  import {
-    Card,
-    ClaimDisplay,
-    PrimaryButton,
-    LoadingSpinner,
-  } from 'components';
-
+  import { Card, PrimaryButton, LoadingSpinner } from 'components';
   import {
     alert,
     claimsStream,
@@ -14,7 +8,12 @@
     addToKepler,
     addClaims,
   } from 'src/store';
-  import { canUpload, getCurrentOrbit, isAllOnChain } from './uploadHelpers';
+  import {
+    canUpload,
+    getCurrentOrbit,
+    isAllOnChain,
+    shouldDisplayPendingStatus,
+  } from './uploadHelpers';
   import { contentToDraft } from 'src/helpers';
 
   export let onClose: () => void;
@@ -80,9 +79,19 @@
 <Card
   class="relative self-center w-full text-center break-all md:max-w-md lg:max-w-md"
 >
-  {#each Object.values($claimsStream) as c}
-    <ClaimDisplay claim={c} />
-  {/each}
+  <div class="mb-4 text-2xl text-left font-bold body">
+    Adding the following claims
+  </div>
+
+  <div class="mb-8">
+    {#each Object.values($claimsStream) as claim}
+      {#if shouldDisplayPendingStatus(claim)}
+        <div class="w-fulll text-left">
+          - {claim.display.display}
+        </div>
+      {/if}
+    {/each}
+  </div>
 
   {#if $contractAddress === null}
     <div class="flex items-center w-full text-gray-650 mt-8">
