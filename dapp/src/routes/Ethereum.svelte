@@ -186,20 +186,6 @@
 <BasePage
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
 >
-  <!-- <VerificationDescription
-    icon={display.icon}
-    title={display.title}
-    description={display.description}
-  >
-    {#if currentStep > 2}
-      <PrimaryButton
-        text="Return to Profile"
-        class="mt-8"
-        onClick={() => navigate('/')}
-      />
-    {/if}
-  </VerificationDescription> -->
-
   <div class="flex flex-col justify-evenly md:w-1/2">
     <div
       class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"

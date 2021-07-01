@@ -33,3 +33,10 @@
     padding: 20px 12px;
     
 }
+
+
+@media (max-width:600px) {
+  .overall-wallet-container {
+    display: none !important;
+  }
+}

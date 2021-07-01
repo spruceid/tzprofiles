@@ -118,7 +118,7 @@
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Upload Credentials to Kepler"
+      title="Uploading Credentials to Kepler"
       loading={currentStep === 1 && !retry}
       error={currentStep === 1 && retry}
     >
@@ -132,7 +132,7 @@
     <VerificationStep
       step={2}
       bind:currentStep
-      title="Deploy Contract to Blockchain"
+      title="Deploying Your Tezos Profile"
       loading={currentStep === 2 && !retry}
       error={currentStep === 2 && retry}
     >
@@ -145,10 +145,13 @@
 
     <VerificationStep step={3} bind:currentStep title="Profile Deployed">
       {#if currentStep > 2}
-        <div>
-          <Link to="/connect"
-            ><PrimaryButton text="Return to Profile" onClick={() => {}} /></Link
-          >
+        <div class="flex flex-col lg:flex-row">
+          <PrimaryButton
+            text="Return to Profile"
+            onClick={() => {
+              navigate('/connect');
+            }}
+          />
         </div>
       {/if}
     </VerificationStep>

@@ -225,11 +225,14 @@
     </VerificationStep>
 
     {#if currentStep > 4}
-      <PrimaryButton
-        text="Return to Profile"
-        class="mt-8"
-        onClick={() => navigate('/connect')}
-      />
+      <div
+        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+      >
+        <PrimaryButton
+          text="Return to Profile"
+          onClick={() => navigate('/connect')}
+        />
+      </div>
     {/if}
   </div>
 </BasePage>

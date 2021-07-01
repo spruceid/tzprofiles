@@ -68,7 +68,7 @@
     {#if $userData}
       <div class="relative">
         <div
-          class="flex flex-row items-center address-container py-3 px-4 cursor-pointer"
+          class="flex flex-row items-center address-container py-3 px-4 cursor-pointer overall-wallet-container"
         >
           <div
             class="address-text-container cursor-pointer"

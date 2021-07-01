@@ -165,9 +165,9 @@
 {#if modalOpen}
   <FileModal onClose={() => closeModal()}
     ><div class="flex flex-column items-center">
-      <Profile />
-    </div></FileModal
-  >
+      <Profile onClose={() => closeModal()} />
+    </div>
+  </FileModal>
 {/if}
 
 {#if isCredentialModalOpen}

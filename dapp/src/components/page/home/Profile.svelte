@@ -15,11 +15,9 @@
     addClaims,
   } from 'src/store';
   import { canUpload, getCurrentOrbit, isAllOnChain } from './uploadHelpers';
-
   import { contentToDraft } from 'src/helpers';
-  import { useNavigate } from 'svelte-navigator';
 
-  let navigate = useNavigate();
+  export let onClose: () => void;
 
   let currentNetwork: string;
 
@@ -60,7 +58,8 @@
 
       await addClaims(newClaims);
       claimsStream.set(nextClaimStream);
-      navigate('/connect');
+      onClose();
+      // Close modal
     } catch (e) {
       alert.set({
         message: `Error in add claim ${e?.message || e}`,
@@ -116,6 +115,7 @@
         {#if isAddingClaims}
           <div class="w-full flex flex-col items-center">
             <LoadingSpinner class="rotating my-6" />
+            Please be patient
           </div>
         {:else}
           <PrimaryButton
