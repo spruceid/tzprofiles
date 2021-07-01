@@ -24,7 +24,7 @@
   onMount(() => {
     if (claimsMap.basic) basicDisplay = claimsMap.basic.draft;
     if (claimsMap.twitter) twitterDisplay = claimsMap.twitter.draft;
-    if (claimsMap.ethereum && claimsMap.ethereum.draft.wallet)
+    if (claimsMap.ethereum && claimsMap.ethereum.draft.address)
       ethereumDisplay = claimsMap.ethereum.draft;
   });
 </script>
@@ -71,7 +71,7 @@
 
       {#if ethereumDisplay}
         <a
-          href={`https://etherscan.io/address/${ethereumDisplay.wallet}`}
+          href={`https://etherscan.io/address/${ethereumDisplay.address}`}
           target="_blank"
           class="mr-2"
         >
