@@ -1,6 +1,5 @@
 import { ClaimMap } from "src/helpers";
 
-
 export const canUpload = (claimStream: any): boolean => {
     let claims = Object.values(claimStream);
     for (let i = 0, n = claims.length; i < n; i++) {
@@ -19,8 +18,7 @@ export const makeDownloadable = (obj: any): string => {
 };
 
 
-
-  export const getCurrentOrbit = (cMap: ClaimMap) => {
+export const getCurrentOrbit = (cMap: ClaimMap) => {
     let keys = Object.keys(cMap);
     for (let i = 0, n = keys.length; i < n; i++) {
       let claim = cMap[keys[i]];
@@ -32,7 +30,6 @@ export const makeDownloadable = (obj: any): string => {
       }
     }
 };
-
 
 export const isAllOnChain = (cMap: ClaimMap): boolean => {
     let keys = Object.keys(cMap);
