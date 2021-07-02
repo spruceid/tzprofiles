@@ -1,6 +1,12 @@
 <script lang="ts">
   import { useNavigate } from 'svelte-navigator';
-  import { claimsStream, loadingContracts, contractAddress } from 'src/store';
+  import {
+    claimsStream,
+    loadingContracts,
+    contractAddress,
+    networkStr,
+    userData,
+  } from 'src/store';
   import './availablecredentials.scss';
   import {
     IconLink,
@@ -15,12 +21,16 @@
     makeDownloadable,
     isAllOnChain,
     shouldDisplayPendingStatus,
-    containsContract,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
 
   let navigate = useNavigate();
+
+  let currentNetwork: string;
+  networkStr.subscribe((x) => {
+    currentNetwork = x;
+  });
 
   let modalOpen = false;
   let isCredentialModalOpen = false;
@@ -45,12 +55,21 @@
 
       <div class="flex flex-row items-center">
         <div class="mr-4">
-          {#if containsContract($claimsStream)}
+          {#if contractAddress}
             <PrimaryButton
               small
               secondary={true}
               text="View on TZKT.io"
-              onClick={() => {}}
+              onClick={() =>
+                window.open(
+                  `https://${
+                    currentNetwork
+                      ? currentNetwork === 'edonet.'
+                        ? 'edo2net.'
+                        : `${currentNetwork}.`
+                      : ''
+                  }tzkt.io/${$userData.account.address}`
+                )}
             />
           {:else}
             <div class="opacity-50">No contract detected</div>
