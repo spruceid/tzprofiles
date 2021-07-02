@@ -32,7 +32,7 @@
   $: currentStep = 1;
 
   const connectMetaMask = async () => {
-    eth = await detectEthereumProvider();
+    let eth = await detectEthereumProvider();
     if (eth) {
       addresses = await eth.request({ method: 'eth_requestAccounts' });
     } else {
@@ -77,7 +77,8 @@
     claimsStream.set(nextClaimMap);
 
     alert.set({
-      message: "You've completed the Ethereum Address Control Claim successfully!",
+      message:
+        "You've completed the Ethereum Address Control Claim successfully!",
       variant: 'success',
     });
 
@@ -219,7 +220,7 @@
           />
         {/if}
         {#if currentStep > 1}
-          <div class="mt-4">Connected to {address}</div>
+          <div class="mt-4 body">Connected to {address}</div>
         {/if}
       </div>
     </VerificationStep>

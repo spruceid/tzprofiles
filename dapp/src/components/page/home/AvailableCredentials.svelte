@@ -59,7 +59,7 @@
             <PrimaryButton
               small
               secondary={true}
-              text="View on TZKT.io"
+              text="View on TzKT"
               onClick={() =>
                 window.open(
                   `https://${
