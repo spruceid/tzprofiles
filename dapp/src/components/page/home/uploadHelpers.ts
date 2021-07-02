@@ -13,6 +13,15 @@ export const canUpload = (claimStream: any): boolean => {
     return false;
 };
 
+export const containsContract = (claimStream: any): boolean => {
+  let claims = Object.values(claimStream);
+
+  for(let i = 0; i < claims.length; i++){
+    if(claims[i].content) return true
+  }
+  return false
+}
+
 export const makeDownloadable = (obj: any): string => {
     let stringify = JSON.stringify(obj, null, 2);
     let encoded = encodeURIComponent(stringify);

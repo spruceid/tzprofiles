@@ -15,6 +15,7 @@
     makeDownloadable,
     isAllOnChain,
     shouldDisplayPendingStatus,
+    containsContract,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
@@ -41,26 +42,41 @@
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
       <div class="text-2xl font-bold body">My Credentials</div>
-      <div>
+
+      <div class="flex flex-row items-center">
+        <div class="mr-4">
+          {#if containsContract($claimsStream)}
+            <PrimaryButton
+              small
+              secondary={true}
+              text="View on TZKT.io"
+              onClick={() => {}}
+            />
+          {:else}
+            <div class="opacity-50">No contract detected</div>
+          {/if}
+        </div>
+
         {#if canUpload($claimsStream)}
-          {#if $contractAddress !== null}
-            {#if !isAllOnChain($claimsStream)}
+          <div>
+            {#if $contractAddress !== null}
+              {#if !isAllOnChain($claimsStream)}
+                <PrimaryButton
+                  small
+                  text="Add Claims to Profile"
+                  onClick={async () => {
+                    openModal();
+                  }}
+                />
+              {/if}
+            {:else}
               <PrimaryButton
+                text="Deploy Profile"
+                onClick={() => navigate('/deploy')}
                 small
-                text="Add Claims to Profile"
-                class="mx-auto mt-4 bottom-6"
-                onClick={async () => {
-                  openModal();
-                }}
               />
             {/if}
-          {:else}
-            <PrimaryButton
-              text="Deploy Profile"
-              onClick={() => navigate('/deploy')}
-              small
-            />
-          {/if}
+          </div>
         {/if}
       </div>
     </div>
