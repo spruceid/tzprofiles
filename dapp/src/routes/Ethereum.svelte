@@ -32,7 +32,7 @@
   $: currentStep = 1;
 
   const connectMetaMask = async () => {
-    let eth = await detectEthereumProvider();
+    eth = await detectEthereumProvider();
     if (eth) {
       addresses = await eth.request({ method: 'eth_requestAccounts' });
     } else {
