@@ -32,6 +32,8 @@
     currentNetwork = x;
   });
 
+  console.log(contractAddress);
+
   let modalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
@@ -55,7 +57,7 @@
 
       <div class="flex flex-row items-center">
         <div class="mr-4">
-          {#if contractAddress}
+          {#if $contractAddress}
             <PrimaryButton
               small
               secondary={true}
@@ -68,7 +70,7 @@
                         ? 'edo2net.'
                         : `${currentNetwork}.`
                       : ''
-                  }tzkt.io/${$userData.account.address}`
+                  }tzkt.io/${$contractAddress}`
                 )}
             />
           {:else}
