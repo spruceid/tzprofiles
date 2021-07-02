@@ -1,0 +1,26 @@
+@import "../../common/style/color.scss";
+
+.button-container{
+    border-radius: 100px !important;
+    background-color: $primary-color;
+    padding: 12px 24px;
+    transition: 0.1s;
+    color: white !important;
+}
+
+.button-container:hover{
+    background-color: $primary-dark;
+    transition: 0.1s;
+    transform: scale(1.05);
+    color: white !important;
+}
+
+.secondary-button-container{
+    background-color: #DAE2EC;
+    color: black !important;
+}
+
+.secondary-button-container:hover{
+    background-color: #bcc7d4;
+    color: black !important;
+}

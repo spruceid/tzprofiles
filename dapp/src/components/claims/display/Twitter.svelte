@@ -17,9 +17,7 @@
     />
 
     {#if draft?.handle}
-      <p class="text-sm text-gray-350 italic mt-2">
-        (signed-by tzprofiles.com)
-      </p>
+      <p class="text-sm text-gray-350 mt-2">(signed-by tzprofiles.com)</p>
     {/if}
   </div>
 
@@ -28,7 +26,6 @@
       <Input
         prefix="@"
         fluid
-        class="font-bold"
         name="basic-twitter-handle"
         value={draft.handle}
         disabled

@@ -11,7 +11,7 @@
     padding: 0px;
     font-size: 16px;
     font-family: 'Inter';
-    background: linear-gradient(151.67deg, #3a83a3 42.84%, #429383 103.49%);
+    background: #ecf2fe;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -22,15 +22,22 @@
   h3,
   h4,
   h5 {
-    font-family: 'Poppins';
-    text-transform: capitalize;
-    font-weight: 700;
-    text-align: center;
+    font-family: 'Inter';
+    font-weight: 600;
+    color: #222222;
   }
 
+  body {
+    color: #222222;
+  }
+
+  a {
+    text-decoration: none;
+    color: #1a75ff;
+  }
   td,
   th {
-    font-family: 'Poppins';
+    font-family: 'Inter';
     font-weight: 400;
   }
 

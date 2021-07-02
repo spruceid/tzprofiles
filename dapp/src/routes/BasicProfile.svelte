@@ -30,56 +30,31 @@
   const next = () => (currentStep = currentStep + 1);
 </script>
 
-<BasePage class="flex-wrap items-center justify-center">
-  <VerificationDescription
-    icon={display.icon}
-    title={display.title}
-    description={display.description}
-  >
-    {#if currentStep == 2}
-      <PrimaryButton
-        text="Sign Profile"
-        class="mt-8"
-        onClick={() => {
-          lock = true;
-          let profile = {
-            alias,
-            description,
-            website,
-            logo,
-          };
-          signBasicProfile($userData, $wallet, $networkStr, profile)
-            .then((vc) => {
-              let nextClaimMap = verification;
-              nextClaimMap.basic.preparedContent = JSON.parse(vc);
-              nextClaimMap.basic.draft = contentToDraft(
-                'basic',
-                nextClaimMap.basic.preparedContent
-              );
-              claimsStream.set(nextClaimMap);
-              next();
-            })
-            .catch(console.error)
-            .finally(() => (lock = false));
-        }}
-        disabled={lock}
-      />
-    {:else if currentStep > 2}
-      <PrimaryButton
-        text="Return to Profile"
-        class="mt-8"
-        onClick={() => navigate('/')}
-      />
-    {/if}
-  </VerificationDescription>
+<BasePage
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-visible flex-wrap items-center justify-center"
+>
   <div class="flex flex-col justify-evenly md:w-1/2">
+    <div
+      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+    >
+      <div
+        class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
+      >
+        <div class="mr-3">Basic Profile</div>
+      </div>
+      <div class="body">
+        This process is used to generate some basic profile information about
+        yourself by filling in an alias, description, and logo for your profile.
+      </div>
+    </div>
+
     <VerificationStep
       step={1}
       bind:currentStep
       title="Fill in Basic Information"
       description="Self-attest to your brand’s information and link it to other identifiers that have been provided."
     >
-      <Label fieldName="alias" value="Alias" class="mt-6 text-white" />
+      <Label fieldName="alias" value="Alias" class="mt-6" />
       <Input
         bind:value={alias}
         name="alias"
@@ -87,11 +62,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label
-        fieldName="description"
-        value="Description"
-        class="mt-2 text-white"
-      />
+      <Label fieldName="description" value="Description" class="mt-2" />
       <Input
         bind:value={description}
         name="description"
@@ -99,7 +70,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label fieldName="website" value="Website" class="mt-2 text-white" />
+      <Label fieldName="website" value="Website" class="mt-2" />
       <Input
         bind:value={website}
         name="website"
@@ -107,7 +78,7 @@
         disabled={currentStep !== 1}
       />
 
-      <Label fieldName="logo" value="Logo" class="mt-2 text-white" />
+      <Label fieldName="logo" value="Logo" class="mt-2" />
       {#if currentStep === 1}
         <Input
           bind:value={logo}
@@ -135,6 +106,36 @@
           disabled={alias.length < 1 ||
             description.length < 1 ||
             logo.length < 1}
+        />
+      {/if}
+
+      {#if currentStep == 2}
+        <PrimaryButton
+          text="Review and sign"
+          class="mt-8 lg:w-60"
+          onClick={() => {
+            lock = true;
+            let profile = {
+              alias,
+              description,
+              website,
+              logo,
+            };
+            signBasicProfile($userData, $wallet, $networkStr, profile)
+              .then((vc) => {
+                let nextClaimMap = verification;
+                nextClaimMap.basic.preparedContent = JSON.parse(vc);
+                nextClaimMap.basic.draft = contentToDraft(
+                  'basic',
+                  nextClaimMap.basic.preparedContent
+                );
+                claimsStream.set(nextClaimMap);
+                navigate('/connect');
+              })
+              .catch(console.error)
+              .finally(() => (lock = false));
+          }}
+          disabled={lock}
         />
       {/if}
     </VerificationStep>

@@ -1,9 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { useParams } from 'svelte-navigator';
-  import { searchClaims, searchAddress, defaultSearchOpts, search, network } from 'src/store';
+  import {
+    searchClaims,
+    searchAddress,
+    defaultSearchOpts,
+    search,
+    network,
+  } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
-  import { BasePage, ViewProfile, SpinnerIcon } from 'components';
+  import { BasePage, LoadingSpinner, PublicProfileView } from 'components';
 
   const params = useParams();
   if ($params.address) {
@@ -19,25 +25,21 @@
         ($params.network as NetworkType) || ('mainnet' as NetworkType)
       );
       fetching = true;
-      search($params.address, defaultSearchOpts).finally(
-        () => { 
-          fetching = false;
-        }
-      );
+      search($params.address, defaultSearchOpts).finally(() => {
+        fetching = false;
+      });
     }
   });
 </script>
 
-<BasePage class="justify-center flex-col">
+<BasePage class="justify-center flex flex-col items-center">
   {#if fetching}
     <div class="items-center justify-center w-full mb-8 flex">
-      <SpinnerIcon class="animate-spin w-8 h-8 text-center mr-6" />
-      Loading profile
+      <LoadingSpinner class="rotating" />
     </div>
   {/if}
-  <ViewProfile
-    claimsMap={searchClaims}
-    address={$searchAddress}
-    network={$params.network}
-  />
+
+  {#if !fetching}
+    <PublicProfileView claimsMap={$searchClaims} />
+  {/if}
 </BasePage>

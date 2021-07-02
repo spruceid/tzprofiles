@@ -1,4 +1,5 @@
 module.exports = {
+  tableLayout: false,
   purge: [
     './src/**/*.html',
     './src/**/*.js',
@@ -59,6 +60,7 @@ module.exports = {
     extend: {
       backgroundColor: ['checked'],
       borderColor: ['checked'],
+      opacity: ['disabled'],
     }
   },
   plugins: [],

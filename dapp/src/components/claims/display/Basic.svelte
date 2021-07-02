@@ -12,74 +12,62 @@
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-alias" value="Alias" />
     {#if draft.alias}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
   {#if draft.alias}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-alias"
-        value={draft.alias}
-        disabled
-      />
-    </div>
+    <Input fluid name="basic-alias" class="mb-3" value={draft.alias} disabled />
   {:else}
-    <ClaimLinkInput display={display} />
+    <ClaimLinkInput {display} />
   {/if}
 
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-description" value="Description" />
     {#if draft.description}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
 
   {#if draft.description}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-description"
-        value={draft.description}
-        disabled
-      />
-    </div>
+    <Input
+      fluid
+      name="basic-description"
+      class="mb-3"
+      value={draft.description}
+      disabled
+    />
   {:else}
-    <ClaimLinkInput display={display} />
+    <ClaimLinkInput {display} />
   {/if}
 
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-website" value="Website" />
     {#if draft.website}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
 
   {#if draft.website}
-    <div class="flex items-center">
-      <Input
-        fluid
-        class="font-bold"
-        name="basic-website"
-        value={draft.website}
-        disabled
-      />
-    </div>
+    <Input
+      fluid
+      name="basic-website"
+      class="mb-3"
+      value={draft.website}
+      disabled
+    />
   {:else}
-    <ClaimLinkInput display={display} />
+    <ClaimLinkInput {display} />
   {/if}
   <div class="flex justify-between items-center">
     <Label class="mt-4" fieldName="basic-logo" value="Logo" />
     {#if draft.logo}
-      <p class="text-sm text-gray-350 italic mt-2">(self-attested)</p>
+      <p class="text-sm text-gray-350 mt-2">(self-attested)</p>
     {/if}
   </div>
 
   <div class="flex items-center justify-between">
     <div
-      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-green-550 text-gray-350"
+      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-gray-200 text-gray-350"
       class:opacity-60={true}
     >
       {#if draft.logo}
@@ -93,7 +81,7 @@
         <p class="m-2 italic break-words select-none">
           {'Available in '}
           <a href="/basic-profile" class="underline">
-            {'Basic profile Information'}
+            Basic profile Information
           </a>
         </p>
       {/if}

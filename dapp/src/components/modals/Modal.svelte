@@ -44,7 +44,8 @@
       class:sm:translate-y-0={opacity}
       class:sm:scale-95={opacity}
     >
-      <div class="bg-white py-6 h-full">
+      <div class="bg-white py-6 px-6 h-full">
+        <div on:click={() => toggle()} class="cursor-pointer">Close</div>
         <div class="flex flex-col sm:items-start h-full">
           <slot id="modal-title" name="title" />
           <slot id="modal-body" name="body" />

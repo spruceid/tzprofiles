@@ -1,12 +1,5 @@
 <script lang="ts">
-  import {
-    BasePage,
-    VerificationStep,
-    VerificationDescription,
-    Cat,
-    PrimaryButton,
-  } from 'components';
-
+  import { BasePage, VerificationStep, PrimaryButton } from 'components';
   import {
     originate,
     userData,
@@ -16,13 +9,11 @@
     saveToKepler,
     alert,
   } from 'src/store';
-
   import type { ClaimMap } from 'src/helpers';
   import { contentToDraft } from 'src/helpers';
-
   import { Link } from 'svelte-navigator';
-
   import { useNavigate } from 'svelte-navigator';
+
   let navigate = useNavigate();
 
   let currentNetwork: string;
@@ -120,14 +111,14 @@
   deploy();
 </script>
 
-<BasePage class="flex-wrap items-center justify-center">
-  <VerificationDescription icon={Cat} title="Deploying Profile" />
-
-  <div class="flex flex-col justify-evenly md:w-1/2">
+<BasePage
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap justify-center"
+>
+  <div class="flex flex-col md:w-1/2">
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Upload Credentials to Kepler"
+      title="Uploading Credentials to Kepler"
       loading={currentStep === 1 && !retry}
       error={currentStep === 1 && retry}
     >
@@ -141,7 +132,7 @@
     <VerificationStep
       step={2}
       bind:currentStep
-      title="Deploy Contract to Blockchain"
+      title="Deploying Your Tezos Profile"
       loading={currentStep === 2 && !retry}
       error={currentStep === 2 && retry}
     >
@@ -154,12 +145,14 @@
 
     <VerificationStep step={3} bind:currentStep title="Profile Deployed">
       {#if currentStep > 2}
-        <p class="inline font-poppins">
-          {'View on '}
-          <Link to={`/view/${currentNetwork}/${$userData.account.address}`}>
-            {'Tezos Profiles Viewer'}
-          </Link>
-        </p>
+        <div class="flex flex-col lg:flex-row">
+          <PrimaryButton
+            text="Return to Profile"
+            onClick={() => {
+              navigate('/connect');
+            }}
+          />
+        </div>
       {/if}
     </VerificationStep>
   </div>

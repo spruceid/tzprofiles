@@ -1,0 +1,23 @@
+.fade-in {
+    animation: fadeIn 0.2s;
+}
+
+.rotating {
+    -webkit-animation: rotating 0.7s linear infinite;
+}
+
+
+@keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+@-webkit-keyframes rotating {
+    from{
+        -webkit-transform: rotate(0deg);
+    }
+    to{
+        -webkit-transform: rotate(360deg);
+    }
+}
+

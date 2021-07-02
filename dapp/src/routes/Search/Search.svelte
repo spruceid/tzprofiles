@@ -2,17 +2,17 @@
   import {
     BasePage,
     PrimaryButton,
-    TextBody2,
     Select,
     Option,
     Input,
     Label,
-    SpinnerIcon,
+    LoadingSpinner,
   } from 'components';
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
   import { defaultSearchOpts, search, network } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
+  import './search.scss';
 
   const navigate = useNavigate();
 
@@ -29,30 +29,34 @@
   };
 </script>
 
-<BasePage class="flex-col flex-wrap items-center justify-center">
-  <h1 class="lg:text-8xl sm:text-7xl text-6xl">Tezos Profiles Viewer</h1>
-  <TextBody2
-    value="Tezos Profiles Viewer enables you to search for a Tezos Profile using
-     a Tezos Address"
-    class="text-center my-8"
-  />
-  <div class="flex flex-col items-center">
-    <Label fieldName="network" value="Choose a network" class="text-white" />
-    <Select
-      name="network"
-      id="network"
-      bind:value={localNetwork}
-      onChange={setSelectedNetwork}
-    >
-      <Option value="mainnet" text="mainnet" selected />
-      <Option value="granadanet" text="granadanet" />
-      <Option value="edonet" text="edonet" />
-      <Option value="florencenet" text="florencenet" />
-      <Option value="custom" text="custom" />
-    </Select>
+<BasePage class="flex flex-col items-center justify-center">
+  <div class="search-container dropshadow-default fade-in">
+    <div class="mb-4 text-2xl text-left font-bold body">
+      Tezos Profiles Explorer
+    </div>
+    <div class="mb-12">
+      Tezos Profiles Explorer enables you to search for a Tezos Profile using a
+      Tezos Address
+    </div>
     <div class="flex items-center mt-8">
       {#if !searching}
-        <Input placeholder="Enter a Tezos address" bind:value={address} />
+        <Select
+          name="network"
+          id="network"
+          bind:value={localNetwork}
+          onChange={setSelectedNetwork}
+          class="mr-2"
+        >
+          <Option value="mainnet" text="mainnet" selected />
+          <Option value="edonet" text="edonet" />
+          <Option value="florencenet" text="florencenet" />
+          <Option value="custom" text="localhost" />
+        </Select>
+        <Input
+          placeholder="Enter a Tezos address"
+          bind:value={address}
+          name="address-search"
+        />
         <PrimaryButton
           class="m-4"
           onClick={() => {
@@ -67,7 +71,9 @@
           small
         />
       {:else}
-        <SpinnerIcon class="w-15 h-15 text-center animate-spin" />
+        <LoadingSpinner
+          class="w-15 h-15 text-center animate-spin w-100 mx-auto"
+        />
       {/if}
     </div>
   </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import './select.scss';
+
   export let value: any;
   export let id: string = '';
   export let name: string = '';
@@ -16,7 +18,7 @@
 <select
   {name}
   {id}
-  class="bg-blue-550 {clazz}"
+  class="select-container {clazz}"
   bind:value
   on:change={(e) => onChange(e)}
 >

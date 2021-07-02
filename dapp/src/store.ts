@@ -79,7 +79,7 @@ export const addToKepler = async (orbit: string, ...obj: Array<any>): Promise<Ar
     let addresses = await helpers.addToKepler(localKepler, orbit, ...obj);
 
     alert.set({
-      message: 'Successfuly uploaded to Kepler',
+      message: 'Successfully uploaded to Kepler',
       variant: 'success',
     });
 
@@ -99,7 +99,7 @@ export const saveToKepler = async(...obj: Array<any>): Promise<Array<string>> =>
     let addresses = await helpers.saveToKepler(localKepler, await localWallet.getPKH(), ...obj);
 
     alert.set({
-      message: 'Successfuly uploaded to Kepler',
+      message: 'Successfully uploaded to Kepler',
       variant: 'success',
     });
 

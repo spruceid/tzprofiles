@@ -5,9 +5,9 @@
   export { clazz as class };
 </script>
 
-<Nav {backHome} />
-<div class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x {clazz}">
+<Nav />
+<div class={clazz}>
   <slot />
+  <!-- <Footer /> -->
 </div>
 <Alert />
-<Footer />

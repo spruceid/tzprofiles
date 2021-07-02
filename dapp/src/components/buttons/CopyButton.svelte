@@ -3,7 +3,7 @@
   import { ClipboardIcon } from 'components';
 
   export let text: string = '';
-  export let color: string = 'white';
+  export let color: string = '#d1d1d1';
   export { clazz as class };
   let clazz: string = 'w-8 h-8';
 

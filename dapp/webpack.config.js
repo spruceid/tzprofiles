@@ -71,6 +71,14 @@ module.exports = {
 				]
 			},
 			{
+				test: /\.s[ac]ss$/i,
+				use: [
+				  "style-loader",
+				  "css-loader",
+				  "sass-loader",
+				],
+			},
+			{
 				// required to prevent errors from Svelte on Webpack 5+
 				test: /node_modules\/svelte\/.*\.mjs$/,
 				resolve: {
@@ -98,8 +106,8 @@ module.exports = {
 			'BUILD_MODE_DEV': !prod,
 		}),
 		new webpack.EnvironmentPlugin({
-			WITNESS_URL: "http://localhost:8787",
-			KEPLER_URL: "http://localhost:8000"
+			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
+			KEPLER_URL: "https://kepler.tzprofiles.com"
 		})
 	],
 	devtool: prod ? false : 'source-map',

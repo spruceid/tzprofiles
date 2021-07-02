@@ -4,8 +4,8 @@
     CopyButton,
     Input,
     PrimaryButton,
-    VerificationDescription,
     VerificationStep,
+    TwitterIcon,
   } from 'components';
 
   import { claimsStream, wallet, userData } from 'src/store';
@@ -51,21 +51,26 @@
   };
 </script>
 
-<BasePage class="flex-wrap items-center justify-center">
-  <VerificationDescription
-    icon={display.icon}
-    title={display.title}
-    description={display.description}
-  >
-    {#if currentStep > 4}
-      <PrimaryButton
-        text="Return to Profile"
-        class="mt-8"
-        onClick={() => navigate('/')}
-      />
-    {/if}
-  </VerificationDescription>
+<BasePage
+  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
+>
   <div class="flex flex-col justify-evenly md:w-1/2">
+    <div
+      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+    >
+      <div
+        class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
+      >
+        <div class="mr-3">Twitter Verification</div>
+        <TwitterIcon class="h-6 w-6" color="#00ACEE" />
+      </div>
+      <div class="body">
+        This process is used to link your Twitter account to your Tezos account
+        by signing a message using your private key, entering your Twitter
+        handle, and finally, tweeting that message.
+      </div>
+    </div>
+
     <VerificationStep
       step={1}
       bind:currentStep
@@ -79,6 +84,7 @@
           prefix="@"
           bind:value={twitterHandle}
           disabled={currentStep !== 1}
+          name="enter-twitter-handle"
         />
         {#if currentStep === 1}
           <PrimaryButton
@@ -105,9 +111,9 @@
       description="Sign the message presented to you containing your Twitter handle and additional information."
     >
       {#if currentStep >= 2}
-        <div class="flex items-center w-full py-2">
+        <div class="flex items-center w-full py-2 mt-8">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
+            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
             bind:value={twitterClaim}
             readonly
             disabled
@@ -141,9 +147,9 @@
       description="Tweet out your signed messaged to create a link between your Tezos account and your Twitter profile."
     >
       {#if currentStep > 2}
-        <div class="flex items-center w-full py-2">
+        <div class="flex items-center w-full py-2 mt-8">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-650 p-2 mr-4 w-full resize-none"
+            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
             bind:value={tweetMessage}
             readonly
             disabled
@@ -184,6 +190,7 @@
           placeholder="Enter your tweet url"
           class="my-8"
           bind:value={tweetURL}
+          name="enter-tweet-url"
         />
         <PrimaryButton
           text="Verify Tweet"
@@ -216,5 +223,16 @@
         </div>
       {/if}
     </VerificationStep>
+
+    {#if currentStep > 4}
+      <div
+        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+      >
+        <PrimaryButton
+          text="Return to Profile"
+          onClick={() => navigate('/connect')}
+        />
+      </div>
+    {/if}
   </div>
 </BasePage>
