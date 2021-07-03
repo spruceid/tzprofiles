@@ -4,20 +4,22 @@
 
 ```bash
 # Retrieve valid claims on mainnet
-$ curl "https://api.tzprofiles.com/tz1giDGsifWB9q9siekCKQaJKrmC9da5M43J"
+$ curl "https://api.tzprofiles.com/tz1LMChSoDrZK8fFYmewVYnYe7q6tn43zFQs"
 # You can also specify an other network
-$ curl "https://api.tzprofiles.com/tz1giDGsifWB9q9siekCKQaJKrmC9da5M43J/edonet"
+$ curl "https://api.tzprofiles.com/tz1LMChSoDrZK8fFYmewVYnYe7q6tn43zFQs/edonet"
 # And retrieve claims that failed validation
-$ curl "https://api.tzprofiles.com/tz1giDGsifWB9q9siekCKQaJKrmC9da5M43J?invalid=true"
+$ curl "https://api.tzprofiles.com/tz1LMChSoDrZK8fFYmewVYnYe7q6tn43zFQs?invalid=true"
 # Or retrieve all of them
-$ curl "https://api.tzprofiles.com/tz1giDGsifWB9q9siekCKQaJKrmC9da5M43J?invalid=true&valid=true"
+$ curl "https://api.tzprofiles.com/tz1LMChSoDrZK8fFYmewVYnYe7q6tn43zFQs?invalid=true&valid=true"
+# It also work with the profile contract directly
+$ curl "https://api.tzprofiles.com/KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7"
 ```
 
 ## Installation
 
 ### Docker
 ```bash
-$ docker run -p 15000:8080 --restart always -d ghcr.io/spruceid/tzp_api:0.1.0
+$ docker run -p 8080:8080 --restart always -d ghcr.io/spruceid/tzp_api:latest
 ```
 
 ### From Source
