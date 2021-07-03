@@ -153,7 +153,7 @@ function getClient() {
 			argv.kepler_base
 		),
 		hashContent: hashFunc,
-		nodeURL: argv.url || "https://mainnet-tezos.giganode.io",
+		nodeURL: argv.url,
 		signer: signerOpts,
 		validateType: async (c, t) => {
 			// Validate VC
