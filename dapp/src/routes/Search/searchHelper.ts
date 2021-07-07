@@ -32,7 +32,6 @@ export const findAddressFromDomain = async (
       });
       throw new Error(`No valid address found for ${domain}`);
     } else {
-      console.log(res.data.data.domain.owner);
       return res.data.data.domain.owner;
     }
   }

@@ -22,13 +22,14 @@
 
   onMount(() => {
     localNetwork = $network;
-
-    document.addEventListener('keypress', (e) => {
-      if (e.key == 'Enter') {
-        searchProfiles();
-      }
-    });
   });
+
+  const handleKeydown = (event) => {
+    if (event.key == 'Enter') {
+      event.preventDefault();
+      searchProfiles();
+    }
+  };
 
   const setSelectedNetwork = () => {
     network.set(localNetwork as NetworkType);
@@ -53,6 +54,8 @@
       .finally(() => (searching = false));
   };
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <BasePage class="flex flex-col items-center justify-center">
   <div class="search-container dropshadow-default fade-in">
