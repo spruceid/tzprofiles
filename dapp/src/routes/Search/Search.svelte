@@ -65,6 +65,7 @@
               .then(() => {
                 navigate(`/view/${localNetwork}/${address}`);
               })
+              .catch((err) => (searching = false))
               .finally(() => (searching = false));
           }}
           text="Find"

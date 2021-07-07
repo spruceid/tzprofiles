@@ -1,21 +1,28 @@
-import {BeaconWallet} from '@taquito/beacon-wallet';
-import type {Writable} from 'svelte/store';
-import {writable} from 'svelte/store';
-import {TezosToolkit} from '@taquito/taquito';
-import {Tzip16Module} from '@taquito/tzip16';
-import {encodeKey} from "@taquito/utils";
+import { BeaconWallet } from '@taquito/beacon-wallet';
+import type { Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import { TezosToolkit } from '@taquito/taquito';
+import { Tzip16Module } from '@taquito/tzip16';
+import { encodeKey } from '@taquito/utils';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
 import * as contractLib from 'tzprofiles';
 import * as helpers from './helpers/index';
 
-import {Kepler, authenticator, Action, getOrbitId} from 'kepler-sdk';
-import {verifyCredential} from 'didkit-wasm';
-import { addDefaults, claimFromTriple, claimTypeFromVC, ClaimVCType, exhaustiveCheck } from './helpers/index';
+import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
+import { verifyCredential } from 'didkit-wasm';
+import {
+  addDefaults,
+  claimFromTriple,
+  claimTypeFromVC,
+  ClaimVCType,
+  exhaustiveCheck,
+} from './helpers/index';
+import axios from 'axios';
 
 /*
-* Global Variables
-*/
+ * Global Variables
+ */
 
 // Global Constants
 // The kepler server hostname
@@ -44,11 +51,11 @@ export const wallet: Writable<BeaconWallet> = writable<BeaconWallet>(null);
 // TODO: MOVE LOCALS
 let localWallet: BeaconWallet;
 wallet.subscribe((x) => {
-  localWallet = x
-})
+  localWallet = x;
+});
 
 // TODO: Unify these two?
-// The name of the Tezos blockchain network used 
+// The name of the Tezos blockchain network used
 export const networkStr: Writable<string> = writable<string>(null);
 // Enum representation of the Tezos blockchain used
 export const network: Writable<NetworkType> = writable<NetworkType>(
@@ -70,33 +77,16 @@ export const alert: Writable<{
     variant: 'error' | 'warning' | 'success' | 'info';
   }>(null);
 
-/* 
- * Kepler Interactions 
-*/
+/*
+ * Kepler Interactions
+ */
 
-export const addToKepler = async (orbit: string, ...obj: Array<any>): Promise<Array<string>>=> {
+export const addToKepler = async (
+  orbit: string,
+  ...obj: Array<any>
+): Promise<Array<string>> => {
   try {
     let addresses = await helpers.addToKepler(localKepler, orbit, ...obj);
-
-    alert.set({
-      message: 'Successfully uploaded to Kepler',
-      variant: 'success',
-    });
-
-    return addresses;
-  } catch (e) {
-      alert.set({
-        message: e.message || JSON.stringify(e),
-        variant: 'error',
-      });
-
-      throw e;
-  }
-}
-
-export const saveToKepler = async(...obj: Array<any>): Promise<Array<string>> => {
-  try {
-    let addresses = await helpers.saveToKepler(localKepler, await localWallet.getPKH(), ...obj);
 
     alert.set({
       message: 'Successfully uploaded to Kepler',
@@ -112,17 +102,40 @@ export const saveToKepler = async(...obj: Array<any>): Promise<Array<string>> =>
 
     throw e;
   }
-}
+};
 
-/* 
-* Claims Interactions
-*/
+export const saveToKepler = async (
+  ...obj: Array<any>
+): Promise<Array<string>> => {
+  try {
+    let addresses = await helpers.saveToKepler(
+      localKepler,
+      await localWallet.getPKH(),
+      ...obj
+    );
 
+    alert.set({
+      message: 'Successfully uploaded to Kepler',
+      variant: 'success',
+    });
 
-export let claimsStream: Writable<helpers.ClaimMap> = writable<helpers.ClaimMap>(
-  addDefaults({})
-);
+    return addresses;
+  } catch (e) {
+    alert.set({
+      message: e.message || JSON.stringify(e),
+      variant: 'error',
+    });
 
+    throw e;
+  }
+};
+
+/*
+ * Claims Interactions
+ */
+
+export let claimsStream: Writable<helpers.ClaimMap> =
+  writable<helpers.ClaimMap>(addDefaults({}));
 
 export const contractClient: Writable<contractLib.TZProfilesClient> =
   writable<contractLib.TZProfilesClient>(null);
@@ -171,7 +184,7 @@ export const originate = async (): Promise<void> => {
 
   for (let i = 0, x = claimsKeys.length; i < x; i++) {
     let claimKey = claimsKeys[i];
-    let {irl} = localClaimsStream[claimKey];
+    let { irl } = localClaimsStream[claimKey];
     if (irl) {
       claimsList.push(['VerifiableCredential', irl]);
     }
@@ -189,7 +202,9 @@ export const originate = async (): Promise<void> => {
   contractAddress.set(contractAddr);
 };
 
-export const addClaims = async (claimsList: Array<helpers.Claim>): Promise<string> => {
+export const addClaims = async (
+  claimsList: Array<helpers.Claim>
+): Promise<string> => {
   if (!localClient) {
     alert.set({
       message: 'No wallet detected',
@@ -255,8 +270,8 @@ wallet.subscribe((w) => {
       async (data) => {
         const pk = data.account.publicKey;
         const pkh = data.account.address;
-        if (!pk.includes("pk")) {
-          const prefix = {"tz1": "00", "tz2": "01", "tz3": "02"};
+        if (!pk.includes('pk')) {
+          const prefix = { tz1: '00', tz2: '01', tz3: '02' };
           data.account.publicKey = encodeKey(prefix[pkh.substring(0, 3)] + pk);
         }
         userData.set(data);
@@ -285,7 +300,7 @@ wallet.subscribe((w) => {
           ): Promise<void> => {
             // Validate VC
             switch (t) {
-              case "VerifiableCredential": {
+              case 'VerifiableCredential': {
                 let verifyResult = await verifyCredential(c, '{}');
                 let verifyJSON = JSON.parse(verifyResult);
                 if (verifyJSON.errors.length > 0) {
@@ -318,16 +333,22 @@ wallet.subscribe((w) => {
                 let parsed = JSON.parse(content);
                 let claimType = claimTypeFromVC(parsed);
                 if (!claimType) {
-                  throw new Error(`Unknown claim type: ${parsed?.type?.length && parsed.type[parsed.type.length - 1]}`)
+                  throw new Error(
+                    `Unknown claim type: ${
+                      parsed?.type?.length &&
+                      parsed.type[parsed.type.length - 1]
+                    }`
+                  );
                 }
 
-                nextClaims[claimType] = helpers.claimFromTriple(
-                  claimType, 
-                  [url, content, contentType]
-                );
+                nextClaims[claimType] = helpers.claimFromTriple(claimType, [
+                  url,
+                  content,
+                  contentType,
+                ]);
               }
 
-              nextClaims = addDefaults(nextClaims)
+              nextClaims = addDefaults(nextClaims);
 
               claimsStream.set(nextClaims);
             }
@@ -442,22 +463,26 @@ const searchRetry = async (
 ): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
   try {
     let found;
-    if (networkStrTemp === "mainnet") {
+    if (networkStrTemp === 'mainnet') {
       let data = {
         query: `query MyQuery { tzprofiles_by_pk(account: \"${addr}\") { invalid_claims valid_claims contract } }`,
         variables: null,
-        operationName: "MyQuery"
-      }
-      found = await fetch("https://indexer.tzprofiles.com/v1/graphql", {
-        method: "POST",
+        operationName: 'MyQuery',
+      };
+      found = await fetch('https://indexer.tzprofiles.com/v1/graphql', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
-      found = await found.json()
-      found = found.data.tzprofiles_by_pk
-      found = {address: found.contract, valid: found.valid_claims, invalid: found.invalid_claims}
+      found = await found.json();
+      found = found.data.tzprofiles_by_pk;
+      found = {
+        address: found.contract,
+        valid: found.valid_claims,
+        invalid: found.invalid_claims,
+      };
     } else {
       found = await contractClient.retrieve(addr);
     }
@@ -493,6 +518,43 @@ const searchRetry = async (
 export const search = async (wallet: string, opts: searchRetryOpts) => {
   if (wallet) {
     try {
+      let searchingAddress = wallet;
+
+      if (wallet.includes('.tez')) {
+        let searchParams =
+          '{\n  domain(validity: VALID, name: ' +
+          `"${wallet}"` +
+          ') {\n    owner\n  }\n}\n';
+
+        const res = await axios.post(
+          'https://api.tezos.domains/graphql',
+          {
+            operationName: null,
+            variables: {},
+            query: searchParams,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (res) {
+          const { data } = res;
+          if (!data.data.domain) {
+            alert.set({
+              message: `Please enter a valid address`,
+              variant: 'error',
+            });
+            throw new Error(`No valid address found for ${wallet}`);
+          }
+          console.log(res);
+          searchingAddress = res.data.data.domain.owner;
+          console.log(searchingAddress);
+        }
+      }
+
       searchClaims.set(addDefaults({}));
 
       let dummyAuthenticator = {
@@ -532,7 +594,7 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
 
       let contractClient = new contractLib.TZProfilesClient(clientOpts);
 
-      let found = await searchRetry(wallet, contractClient, opts);
+      let found = await searchRetry(searchingAddress, contractClient, opts);
       if (found) {
         let nextSearchClaims = addDefaults({});
         searchAddress.set(found.address);
@@ -544,7 +606,9 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
           let vc = JSON.parse(contentStr);
           let ct = claimTypeFromVC(vc);
           if (!ct) {
-            throw new Error(`No claim type found in vc: ${JSON.stringify(vc?.type)}`);
+            throw new Error(
+              `No claim type found in vc: ${JSON.stringify(vc?.type)}`
+            );
           }
 
           nextSearchClaims[ct] = claimFromTriple(ct, triple);
