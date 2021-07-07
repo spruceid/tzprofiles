@@ -12,6 +12,7 @@
   import { onMount } from 'svelte';
   import { defaultSearchOpts, search, network } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
+  import { findAddressFromDomain } from './searchHelper';
   import './search.scss';
 
   const navigate = useNavigate();
@@ -26,6 +27,24 @@
 
   const setSelectedNetwork = () => {
     network.set(localNetwork as NetworkType);
+  };
+
+  const searchProfiles = async () => {
+    searching = true;
+    let searchingAddress = address;
+    if (address.includes('tez')) {
+      try {
+        searchingAddress = await findAddressFromDomain(address);
+      } catch (err) {
+        searching = false;
+        return;
+      }
+    }
+    search(searchingAddress, defaultSearchOpts)
+      .then(() => {
+        navigate(`/view/${localNetwork}/${searchingAddress}`);
+      })
+      .finally(() => (searching = false));
   };
 </script>
 
@@ -59,15 +78,7 @@
         />
         <PrimaryButton
           class="m-4"
-          onClick={() => {
-            searching = true;
-            search(address, defaultSearchOpts)
-              .then(() => {
-                navigate(`/view/${localNetwork}/${address}`);
-              })
-              .catch((err) => (searching = false))
-              .finally(() => (searching = false));
-          }}
+          onClick={() => searchProfiles()}
           text="Find"
           small
         />

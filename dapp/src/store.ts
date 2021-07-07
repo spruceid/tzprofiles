@@ -549,9 +549,7 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
             });
             throw new Error(`No valid address found for ${wallet}`);
           }
-          console.log(res);
           searchingAddress = res.data.data.domain.owner;
-          console.log(searchingAddress);
         }
       }
 
