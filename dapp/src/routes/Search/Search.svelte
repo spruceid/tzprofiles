@@ -5,7 +5,6 @@
     Select,
     Option,
     Input,
-    Label,
     LoadingSpinner,
   } from 'components';
   import { useNavigate } from 'svelte-navigator';
@@ -23,6 +22,12 @@
 
   onMount(() => {
     localNetwork = $network;
+
+    document.addEventListener('keypress', (e) => {
+      if (e.key == 'Enter') {
+        searchProfiles();
+      }
+    });
   });
 
   const setSelectedNetwork = () => {
@@ -44,6 +49,7 @@
       .then(() => {
         navigate(`/view/${localNetwork}/${searchingAddress}`);
       })
+      .catch((err) => (searching = false))
       .finally(() => (searching = false));
   };
 </script>

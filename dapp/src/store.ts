@@ -9,16 +9,9 @@ import BeaconEvent from 'enums/BeaconEvent';
 import * as contractLib from 'tzprofiles';
 import * as helpers from './helpers/index';
 
-import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
+import { Kepler, authenticator, Action } from 'kepler-sdk';
 import { verifyCredential } from 'didkit-wasm';
-import {
-  addDefaults,
-  claimFromTriple,
-  claimTypeFromVC,
-  ClaimVCType,
-  exhaustiveCheck,
-} from './helpers/index';
-import axios from 'axios';
+import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 
 /*
  * Global Variables
@@ -452,7 +445,7 @@ export interface searchRetryOpts {
 
 export const defaultSearchOpts = {
   current: 0,
-  max: 10000,
+  max: 5,
   step: 1000,
 };
 
@@ -477,6 +470,7 @@ const searchRetry = async (
         body: JSON.stringify(data),
       });
       found = await found.json();
+
       found = found.data.tzprofiles_by_pk;
       found = {
         address: found.contract,
@@ -490,9 +484,7 @@ const searchRetry = async (
     return found;
   } catch (err) {
     if (opts.current >= opts.max) {
-      throw Error(
-        `Found contract, encountered repeated network errors, gave up on: ${err.message}`
-      );
+      return;
     }
     opts.current += opts.step;
 
@@ -519,39 +511,6 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
   if (wallet) {
     try {
       let searchingAddress = wallet;
-
-      if (wallet.includes('.tez')) {
-        let searchParams =
-          '{\n  domain(validity: VALID, name: ' +
-          `"${wallet}"` +
-          ') {\n    owner\n  }\n}\n';
-
-        const res = await axios.post(
-          'https://api.tezos.domains/graphql',
-          {
-            operationName: null,
-            variables: {},
-            query: searchParams,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (res) {
-          const { data } = res;
-          if (!data.data.domain) {
-            alert.set({
-              message: `Please enter a valid address`,
-              variant: 'error',
-            });
-            throw new Error(`No valid address found for ${wallet}`);
-          }
-          searchingAddress = res.data.data.domain.owner;
-        }
-      }
 
       searchClaims.set(addDefaults({}));
 
@@ -592,7 +551,12 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
 
       let contractClient = new contractLib.TZProfilesClient(clientOpts);
 
-      let found = await searchRetry(searchingAddress, contractClient, opts);
+      let found = await searchRetry(
+        searchingAddress,
+        contractClient,
+        Object.assign({}, opts)
+      );
+
       if (found) {
         let nextSearchClaims = addDefaults({});
         searchAddress.set(found.address);
@@ -614,13 +578,18 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
 
         searchClaims.set(nextSearchClaims);
         return;
+      } else {
+        alert.set({
+          message: 'Profile not found',
+          variant: 'error',
+        });
+        throw Error('Profile not found');
       }
     } catch (err) {
       alert.set({
         message: err.message || 'Network error',
         variant: 'error',
       });
-      console.error(err);
       throw err;
     }
   }
