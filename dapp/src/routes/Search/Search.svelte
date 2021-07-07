@@ -72,7 +72,7 @@
           <Option value="custom" text="localhost" />
         </Select>
         <Input
-          placeholder="Enter a Tezos address"
+          placeholder="Enter Tezos address or domain"
           bind:value={address}
           name="address-search"
         />
