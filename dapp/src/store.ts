@@ -445,7 +445,7 @@ export interface searchRetryOpts {
 
 export const defaultSearchOpts = {
   current: 0,
-  max: 5,
+  max: 3000,
   step: 1000,
 };
 
@@ -484,6 +484,11 @@ const searchRetry = async (
     return found;
   } catch (err) {
     if (opts.current >= opts.max) {
+      console.warn(
+        new Error(
+          `Found contract, encountered repeated network errors, gave up on: ${err.message}`
+        )
+      );
       return;
     }
     opts.current += opts.step;

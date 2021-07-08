@@ -9,7 +9,7 @@
   } from 'components';
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
-  import { defaultSearchOpts, search, network } from 'src/store';
+  import { defaultSearchOpts, search, network, alert } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
   import { findAddressFromDomain } from './searchHelper';
   import './search.scss';
@@ -36,22 +36,23 @@
   };
 
   const searchProfiles = async () => {
-    searching = true;
-    let searchingAddress = address;
-    if (address.includes('tez')) {
-      try {
+    try {
+      searching = true;
+      let searchingAddress = address.trim();
+
+      if (address.endsWith('.tez')) {
         searchingAddress = await findAddressFromDomain(address);
-      } catch (err) {
-        searching = false;
-        return;
       }
+      await search(searchingAddress, defaultSearchOpts);
+      navigate(`/view/${localNetwork}/${searchingAddress}`);
+    } catch (err) {
+      alert.set({
+        message: err?.message || `Failed in search ${JSON.stringify(err)}`,
+        variant: 'error',
+      });
+    } finally {
+      searching = false;
     }
-    search(searchingAddress, defaultSearchOpts)
-      .then(() => {
-        navigate(`/view/${localNetwork}/${searchingAddress}`);
-      })
-      .catch((err) => (searching = false))
-      .finally(() => (searching = false));
   };
 </script>
 

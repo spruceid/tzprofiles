@@ -1,38 +1,33 @@
-import axios from 'axios';
 import { alert } from 'src/store';
 
 export const findAddressFromDomain = async (
   domain: string
 ): Promise<string> => {
-  let searchParams =
-    '{\n  domain(validity: VALID, name: ' +
-    `"${domain}"` +
-    ') {\n    owner\n  }\n}\n';
+  try {
+    let searchParams =
+      '{\n  domain(validity: VALID, name: ' +
+      `"${domain}"` +
+      ') {\n    owner\n  }\n}\n';
 
-  const res = await axios.post(
-    'https://api.tezos.domains/graphql',
-    {
-      operationName: null,
-      variables: {},
-      query: searchParams,
-    },
-    {
+    const res = await fetch('https://api.tezos.domains/graphql', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-    }
-  );
+      body: JSON.stringify({
+        operationName: null,
+        variables: {},
+        query: searchParams,
+      }),
+    });
 
-  if (res) {
-    const { data } = res;
+    const data = await res.json();
     if (!data.data.domain) {
-      alert.set({
-        message: `Please enter a valid address`,
-        variant: 'error',
-      });
       throw new Error(`No valid address found for ${domain}`);
     } else {
-      return res.data.data.domain.owner;
+      return data.data.domain.owner;
     }
+  } catch (err) {
+    throw new Error(`No valid address found for ${domain}`);
   }
 };
