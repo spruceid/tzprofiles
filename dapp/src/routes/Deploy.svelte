@@ -122,7 +122,7 @@
       step={1}
       bind:currentStep
       title="Deploy Your Profile"
-      description="Upload your credentials to your off-chain storage via Kepler, and deploy the smart contract that will become your Tezos Profile"
+      description="Upload your credentials to Kepler, and deploy your Tezos Profile smart contract."
     >
       <div class="w-full body mt-8">
         <div class="flex flex-row items-center">
