@@ -3,6 +3,7 @@ extern crate wasm_bindgen;
 #[macro_use]
 extern crate log;
 
+mod discord;
 mod twitter;
 mod utils;
 
@@ -148,6 +149,30 @@ pub async fn witness_tweet(
         vc.proof = Some(OneOrMany::One(proof));
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })
+}
+
+#[wasm_bindgen]
+pub async fn witness_discord(
+    authorization_key: String,
+    public_key_tezos: String,
+    discord_handle: String,
+    channel_id: String,
+    message_id: String,
+) {
+    use log::Level;
+    console_log::init_with_level(Level::Trace).expect("error initializing log");
+    println!("Hello");
+
+    // future_to_promise(async move {
+    //     let twitter_res = jserr!(twitter::retrieve_tweet(twitter_token, tweet_id.clone()).await);
+
+    //     // let discord_res = jserr!(
+    //     //     discord::retrieve_discord_message("asdf", channel_id, message_id);
+    //     //         .await
+    //     // );
+
+    //     Ok(jserr!(serde_json::to_string(&twitter_res)))
+    // })
 }
 
 #[test]
