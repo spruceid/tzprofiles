@@ -147,14 +147,14 @@ function handleOptions(request) {
     headers.get("Origin") !== null &&
     headers.get("Access-Control-Request-Method") !== null &&
     headers.get("Access-Control-Request-Headers") !== null
-  ){
+  ) {
     // Handle CORS pre-flight request.
     // If you want to check or reject the requested method + headers
     // you can do that here.
     let respHeaders = {
       ...corsHeaders,
-    // Allow all future content Request headers to go back to browser
-    // such as Authorization (Bearer) or X-Client-Name-Version
+      // Allow all future content Request headers to go back to browser
+      // such as Authorization (Bearer) or X-Client-Name-Version
       "Access-Control-Allow-Headers": request.headers.get("Access-Control-Request-Headers"),
     }
 
@@ -175,22 +175,83 @@ function handleOptions(request) {
 
 async function handler_witness_tweet(request) {
   try {
-    const {searchParams} = new URL(request.url)
+    const { searchParams } = new URL(request.url)
     let pk = decodeURI(searchParams.get('pk'))
     let handle = searchParams.get('handle')
     let tweet_id = searchParams.get('tweet_id')
-    const {witness_tweet} = wasm_bindgen;
+    const { witness_tweet } = wasm_bindgen;
     await wasm_bindgen(wasm)
     const vc = await witness_tweet(TZPROFILES_ME_PRIVATE_KEY, pk, TWITTER_BEARER_TOKEN, handle, tweet_id)
-    return new Response(vc, {status: 200, headers: headers})
+    return new Response(vc, { status: 200, headers: headers })
   } catch (error) {
-    return new Response(error, {status: 500, headers: headers})
+    return new Response(error, { status: 500, headers: headers })
+  }
+}
+
+async function handler_witness_instagram_post(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    let pk = decodeURI(searchParams.get('pk'));
+    let handle = searchParams.get('handle');
+
+    let kvEntry = await INSTAGRAM_CLAIM.get(handle.toLowerCase());
+    if (!kvEntry) {
+      throw new Error(`Could not find claim for ${handle}`);
+    }
+
+    let kvObj = JSON.parse(kvEntry);
+
+    const { witness_instagram_post } = wasm_bindgen;
+    await wasm_bindgen(wasm);
+
+    const vc = await witness_instagram_post(TZPROFILES_ME_PRIVATE_KEY, pk, handle, kvObj.link, kvObj.sig);
+
+    return new Response(vc, { status: 200, headers: headers });
+  } catch (error) {
+    return new Response(JSON.stringify(error), { status: 500, headers: headers });
+  }
+}
+
+async function handler_instagram_login(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    const code = searchParams.get("code");
+
+    const { handle_instagram_login } = wasm_bindgen;
+    await wasm_bindgen(wasm);
+
+    let kvEntry = await handle_instagram_login(IG_APP_ID, IG_APP_SECRET, IG_REDIRECT_URI, code);
+    let kvObj = JSON.parse(kvEntry);
+
+    await INSTAGRAM_CLAIM.put(kvObj.key.toLowerCase(), JSON.stringify(kvObj.val));
+
+    const res = `<html>
+    <body>
+      <p>Instagram claim has been prepared.</p> 
+      <p>Please return to Tezos Profiles to save it to your profile!</p> 
+    </body>
+</html>`;
+
+    return new Response(res, { status: 200, headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'text/html'
+     }});
+  } catch (error) {
+    let res = {
+      message: error?.message || error
+    };
+
+    return new Response(JSON.stringify(res), { status: 500, headers: headers });
   }
 }
 
 async function handleRequest(request) {
-  const r = new Router()
-  r.get('/witness_tweet', request => handler_witness_tweet(request))
-  const resp = await r.route(request)
-  return resp
+  const r = new Router();
+  r.get('/witness_tweet', request => handler_witness_tweet(request));
+  r.get('/witness_instagram_post', request => handler_witness_instagram_post(request));
+  r.get('/instagram_login', request => handler_instagram_login(request));
+  const resp = await r.route(request);
+  return resp;
 }
