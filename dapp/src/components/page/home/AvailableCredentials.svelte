@@ -5,7 +5,6 @@
     loadingContracts,
     contractAddress,
     networkStr,
-    userData,
   } from 'src/store';
   import './availablecredentials.scss';
   import {
@@ -31,8 +30,6 @@
   networkStr.subscribe((x) => {
     currentNetwork = x;
   });
-
-  console.log(contractAddress);
 
   let modalOpen = false;
   let isCredentialModalOpen = false;
@@ -91,11 +88,13 @@
                 />
               {/if}
             {:else}
-              <PrimaryButton
-                text="Deploy Profile"
-                onClick={() => navigate('/deploy')}
-                small
-              />
+              <div>
+                <PrimaryButton
+                  text="Deploy Profile"
+                  onClick={() => navigate('/deploy')}
+                  small
+                />
+              </div>
             {/if}
           </div>
         {/if}
