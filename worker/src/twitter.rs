@@ -43,6 +43,7 @@ pub async fn retrieve_tweet(api_token: String, tweet_id: String) -> Result<Twitt
     let mut headers = HeaderMap::new();
     headers.insert(AUTHORIZATION, format!("Bearer {}", &api_token).parse()?);
     let client = reqwest::Client::new();
+
     let res = client
         .get(Url::parse("https://api.twitter.com/2/tweets")?)
         .query(&[

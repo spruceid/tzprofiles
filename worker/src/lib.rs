@@ -153,26 +153,39 @@ pub async fn witness_tweet(
 
 #[wasm_bindgen]
 pub async fn witness_discord(
-    authorization_key: String,
+    secret_key_jwk: String,
     public_key_tezos: String,
+    discord_authorization_key: String,
     discord_handle: String,
     channel_id: String,
     message_id: String,
-) {
+) -> Promise {
     use log::Level;
     console_log::init_with_level(Level::Trace).expect("error initializing log");
-    println!("Hello");
 
-    // future_to_promise(async move {
-    //     let twitter_res = jserr!(twitter::retrieve_tweet(twitter_token, tweet_id.clone()).await);
+    future_to_promise(async move {
+        let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
+        let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+        let discord_res = jserr!(
+            discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
+                .await
+        );
+        let mut vc = jserr!(build_vc_(&pk, &discord_handle));
+        let formatted_discord_handle = format!(
+            "{}#{}",
+            discord_res.author.username, discord_res.author.discriminator
+        );
 
-    //     // let discord_res = jserr!(
-    //     //     discord::retrieve_discord_message("asdf", channel_id, message_id);
-    //     //         .await
-    //     // );
+        // Check for matching handles
+        if discord_handle != formatted_discord_handle {
+            jserr!(Err(anyhow!(format!(
+                "Different Discord handle {} v. {}",
+                discord_handle, formatted_discord_handle
+            ))));
+        }
 
-    //     Ok(jserr!(serde_json::to_string(&twitter_res)))
-    // })
+        Ok(jserr!(serde_json::to_string(&vc)).into())
+    })
 }
 
 #[test]
