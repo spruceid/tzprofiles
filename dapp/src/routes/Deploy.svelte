@@ -11,8 +11,8 @@
   } from 'src/store';
   import type { ClaimMap } from 'src/helpers';
   import { contentToDraft } from 'src/helpers';
-  import { Link } from 'svelte-navigator';
   import { useNavigate } from 'svelte-navigator';
+  import { onMount } from 'svelte';
 
   let navigate = useNavigate();
 
@@ -29,6 +29,7 @@
 
   let currentStep: number = 1;
   let retry: boolean = false;
+  let agreedToConditions = false;
 
   const redirectCheck = (cMap: ClaimMap): boolean => {
     let keys = Object.keys(cMap);
@@ -98,17 +99,19 @@
     }
   };
 
-  const deploy = async () => {
-    let rd =
-      (redirectCheck($claimsStream) && currentContractAddress) || !$userData;
-    if (rd) {
-      return navigate('/connect');
+  onMount(() => {
+    if (
+      (redirectCheck($claimsStream) && currentContractAddress) ||
+      !$userData
+    ) {
+      navigate('/connect');
     }
+  });
+
+  const deploy = async () => {
     await upload();
     await generateContract();
   };
-
-  deploy();
 </script>
 
 <BasePage
@@ -118,11 +121,59 @@
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Uploading Credentials to Kepler"
-      loading={currentStep === 1 && !retry}
-      error={currentStep === 1 && retry}
+      title="Deploy Your Profile"
+      description="Upload your credentials to your off-chain storage via Kepler, and deploy the smart contract that will become your Tezos Profile"
     >
-      {#if retry && currentStep === 1}
+      <div class="w-full body mt-8">
+        <div class="flex flex-row items-center">
+          <input
+            class="mr-4 body"
+            id="agreement"
+            name="agreement"
+            type="checkbox"
+            bind:checked={agreedToConditions}
+            disabled={currentStep !== 1}
+          />
+          <label for="agreement" class="body">
+            I have
+            <span class="font-bold">{'read'}</span>
+            and
+            <span class="font-bold">{'agree'}</span>
+            with the
+            <a class="primary-action" target="_blank" href="/privacy-policy">
+              Privacy Policy
+            </a>
+            and the
+            <a class="primary-action" target="_blank" href="/terms-of-service">
+              Terms of Service
+            </a>
+            .
+          </label>
+        </div>
+
+        {#if currentStep === 1}
+          <div class="w-40 mt-4">
+            <PrimaryButton
+              text="Deploy"
+              onClick={() => {
+                next();
+                deploy();
+              }}
+              disabled={!agreedToConditions}
+            />
+          </div>
+        {/if}
+      </div>
+    </VerificationStep>
+
+    <VerificationStep
+      step={2}
+      bind:currentStep
+      title="Uploading Credentials to Kepler"
+      loading={currentStep === 2 && !retry}
+      error={currentStep === 2 && retry}
+    >
+      {#if retry && currentStep === 2}
         <div class="w-40">
           <PrimaryButton text="Retry" onClick={() => upload()} />
         </div>
@@ -130,21 +181,21 @@
     </VerificationStep>
 
     <VerificationStep
-      step={2}
+      step={3}
       bind:currentStep
       title="Deploying Your Tezos Profile"
-      loading={currentStep === 2 && !retry}
-      error={currentStep === 2 && retry}
+      loading={currentStep === 3 && !retry}
+      error={currentStep === 3 && retry}
     >
-      {#if retry && currentStep === 2}
+      {#if retry && currentStep === 3}
         <div class="w-40">
           <PrimaryButton text="Retry" onClick={() => generateContract()} />
         </div>
       {/if}
     </VerificationStep>
 
-    <VerificationStep step={3} bind:currentStep title="Profile Deployed">
-      {#if currentStep > 2}
+    <VerificationStep step={4} bind:currentStep title="Profile Deployed">
+      {#if currentStep > 3}
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Return to Profile"
