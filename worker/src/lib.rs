@@ -43,9 +43,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
-    // Credential {
-    //     context: Contexts::Object(vec![Context::URI(URI::String("https://www.w3.org/2018/credentials/v1".to_string())), Context::URI(URI::String("https://schema.org/".to_string())), Context::Object()])
-    // }
     Ok(serde_json::from_value(json!({
       "@context": [
           "https://www.w3.org/2018/credentials/v1",
@@ -170,7 +167,7 @@ pub async fn witness_discord(
             discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
                 .await
         );
-        let mut vc = jserr!(build_vc_(&pk, &discord_handle));
+        let mut vc = jserr!(discord::build_discord_vc(&pk, &discord_handle));
         let formatted_discord_handle = format!(
             "{}#{}",
             discord_res.author.username, discord_res.author.discriminator

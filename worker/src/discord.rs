@@ -1,7 +1,20 @@
 use anyhow::Result;
+use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
 use serde::Deserialize;
+use serde_json::json;
+use ssi::{
+    blakesig::hash_public_key,
+    jwk::{Algorithm, JWK},
+    jws::verify_bytes,
+    one_or_many::OneOrMany,
+    tzkey::jwk_from_tezos_key,
+    vc::{Credential, Evidence, LinkedDataProofOptions},
+};
 use url::Url;
+use uuid::Uuid;
+
+const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 #[derive(Deserialize, Debug)]
 pub struct DiscordResponse {
@@ -61,4 +74,37 @@ pub async fn retrieve_discord_message(
     info!("{:?}", res);
 
     Ok(res)
+}
+
+pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
+    Ok(serde_json::from_value(json!({
+      "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          {
+              "sameAs": "http://schema.org/sameAs",
+              "DiscordVerification": "https://tzprofiles.com/DiscordVerification",
+              "DiscordVerificationMessage": {
+                  "@id": "https://tzprofiles.com/DiscordVerificationMessage",
+                  "@context": {
+                      "@version": 1.1,
+                      "@protected": true,
+                      "handle": "https://tzprofiles.com/handle",
+                      "timestamp": {
+                          "@id": "https://tzprofiles.com/timestamp",
+                          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                      },
+                      "DiscordMessageId": "https://tzprofiles.com/DiscordMessageId"
+                  }
+              }
+          }
+      ],
+      "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
+      "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
+      "type": ["VerifiableCredential", "DiscordVerification"],
+      "credentialSubject": {
+          "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
+          "sameAs": "https://twitter.com/".to_string() + discord_handle
+      },
+      "issuer": SPRUCE_DIDWEB
+    }))?)
 }
