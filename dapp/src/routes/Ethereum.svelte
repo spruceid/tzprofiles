@@ -165,7 +165,6 @@
 
       const typedData = preparation.signingInput;
       if (!typedData || !typedData.primaryType) {
-        console.error('proof preparation:', preparation);
         throw new Error('Expected EIP-712 TypedData');
       }
 
@@ -188,21 +187,7 @@
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
-    <div
-      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
-    >
-      <div
-        class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
-      >
-        <div class="mr-3">Ethereum Wallet Ownership</div>
-        <EthereumIcon class="h-6 w-6" />
-      </div>
-      <div class="body">
-        This process is used to link your Ethereum account to your Tezos account
-        by connecting to MetaMask, signing using your Ethereum wallet, and
-        finally receiving the verification.
-      </div>
-    </div>
+    <VerificationDescription {display} />
 
     <VerificationStep
       step={1}

@@ -4,22 +4,22 @@
     CopyButton,
     Input,
     PrimaryButton,
+    VerificationDescription,
     VerificationStep,
-    TwitterIcon,
   } from 'components';
 
-  import { claimsStream, wallet, userData } from 'src/store';
-  import {
-    signTwitterClaim,
-    getTwitterClaim,
-    verifyTweet,
-    getTweetMessage,
-  } from 'src/twitter';
+  import { alert, claimsStream, wallet, userData } from 'src/store';
+  import { verifyTweet } from 'src/twitter';
 
-  import { contentToDraft } from 'src/helpers';
+  import {
+    contentToDraft,
+    getFullSocialMediaClaim,
+    getPreparedUnsignedMessage,
+  } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
 
   import { useNavigate } from 'svelte-navigator';
+
   let navigate = useNavigate();
 
   let readClaimMap: ClaimMap;
@@ -29,8 +29,8 @@
 
   let display = readClaimMap?.twitter?.display;
 
-  let twitterHandle = '';
-  let tweetURL = '';
+  let twitterHandle: string = '';
+  let tweetURL: string = '';
 
   let currentStep: number = 1;
   let lock: boolean = false;
@@ -55,21 +55,7 @@
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
-    <div
-      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
-    >
-      <div
-        class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
-      >
-        <div class="mr-3">Twitter Verification</div>
-        <TwitterIcon class="h-6 w-6" color="#00ACEE" />
-      </div>
-      <div class="body">
-        This process is used to link your Twitter account to your Tezos account
-        by signing a message using your private key, entering your Twitter
-        handle, and finally, tweeting that message.
-      </div>
-    </div>
+    <VerificationDescription {display} iconColor="#00ACEE" />
 
     <VerificationStep
       step={1}
@@ -90,12 +76,22 @@
           <PrimaryButton
             text="Submit"
             onClick={() => {
-              next(() => getTwitterClaim($userData, twitterHandle)).then(
-                (res) => {
-                  twitterClaim = res;
-                  tweetMessage = getTweetMessage($userData, twitterHandle);
+              next(async () => {
+                try {
+                  twitterClaim = await getPreparedUnsignedMessage(
+                    'twitter',
+                    $userData,
+                    twitterHandle
+                  );
+                } catch (err) {
+                  alert.set({
+                    variant: 'error',
+                    message: `Failed to create Twitter claim: ${
+                      err?.message || JSON.stringify(err)
+                    }`,
+                  });
                 }
-              );
+              });
             }}
             class="ml-4 lg:ml-0"
             disabled={twitterHandle.length < 4}
@@ -126,15 +122,16 @@
           text="Signature Prompt"
           class="mt-8 lg:w-48"
           onClick={() => {
-            next(() =>
-              signTwitterClaim($userData, `${twitterClaim}\n\n`, $wallet)
-            ).then(
-              (sig) =>
-                (tweetMessage = `${getTweetMessage(
+            next(async () => {
+              try {
+                tweetMessage = await getFullSocialMediaClaim(
+                  'twitter',
                   $userData,
-                  twitterHandle
-                )}\n\n${sig}`)
-            );
+                  twitterHandle,
+                  $wallet
+                );
+              } catch (err) {}
+            });
           }}
           disabled={lock}
         />
