@@ -1,21 +1,19 @@
 <script lang="ts">
-  import { SvelteComponentDev } from 'svelte/internal';
-
-  export let title: string;
-  export let description: string = '';
-  export let icon: typeof SvelteComponentDev;
+  export let display: ClaimUIAssets;
   export let iconColor: string = 'black';
-  export { clazz as class };
-  let clazz: string = '';
+
 </script>
 
 <div
-  class="flex flex-col md:w-64 md:mx-12 lg:mx-28 xl:mx-32 mb-12 mx-4 {clazz}"
+  class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
 >
-  <svelte:component this={icon} color={iconColor} class="w-1/3 m-auto" />
-  <h3 class="my-4 text-2xl">{title}</h3>
-  {#if description}
-    <div class="text-sm text-center body">{description}</div>
-  {/if}
-  <slot />
+  <div
+    class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
+  >
+    <div class="mr-3">{display.title}</div>
+    <svelte:component this={display.icon} color={iconColor} class="h-6 w-6" />
+  </div>
+  <div class="body">
+    {display.description}
+  </div>
 </div>

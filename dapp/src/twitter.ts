@@ -1,42 +1,4 @@
-import { witnessUrl, alert, userData } from 'src/store';
-import { BeaconWallet } from '@taquito/beacon-wallet';
-import { signClaim } from 'src/utils';
-
-export const getTweetMessage = (userData, twitterHandle) => {
-  return `I am attesting that this Twitter handle @${twitterHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.`;
-};
-
-export const getTwitterClaim = async (userData, twitterHandle) => {
-  try {
-    const sig_target = getTweetMessage(userData, twitterHandle);
-    return `Tezos Signed Message: ${sig_target}`;
-  } catch (e) {
-    alert.set({
-      message: e.message || JSON.stringify(e),
-      variant: 'error',
-    });
-
-    throw e;
-  }
-};
-
-export const signTwitterClaim = async (
-  userData,
-  fmtInput: string,
-  wallet: BeaconWallet
-) => {
-  try {
-    const sig = await signClaim(userData, fmtInput, wallet);
-    return `sig:${sig}`;
-  } catch (e) {
-    alert.set({
-      message: e.message || JSON.stringify(e),
-      variant: 'error',
-    });
-
-    throw e;
-  }
-};
+import { witnessUrl, alert } from 'src/store';
 
 const urlToTweetId = (url: string): string => {
   const list = url.split('/');
