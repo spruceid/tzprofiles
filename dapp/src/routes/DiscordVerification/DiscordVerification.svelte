@@ -6,26 +6,18 @@
     PrimaryButton,
     VerificationStep,
   } from 'components';
-
   import { claimsStream, wallet, userData } from 'src/store';
-  import {
-    signTwitterClaim,
-    getTwitterClaim,
-    verifyTweet,
-    getTweetMessage,
-  } from 'src/twitter';
-
   import {
     validateDiscordHandle,
     getDiscordClaim,
     getDiscordMessage,
     signDiscordClaim,
+    verifyDiscord,
   } from 'src/helpers/discord';
-
   import { contentToDraft } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
-
   import { useNavigate } from 'svelte-navigator';
+
   let navigate = useNavigate();
 
   let readClaimMap: ClaimMap;
@@ -33,15 +25,13 @@
     readClaimMap = x;
   });
 
-  let display = readClaimMap?.twitter?.display;
-
-  let discordHandle = '';
-  let tweetURL = '';
+  let discordHandle: string = '';
+  let discordMessageUrl: string = '';
 
   let currentStep: number = 1;
   let lock: boolean = false;
-  let twitterClaim: string = '';
-  let tweetMessage: string = '';
+  let discordClaim: string = '';
+  let discordMessage: string = '';
 
   const next = (func: () => Promise<any> = async () => '') => {
     return new Promise<any>((resolve, _) => {
@@ -86,7 +76,6 @@
         <Input
           placeholder="Enter your Discord handle"
           class="mr-8"
-          prefix="@"
           bind:value={discordHandle}
           disabled={currentStep !== 1}
           name="enter-discord-handle"
@@ -97,8 +86,8 @@
             onClick={() => {
               next(() => getDiscordClaim($userData, discordHandle)).then(
                 (res) => {
-                  twitterClaim = res;
-                  tweetMessage = getDiscordMessage($userData, discordHandle);
+                  discordClaim = res;
+                  discordMessage = getDiscordMessage($userData, discordHandle);
                 }
               );
             }}
@@ -120,11 +109,11 @@
         <div class="flex items-center w-full py-2 mt-8">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
-            bind:value={twitterClaim}
+            bind:value={discordClaim}
             readonly
             disabled
           />
-          <CopyButton text={twitterClaim} />
+          <CopyButton text={discordClaim} />
         </div>
       {/if}
       {#if currentStep === 2}
@@ -133,10 +122,10 @@
           class="mt-8 lg:w-48"
           onClick={() => {
             next(() =>
-              signDiscordClaim($userData, `${twitterClaim}\n\n`, $wallet)
+              signDiscordClaim($userData, `${discordClaim}\n\n`, $wallet)
             ).then(
               (sig) =>
-                (tweetMessage = `${getDiscordMessage(
+                (discordMessage = `${getDiscordMessage(
                   $userData,
                   discordHandle
                 )}\n\n${sig}`)
@@ -146,6 +135,7 @@
         />
       {/if}
     </VerificationStep>
+
     <VerificationStep step={3} bind:currentStep title="Send Discord Message">
       <div class="body">
         Follow these instructions to verify your handle:
@@ -153,7 +143,7 @@
         <br />1) Join this channel
         <a target="_blank" href="https://discord.gg/Jef8Y52mqz">here</a>.
         <br />2) Go to #verification.
-        <br /> 3) Copy and post the Discord message above.
+        <br /> 3) Copy and post the Discord message below.
         <br /> 4) Right click on the message and click "Copy Message Link".
         <br /> 5) Paste the message link below and continue.
       </div>
@@ -161,11 +151,11 @@
         <div class="flex items-center w-full py-2 mt-8">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
-            bind:value={tweetMessage}
+            bind:value={discordMessage}
             readonly
             disabled
           />
-          <CopyButton text={tweetMessage} />
+          <CopyButton text={discordMessage} />
         </div>
       {/if}
       {#if currentStep === 3}
@@ -187,27 +177,27 @@
     >
       {#if currentStep === 4}
         <Input
-          placeholder="Enter your tweet url"
+          placeholder="Enter your Discord message link"
           class="my-8"
-          bind:value={tweetURL}
-          name="enter-tweet-url"
+          bind:value={discordMessageUrl}
+          name="enter-discord-message-url"
         />
         <PrimaryButton
-          text="Verify Tweet"
+          text="Verify Message"
           class="lg:w-48"
           onClick={() => {
-            next(() => verifyTweet($userData, discordHandle, tweetURL)).then(
-              (vc) => {
-                let nextClaimMap = readClaimMap;
-                nextClaimMap.twitter.preparedContent = JSON.parse(vc);
-                nextClaimMap.twitter.draft = contentToDraft(
-                  'twitter',
-                  nextClaimMap.twitter.preparedContent
-                );
-                claimsStream.set(nextClaimMap);
-                next();
-              }
-            );
+            next(() =>
+              verifyDiscord($userData, discordHandle, discordMessageUrl)
+            ).then((vc) => {
+              let nextClaimMap = readClaimMap;
+              nextClaimMap.discord.preparedContent = JSON.parse(vc);
+              nextClaimMap.discord.draft = contentToDraft(
+                'discord',
+                nextClaimMap.discord.preparedContent
+              );
+              claimsStream.set(nextClaimMap);
+              next();
+            });
           }}
           disabled={lock}
         />
@@ -215,11 +205,11 @@
         <div class="flex items-center w-full py-2">
           <input
             class="w-full p-2 mr-4 overflow-x-auto rounded-lg resize-none bg-gray-650"
-            bind:value={tweetURL}
+            bind:value={discordMessageUrl}
             readonly
             disabled
           />
-          <CopyButton text={tweetURL} />
+          <CopyButton text={discordMessageUrl} />
         </div>
       {/if}
     </VerificationStep>

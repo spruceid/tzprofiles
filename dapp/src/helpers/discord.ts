@@ -43,27 +43,27 @@ export const signDiscordClaim = async (
   }
 };
 
-const urlToTweetId = (url: string): string => {
+export const discordMessageUrlToIds = (url: string): string[] => {
   const list = url.split('/');
-  const entry = list[list.length - 1];
-  const entryList = entry.split('?');
-  const innerEntry = entryList[0];
-  const innerEntryList = innerEntry.split('#');
-  return innerEntryList[0];
+  return [list[5], list[6]];
 };
 
-export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
-  let tweetID = urlToTweetId(tweetURL);
+export const verifyDiscord = async (
+  userData,
+  discordHandle,
+  discordMessageUrl
+) => {
+  let [channelId, messageId] = discordMessageUrlToIds(discordMessageUrl);
+
   try {
     let res = await fetch(
-      `${witnessUrl}/witness_tweet?pk=${
-        userData.account.publicKey
-      }&handle=${twitterHandle.replace('@', '')}&tweet_id=${tweetID}`
+      `${witnessUrl}/witness_discord?pk=${userData.account.publicKey}
+      &channelId=${channelId}&messageId=${messageId}&discordHandle=${discordHandle}`
     );
 
     if (res.ok) {
       alert.set({
-        message: "You've completed your Twitter Profile successfully!",
+        message: "You've completed your Discord Profile successfully!",
         variant: 'success',
       });
 
