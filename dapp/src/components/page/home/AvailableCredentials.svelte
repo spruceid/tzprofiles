@@ -50,7 +50,14 @@
 <div class="table-container fade-in dropshadow-default">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
-      <div class="text-2xl font-bold body">My Credentials</div>
+      <div
+        class="text-2xl font-bold body"
+        on:click={() => {
+          navigate('/discord');
+        }}
+      >
+        My Credentials
+      </div>
 
       <div class="flex flex-row items-center">
         <div class="mr-4">

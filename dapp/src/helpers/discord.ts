@@ -2,14 +2,18 @@ import { witnessUrl, alert } from 'src/store';
 import { BeaconWallet } from '@taquito/beacon-wallet';
 import { signClaim } from 'src/utils';
 
-export const getTweetMessage = (userData, twitterHandle) => {
-  return `I am attesting that this Twitter handle @${twitterHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.`;
+export const validateDiscordHandle = (discordHandle: string): boolean => {
+  if (discordHandle.length <= 5) return false;
 };
 
-export const getTwitterClaim = async (userData, twitterHandle) => {
+export const getDiscordMessage = (userData, discordHandle) => {
+  return `I am attesting that this Discord handle ${discordHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.`;
+};
+
+export const getDiscordClaim = async (userData, discordHandle) => {
   try {
-    console.log(userData, twitterHandle);
-    const sig_target = getTweetMessage(userData, twitterHandle);
+    console.log(userData, discordHandle);
+    const sig_target = getDiscordMessage(userData, discordHandle);
     return `Tezos Signed Message: ${sig_target}`;
   } catch (e) {
     alert.set({
@@ -21,7 +25,7 @@ export const getTwitterClaim = async (userData, twitterHandle) => {
   }
 };
 
-export const signTwitterClaim = async (
+export const signDiscordClaim = async (
   userData,
   fmtInput: string,
   wallet: BeaconWallet
