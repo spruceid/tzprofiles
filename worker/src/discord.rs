@@ -70,12 +70,6 @@ pub async fn retrieve_discord_message(
     Ok(res)
 }
 
-// pub fn extract_discord_signature(discordMessage: String) -> Result<(String, String)> {
-//     for line in discordMessage.split('\n').collect::<Vec<&str>>() {
-//         if line.starts_with('sig:')
-//     }
-// }
-
 pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
       "@context": [
@@ -103,7 +97,7 @@ pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
       "type": ["VerifiableCredential", "DiscordVerification"],
       "credentialSubject": {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
-          "sameAs": "https://twitter.com/".to_string() + discord_handle
+          "sameAs": "urn:discord.com:".to_string() + discord_handle
       },
       "issuer": SPRUCE_DIDWEB
     }))?)

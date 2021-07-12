@@ -109,7 +109,6 @@ pub async fn witness_tweet(
         let (sig_target, sig) =
             jserr!(twitter::extract_signature(twitter_res.data[0].text.clone()));
 
-        info!("SIG TARGET:{} SIG:{}", sig_target, sig);
         let mut props = HashMap::new();
         props.insert(
             "publicKeyJwk".to_string(),
@@ -135,17 +134,19 @@ pub async fn witness_tweet(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
-        let proof = jserr!(
-            vc.generate_proof(
-                &sk,
-                &LinkedDataProofOptions {
-                    verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
-                    ..Default::default()
-                }
-            )
-            .await
-        );
-        vc.proof = Some(OneOrMany::One(proof));
+        info!("{:?}", vc);
+
+        // let proof = jserr!(
+        //     vc.generate_proof(
+        //         &sk,
+        //         &LinkedDataProofOptions {
+        //             verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
+        //             ..Default::default()
+        //         }
+        //     )
+        //     .await
+        // );
+        // vc.proof = Some(OneOrMany::One(proof));
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })
 }
@@ -169,11 +170,11 @@ pub async fn witness_discord(
             discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
                 .await
         );
-        let mut vc = jserr!(discord::build_discord_vc(&pk, &discord_handle));
         let formatted_discord_handle = format!(
             "{}#{}",
             discord_res.author.username, discord_res.author.discriminator
         );
+        let mut vc = jserr!(discord::build_discord_vc(&pk, &formatted_discord_handle));
 
         // Check for matching handles
         if discord_handle != formatted_discord_handle {
@@ -184,14 +185,13 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(twitter::extract_signature(discord_res.content));
+        jserr!(verify_signature(&sig_target, &pk, &sig));
 
-        info!("SIG TARGET:{} SIG:{}", sig_target, sig);
         let mut props = HashMap::new();
         props.insert(
             "publicKeyJwk".to_string(),
             jserr!(serde_json::to_value(pk.clone())),
         );
-        jserr!(verify_signature(&sig_target, &pk, &sig));
 
         info!("Issue Discord Credential");
 
@@ -207,7 +207,7 @@ pub async fn witness_discord(
         // evidence_map.insert("discordId".to_string(), serde_json::Value::String(tweet_id));
         let evidence = Evidence {
             id: None,
-            type_: vec!["TwitterVerificationPublicTweet".to_string()],
+            type_: vec!["DiscordVerificationMessage".to_string()],
             property_set: Some(evidence_map),
         };
         vc.evidence = Some(OneOrMany::One(evidence));
