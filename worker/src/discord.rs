@@ -59,9 +59,6 @@ pub async fn retrieve_discord_message(
         channel_id, message_id
     );
 
-    // info!("{}", requestUrl);
-    // info!("{:?}", headers);
-
     let res = client
         .get(Url::parse(&request_url)?)
         .headers(headers)
@@ -70,11 +67,14 @@ pub async fn retrieve_discord_message(
         .json()
         .await?;
 
-    info!("DONE");
-    info!("{:?}", res);
-
     Ok(res)
 }
+
+// pub fn extract_discord_signature(discordMessage: String) -> Result<(String, String)> {
+//     for line in discordMessage.split('\n').collect::<Vec<&str>>() {
+//         if line.starts_with('sig:')
+//     }
+// }
 
 pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({

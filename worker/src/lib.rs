@@ -13,7 +13,7 @@ use js_sys::Promise;
 use serde_json::json;
 use ssi::{
     blakesig::hash_public_key,
-    jwk::{Algorithm, JWK},
+    jwk::JWK,
     jws::verify_bytes,
     one_or_many::OneOrMany,
     tzkey::jwk_from_tezos_key,
@@ -108,6 +108,8 @@ pub async fn witness_tweet(
 
         let (sig_target, sig) =
             jserr!(twitter::extract_signature(twitter_res.data[0].text.clone()));
+
+        info!("SIG TARGET:{} SIG:{}", sig_target, sig);
         let mut props = HashMap::new();
         props.insert(
             "publicKeyJwk".to_string(),
@@ -180,6 +182,47 @@ pub async fn witness_discord(
                 discord_handle, formatted_discord_handle
             ))));
         }
+
+        let (sig_target, sig) = jserr!(twitter::extract_signature(discord_res.content));
+
+        info!("SIG TARGET:{} SIG:{}", sig_target, sig);
+        let mut props = HashMap::new();
+        props.insert(
+            "publicKeyJwk".to_string(),
+            jserr!(serde_json::to_value(pk.clone())),
+        );
+        jserr!(verify_signature(&sig_target, &pk, &sig));
+
+        info!("Issue Discord Credential");
+
+        let mut evidence_map = HashMap::new();
+        evidence_map.insert(
+            "handle".to_string(),
+            serde_json::Value::String(formatted_discord_handle),
+        );
+        evidence_map.insert(
+            "timestamp".to_string(),
+            serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
+        );
+        // evidence_map.insert("discordId".to_string(), serde_json::Value::String(tweet_id));
+        let evidence = Evidence {
+            id: None,
+            type_: vec!["TwitterVerificationPublicTweet".to_string()],
+            property_set: Some(evidence_map),
+        };
+        vc.evidence = Some(OneOrMany::One(evidence));
+
+        let proof = jserr!(
+            vc.generate_proof(
+                &sk,
+                &LinkedDataProofOptions {
+                    verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
+                    ..Default::default()
+                }
+            )
+            .await
+        );
+        vc.proof = Some(OneOrMany::One(proof));
 
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })

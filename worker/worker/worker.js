@@ -204,18 +204,6 @@ async function handler_discord_message(request) {
     const message_id = searchParams.get("messageId");
     const channel_id = searchParams.get("channelId");
     const discord_handle = searchParams.get("discordHandle");
-    // console.log(
-    //   "Tezos profiles private key",
-    //   TZPROFILES_ME_PRIVATE_KEY,
-    //   "pk",
-    //   pk,
-    //   "DISCORD_AUTHORIZATION_TOKEN",
-    //   DISCORD_AUTHORIZATION_TOKEN,
-    //   "Channel ID",
-    //   channel_id,
-    //   "Message ID",
-    //   message_id
-    // );
 
     await wasm_bindgen(wasm); // What is this line for?
     const discordVc = await witness_discord(

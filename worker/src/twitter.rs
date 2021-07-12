@@ -2,6 +2,7 @@ use anyhow::{anyhow, Result};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
 use serde::Deserialize;
 use url::Url;
+use web_sys::console::info;
 
 #[derive(Deserialize)]
 pub struct TwitterResponseData {
