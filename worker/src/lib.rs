@@ -136,17 +136,17 @@ pub async fn witness_tweet(
 
         info!("{:?}", vc);
 
-        // let proof = jserr!(
-        //     vc.generate_proof(
-        //         &sk,
-        //         &LinkedDataProofOptions {
-        //             verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
-        //             ..Default::default()
-        //         }
-        //     )
-        //     .await
-        // );
-        // vc.proof = Some(OneOrMany::One(proof));
+        let proof = jserr!(
+            vc.generate_proof(
+                &sk,
+                &LinkedDataProofOptions {
+                    verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
+                    ..Default::default()
+                }
+            )
+            .await
+        );
+        vc.proof = Some(OneOrMany::One(proof));
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })
 }
@@ -204,7 +204,16 @@ pub async fn witness_discord(
             "timestamp".to_string(),
             serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
         );
-        // evidence_map.insert("discordId".to_string(), serde_json::Value::String(tweet_id));
+
+        evidence_map.insert(
+            "channelId".to_string(),
+            serde_json::Value::String(discord_res.channel_id),
+        );
+        evidence_map.insert(
+            "messageId".to_string(),
+            serde_json::Value::String(discord_res.id),
+        );
+
         let evidence = Evidence {
             id: None,
             type_: vec!["DiscordVerificationMessage".to_string()],
