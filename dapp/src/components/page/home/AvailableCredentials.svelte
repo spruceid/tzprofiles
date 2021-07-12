@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useNavigate, Link } from 'svelte-navigator';
+  import { useNavigate } from 'svelte-navigator';
   import {
     claimsStream,
     loadingContracts,
@@ -8,7 +8,6 @@
   } from 'src/store';
   import './availablecredentials.scss';
   import {
-    Input,
     IconLink,
     DownloadIcon,
     FileModal,
@@ -24,25 +23,19 @@
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
-
   let navigate = useNavigate();
-
   let currentNetwork: string;
   networkStr.subscribe((x) => {
     currentNetwork = x;
   });
-
   let modalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
-
   type contentType = 'content' | 'preparedContent';
   let filterType: contentType;
-
   const closeModal = () => {
     modalOpen = false;
   };
-
   const openModal = () => {
     modalOpen = true;
   };
@@ -101,40 +94,6 @@
         {/if}
       </div>
     </div>
-    {#if canUpload($claimsStream) && !$contractAddress}
-      <div class="flex flex-row-reverse">
-        <label for="agreement" class="text-xs md:text-sm">
-          {'I have '}
-          <span class="font-bold">{'read'}</span>
-          {' and '}
-          <span class="font-bold">{'agree'}</span>
-          {' with the '}
-          <a
-            class="underline text-blue-550"
-            target="_blank"
-            href="/privacy-policy"
-          >
-            {'Privacy Policy'}
-          </a>
-          {' and the '}
-          <a
-            class="underline text-blue-550"
-            target="_blank"
-            href="/terms-of-service"
-          >
-            {'Terms of Service'}
-          </a>
-          {'.'}
-        </label>
-        <input
-          class="mr-4 text-xs md:text-sm"
-          id="agreement"
-          name="agreement"
-          type="checkbox"
-          bind:checked={agreed}
-        />
-      </div>
-    {/if}
   </div>
   {#if $loadingContracts}
     Loading...
