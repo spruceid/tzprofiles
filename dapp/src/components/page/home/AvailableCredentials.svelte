@@ -23,16 +23,21 @@
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
+
   let navigate = useNavigate();
+
   let currentNetwork: string;
   networkStr.subscribe((x) => {
     currentNetwork = x;
   });
+
   let modalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
+
   type contentType = 'content' | 'preparedContent';
   let filterType: contentType;
+
   const closeModal = () => {
     modalOpen = false;
   };
