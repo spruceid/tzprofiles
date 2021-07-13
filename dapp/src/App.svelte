@@ -78,7 +78,6 @@
 </style>
 
 <script lang="ts">
-
   import { Router, Route } from 'svelte-navigator';
   import {
     Address,
@@ -90,6 +89,7 @@
     GitHubVerification,
     GitHubVerificationMessage,
     Instagram,
+    InstagramDataDeletion,
     Faq,
     Twitter,
     BasicProfile,
@@ -195,6 +195,12 @@
     <View />
   </Route>
 
+  <!-- FB / IG App compliance:-->
+  <Route path="instagram-data-deletion">
+    <InstagramDataDeletion />
+  </Route>
+
+  <!-- Context Files:-->
   <Route path="BasicProfile">
     <BasicProfileContext />
   </Route>

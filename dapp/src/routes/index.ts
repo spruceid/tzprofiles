@@ -4,6 +4,7 @@ export { default as Faq } from './Faq/Faq.svelte';
 export { default as GitHub} from './GitHub.svelte';
 export { default as Twitter } from './Twitter.svelte';
 export { default as Instagram } from './Instagram.svelte';
+export { default as InstagramDataDeletion } from './Instagram.svelte';
 export { default as Claims } from './Claims.svelte';
 export { default as BasicProfile } from './BasicProfile.svelte';
 export { default as TermsOfService } from './TermsOfService.svelte';
