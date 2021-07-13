@@ -145,7 +145,7 @@
               <IconLink
                 class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
                 icon={DownloadIcon}
-                href={makeDownloadable(claim[filterType])}
+                href={makeDownloadable(claim.content || claim.preparedContent)}
                 download={`${claim.display.display}.json`}
               />
               <div
