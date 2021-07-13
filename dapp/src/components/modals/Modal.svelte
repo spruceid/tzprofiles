@@ -50,7 +50,9 @@
     >
       <div class={`${backgroundColor} py-6 h-full`}>
         <div class="flex flex-col sm:items-start h-full">
-          <p on:click={toggle} class="underline pl-6 cursor-pointer">Close</p>
+          <p on:click={toggle} class="underline pl-6 cursor-pointer text-black">
+            Close
+          </p>
           <slot id="modal-title" name="title" />
           <slot id="modal-body" name="body" />
           <div class="flex-grow" />

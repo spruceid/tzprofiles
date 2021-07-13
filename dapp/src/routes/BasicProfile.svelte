@@ -1,13 +1,12 @@
 <script lang="ts">
   import {
     BasePage,
-    VerificationDescription,
     VerificationStep,
     Input,
     Label,
     PrimaryButton,
     ExplainerToolModal,
-    CopyButton,
+    Tooltip,
   } from 'components';
   import { claimsStream, userData, wallet, networkStr } from 'src/store';
   import type { ClaimMap } from 'src/helpers';
@@ -39,72 +38,6 @@
 <BasePage
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-visible flex-wrap items-center justify-center"
 >
-  <VerificationDescription
-    icon={display.icon}
-    title={display.title}
-    description={display.description}
-  >
-    {#if currentStep == 2}
-      <ExplainerToolModal
-        bind:toggle
-        signature={async () => {
-          let profile = {
-            alias,
-            description,
-            website,
-            logo,
-          };
-
-          return generateSignature(profile, $userData).then(({ micheline }) => {
-            let str = JSON.stringify(
-              valueDecoder(Uint8ArrayConsumer.fromHexString(micheline.slice(2)))
-                .string
-            );
-            str = str.substring(1, str.length - 1);
-            return str;
-          });
-          console.log('generated');
-        }}
-      />
-      <div class="flex flex-grow justify-evenly mt-8">
-        <button on:click={toggle}> What am I signing? </button>
-      </div>
-
-      <PrimaryButton
-        text="Sign Profile"
-        class="mt-8 flex-grow"
-        onClick={() => {
-          lock = true;
-          let profile = {
-            alias,
-            description,
-            website,
-            logo,
-          };
-          signBasicProfile($userData, $wallet, $networkStr, profile)
-            .then((vc) => {
-              let nextClaimMap = verification;
-              nextClaimMap.basic.preparedContent = JSON.parse(vc);
-              nextClaimMap.basic.draft = contentToDraft(
-                'basic',
-                nextClaimMap.basic.preparedContent
-              );
-              claimsStream.set(nextClaimMap);
-              next();
-            })
-            .catch(console.error)
-            .finally(() => (lock = false));
-        }}
-        disabled={lock}
-      />
-    {:else if currentStep > 2}
-      <PrimaryButton
-        text="Return to Profile"
-        class="mt-4"
-        onClick={() => navigate('/')}
-      />
-    {/if}
-  </VerificationDescription>
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationDescription {display} />
 
@@ -170,33 +103,68 @@
       {/if}
 
       {#if currentStep == 2}
-        <PrimaryButton
-          text="Review and sign"
-          class="mt-8 lg:w-60"
-          onClick={() => {
-            lock = true;
+        <ExplainerToolModal
+          bind:toggle
+          signature={async () => {
             let profile = {
               alias,
               description,
               website,
               logo,
             };
-            signBasicProfile($userData, $wallet, $networkStr, profile)
-              .then((vc) => {
-                let nextClaimMap = verification;
-                nextClaimMap.basic.preparedContent = JSON.parse(vc);
-                nextClaimMap.basic.draft = contentToDraft(
-                  'basic',
-                  nextClaimMap.basic.preparedContent
+
+            return generateSignature(profile, $userData).then(
+              ({ micheline }) => {
+                let str = JSON.stringify(
+                  valueDecoder(
+                    Uint8ArrayConsumer.fromHexString(micheline.slice(2))
+                  ).string
                 );
-                claimsStream.set(nextClaimMap);
-                navigate('/connect');
-              })
-              .catch(console.error)
-              .finally(() => (lock = false));
+                str = str.substring(1, str.length - 1);
+                return str;
+              }
+            );
           }}
-          disabled={lock}
         />
+        <div class="flex items-center flex-grow">
+          <PrimaryButton
+            text="Review and sign"
+            class="mt-8 lg:w-60"
+            onClick={() => {
+              lock = true;
+              let profile = {
+                alias,
+                description,
+                website,
+                logo,
+              };
+              signBasicProfile($userData, $wallet, profile)
+                .then((vc) => {
+                  let nextClaimMap = verification;
+                  nextClaimMap.basic.preparedContent = JSON.parse(vc);
+                  nextClaimMap.basic.draft = contentToDraft(
+                    'basic',
+                    nextClaimMap.basic.preparedContent
+                  );
+                  claimsStream.set(nextClaimMap);
+                  navigate('/connect');
+                })
+                .catch(console.error)
+                .finally(() => (lock = false));
+            }}
+            disabled={lock}
+          />
+          <Tooltip
+            tooltip="What am I signing?"
+            backgroundColor="bg-gray-370"
+            textColor="text-white"
+            class="mt-4"
+          >
+            <p class="text-gray-370 italic cursor-pointer" on:click={toggle}>
+              (i)
+            </p>
+          </Tooltip>
+        </div>
       {/if}
     </VerificationStep>
   </div>

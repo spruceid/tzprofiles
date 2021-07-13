@@ -1,10 +1,14 @@
-import {v4 as uuid} from 'uuid';
-import {alert} from 'src/store';
-import {signClaim} from 'src/utils';
-import {RequestSignPayloadInput, SigningType} from '@airgap/beacon-sdk';
-import {completeIssueCredential, JWKFromTezos, prepareIssueCredential, verifyCredential} from 'didkit-wasm';
-export const generateSignature = async (profile, userData) => {
+import { v4 as uuid } from 'uuid';
+import { alert } from 'src/store';
+import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-sdk';
+import {
+  completeIssueCredential,
+  JWKFromTezos,
+  prepareIssueCredential,
+  verifyCredential,
+} from 'didkit-wasm';
 
+export const generateSignature = async (profile, userData) => {
   const { alias, description, website, logo } = profile;
   const did = `did:pkh:tz:${userData.account.address}`;
   const credential = {
@@ -51,23 +55,21 @@ export const generateSignature = async (profile, userData) => {
     throw new Error('Expected micheline signing input');
   }
   return { micheline, credentialString, prepStr };
-}
+};
 
-export const signBasicProfile = async (
-  userData,
-  wallet,
-  networkStr,
-  profile
-) => {
+export const signBasicProfile = async (userData, wallet, profile) => {
   try {
-    const { micheline, credentialString, prepStr } = await generateSignature(profile, userData);
+    const { micheline, credentialString, prepStr } = await generateSignature(
+      profile,
+      userData
+    );
 
     const payload: RequestSignPayloadInput = {
       signingType: SigningType.MICHELINE,
       payload: micheline,
       sourceAddress: userData.account.address,
     };
-    const {signature} = await wallet.client.requestSignPayload(payload);
+    const { signature } = await wallet.client.requestSignPayload(payload);
 
     let vcStr = await completeIssueCredential(
       credentialString,
@@ -80,7 +82,9 @@ export const signBasicProfile = async (
       await verifyCredential(vcStr, verifyOptionsString)
     );
     if (verifyResult.errors.length > 0) {
-      const errorMessage = `Unable to verify credential: ${verifyResult.errors.join(", ")}`;
+      const errorMessage = `Unable to verify credential: ${verifyResult.errors.join(
+        ', '
+      )}`;
       alert.set({
         message: errorMessage,
         variant: 'error',

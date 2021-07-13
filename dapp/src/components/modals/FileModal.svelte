@@ -25,7 +25,6 @@
 </style>
 
 <script lang="ts">
-  import { PrimaryButton } from 'components';
   import { CloseIcon } from 'components/icons';
 
   export let onClose: () => void;

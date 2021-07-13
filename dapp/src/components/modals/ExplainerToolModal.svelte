@@ -12,7 +12,6 @@
     textAreaValue =
       typeof signature === 'function' ? await signature() : await signature;
   }}
-  backgroundColor="bg-blue-550"
 >
   <div slot="title" class="text-gray-650 text-center w-full">
     <h3>What am I signing?</h3>
@@ -23,7 +22,7 @@
   >
     <iframe
       class="h-full"
-      src="${explainerInstance}/#!input={textAreaValue}"
+      src="{explainerInstance}/#!{textAreaValue}"
       title="Explainer Tool"
     />
   </div>
