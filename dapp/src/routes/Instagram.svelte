@@ -27,7 +27,7 @@
 
   // TODO: Change "login" to permissions or auth
   // TODO: reduce to just media permissions?
-  const instagramAuthLink = `https://api.instagram.com/oauth/authorize?client_id=${process.env.IG_APP_ID}&redirect_uri=${process.env.WITNESS_URL}/instagram_login&scope=user_profile,user_media&response_type=code`;
+  const instagramAuthLink = `https://api.instagram.com/oauth/authorize?client_id=${process.env.IG_APP_ID}&redirect_uri=https://witness.tzprofiles.com/instagram_login&scope=user_profile,user_media&response_type=code`;
 
   let display: ClaimUIAssets = readClaimMap?.instagram?.display;
 
