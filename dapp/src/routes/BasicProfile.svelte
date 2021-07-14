@@ -7,6 +7,7 @@
     PrimaryButton,
     ExplainerToolModal,
     Tooltip,
+    InfoIcon,
   } from 'components';
   import { claimsStream, userData, wallet, networkStr } from 'src/store';
   import type { ClaimMap } from 'src/helpers';
@@ -158,10 +159,13 @@
             tooltip="What am I signing?"
             backgroundColor="bg-gray-370"
             textColor="text-white"
-            class="mt-4"
+            class="mt-1 -ml-1"
           >
-            <p class="text-gray-370 italic cursor-pointer" on:click={toggle}>
-              (i)
+            <p
+              class="text-gray-370 italic cursor-pointer w-4 h-4 ml-2 mt-2"
+              on:click={toggle}
+            >
+              <InfoIcon />
             </p>
           </Tooltip>
         </div>

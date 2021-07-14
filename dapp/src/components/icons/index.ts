@@ -14,3 +14,4 @@ export { default as ErrorIcon } from './ErrorIcon.svelte';
 export { default as ViewIcon } from './Eye.svelte';
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 export { default as Eye } from './Eye.svelte';
+export { default as InfoIcon } from './InfoIcon.svelte';

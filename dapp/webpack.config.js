@@ -108,7 +108,7 @@ module.exports = {
 		new webpack.EnvironmentPlugin({
 			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
 			KEPLER_URL: "https://kepler.tzprofiles.com",
-			EXPLAINER_URL: "https://7bbd84b9.tzvm2021-explainer.pages.dev"
+			EXPLAINER_URL: "https://explainer.tzprofiles.com"
 		})
 	],
 	devtool: prod ? false : 'source-map',
