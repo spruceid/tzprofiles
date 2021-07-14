@@ -77,7 +77,7 @@ pub struct KVWrapper {
 }
 
 pub fn target_from_handle(handle: &str, pkh: &str) -> String {
-    return format!("I am attesting that this Instagram handle @{} is linked to the Tezos account {} for @tezos_profiles\n\n", handle, pkh);
+    return format!("I am attesting that this Instagram handle @{} is linked to the Tezos account {} for Tezos Profiles\n\n", handle, pkh);
 }
 
 pub async fn retrieve_user(access_token: &str) -> Result<User> {
