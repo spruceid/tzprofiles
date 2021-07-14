@@ -1,7 +1,13 @@
 use anyhow::{anyhow, Result};
+use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
 use serde::Deserialize;
+use serde_json::json;
+use ssi::{blakesig::hash_public_key, jwk::JWK, vc::Credential};
 use url::Url;
+use uuid::Uuid;
+
+const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 #[derive(Deserialize)]
 pub struct TwitterResponseData {
@@ -57,4 +63,37 @@ pub async fn retrieve_tweet(api_token: String, tweet_id: String) -> Result<Twitt
         .json()
         .await?;
     Ok(res)
+}
+
+pub fn build_twitter_vc(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
+    Ok(serde_json::from_value(json!({
+      "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          {
+              "sameAs": "http://schema.org/sameAs",
+              "TwitterVerification": "https://tzprofiles.com/TwitterVerification",
+              "TwitterVerificationPublicTweet": {
+                  "@id": "https://tzprofiles.com/TwitterVerificationPublicTweet",
+                  "@context": {
+                      "@version": 1.1,
+                      "@protected": true,
+                      "handle": "https://tzprofiles.com/handle",
+                      "timestamp": {
+                          "@id": "https://tzprofiles.com/timestamp",
+                          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                      },
+                      "tweetId": "https://tzprofiles.com/tweetId"
+                  }
+              }
+          }
+      ],
+      "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
+      "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
+      "type": ["VerifiableCredential", "TwitterVerification"],
+      "credentialSubject": {
+          "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
+          "sameAs": "https://twitter.com/".to_string() + twitter_handle
+      },
+      "issuer": SPRUCE_DIDWEB
+    }))?)
 }

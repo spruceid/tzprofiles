@@ -1,3 +1,5 @@
+mod lib;
+
 use anyhow::Result;
 use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};

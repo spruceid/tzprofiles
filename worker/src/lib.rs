@@ -10,17 +10,14 @@ mod utils;
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
 use js_sys::Promise;
-use serde_json::json;
 use ssi::{
-    blakesig::hash_public_key,
     jwk::JWK,
     jws::verify_bytes,
     one_or_many::OneOrMany,
     tzkey::jwk_from_tezos_key,
-    vc::{Credential, Evidence, LinkedDataProofOptions},
+    vc::{Evidence, LinkedDataProofOptions},
 };
 use std::collections::HashMap;
-use uuid::Uuid;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
@@ -42,44 +39,16 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 pub const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
-fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
-    Ok(serde_json::from_value(json!({
-      "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          {
-              "sameAs": "http://schema.org/sameAs",
-              "TwitterVerification": "https://tzprofiles.com/TwitterVerification",
-              "TwitterVerificationPublicTweet": {
-                  "@id": "https://tzprofiles.com/TwitterVerificationPublicTweet",
-                  "@context": {
-                      "@version": 1.1,
-                      "@protected": true,
-                      "handle": "https://tzprofiles.com/handle",
-                      "timestamp": {
-                          "@id": "https://tzprofiles.com/timestamp",
-                          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
-                      },
-                      "tweetId": "https://tzprofiles.com/tweetId"
-                  }
-              }
-          }
-      ],
-      "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
-      "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
-      "type": ["VerifiableCredential", "TwitterVerification"],
-      "credentialSubject": {
-          "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
-          "sameAs": "https://twitter.com/".to_string() + twitter_handle
-      },
-      "issuer": SPRUCE_DIDWEB
-    }))?)
-}
-
 fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
     info!("Verify tweet signature.");
     let micheline_data = ssi::tzkey::encode_tezos_signed_message(data)?;
     let (algorithm, sig_bytes) = ssi::tzkey::decode_tzsig(sig)?;
     Ok(verify_bytes(algorithm, &micheline_data, pk, &sig_bytes)?)
+}
+
+fn initialize_logging() {
+    use log::Level;
+    console_log::init_with_level(Level::Error).expect("error initializing log");
 }
 
 #[wasm_bindgen]
@@ -90,13 +59,12 @@ pub async fn witness_tweet(
     twitter_handle: String,
     tweet_id: String,
 ) -> Promise {
-    use log::Level;
-    console_log::init_with_level(Level::Trace).expect("error initializing log");
+    initialize_logging();
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
         let twitter_res = jserr!(twitter::retrieve_tweet(twitter_token, tweet_id.clone()).await);
-        let mut vc = jserr!(build_vc_(&pk, &twitter_handle));
+        let mut vc = jserr!(twitter::build_twitter_vc(&pk, &twitter_handle));
 
         if twitter_handle.to_lowercase() != twitter_res.includes.users[0].username.to_lowercase() {
             jserr!(Err(anyhow!(format!(
@@ -160,8 +128,7 @@ pub async fn witness_discord(
     channel_id: String,
     message_id: String,
 ) -> Promise {
-    use log::Level;
-    console_log::init_with_level(Level::Trace).expect("error initializing log");
+    initialize_logging();
 
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
@@ -185,7 +152,7 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(twitter::extract_signature(discord_res.content));
-        // jserr!(verify_signature(&sig_target, &pk, &sig));
+        jserr!(verify_signature(&sig_target, &pk, &sig));
 
         let mut props = HashMap::new();
         props.insert(
@@ -194,6 +161,7 @@ pub async fn witness_discord(
         );
 
         let mut evidence_map = HashMap::new();
+
         evidence_map.insert(
             "handle".to_string(),
             serde_json::Value::String(formatted_discord_handle),
