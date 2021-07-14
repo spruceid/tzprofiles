@@ -1,3 +1,4 @@
+use crate::SPRUCE_DIDWEB;
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
@@ -6,8 +7,6 @@ use serde_json::json;
 use ssi::{blakesig::hash_public_key, jwk::JWK, vc::Credential};
 use url::Url;
 use uuid::Uuid;
-
-const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 #[derive(Deserialize)]
 pub struct TwitterResponseData {
