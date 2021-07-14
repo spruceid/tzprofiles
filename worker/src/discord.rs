@@ -69,7 +69,8 @@ pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
                           "@id": "https://tzprofiles.com/timestamp",
                           "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
                       },
-                      "DiscordMessageId": "https://tzprofiles.com/DiscordMessageId"
+                      "channelId": "https://tzprofiles.com/DiscordChannelId",
+                      "messageId": "https://tzprofiles.com/DiscordMessageId",
                   }
               }
           }
