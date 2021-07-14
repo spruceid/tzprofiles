@@ -25,8 +25,6 @@
     readClaimMap = x;
   });
 
-  // TODO: Change "login" to permissions or auth
-  // TODO: reduce to just media permissions?
   const instagramAuthLink = `https://api.instagram.com/oauth/authorize?client_id=${process.env.IG_APP_ID}&redirect_uri=https://witness.tzprofiles.com/instagram_login&scope=user_profile,user_media&response_type=code`;
 
   let display: ClaimUIAssets = readClaimMap?.instagram?.display;
@@ -86,12 +84,12 @@
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Enter Account Handle"
-      description="Enter your Instagram account handle to verify and include in a message signed via your wallet."
+      title="Enter Instagram Handle"
+      description="Enter your Instagram handle for the account you want to link to your Tezos Profile."
     >
       <div class="flex w-full mt-8">
         <Input
-          placeholder="Enter your Instagram handle"
+          placeholder="Enter Instagram handle"
           class="mr-8"
           prefix="@"
           bind:value={instagramHandle}
@@ -129,7 +127,7 @@
       step={2}
       bind:currentStep
       title="Signature Prompt"
-      description="Sign the message presented to you containing your Instagram handle and additional information."
+      description="Sign a message to prove ownership of your Tezos Profile"
     >
       {#if currentStep >= 2}
         <div class="flex items-center w-full py-2">
@@ -170,8 +168,8 @@
     <VerificationStep
       step={3}
       bind:currentStep
-      title="Post Signature Caption"
-      description="Create or edit an Instagram post caption to include the signature shown below."
+      title="Include Signature in Caption"
+      description="Edit (or create a new) Post from your Instagram account which includes the below signature anywhere in it's caption."
     >
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2">
@@ -198,43 +196,67 @@
       step={4}
       bind:currentStep
       title="Verify with Instagram"
-      description="First, authenticate with Instagram, see the success message, then press the button to download save the claim."
+      description="Authenticate with Instagram to allow a one-time look up of your posts to find the signature"
     >
       {#if currentStep === 4}
-        <a href={instagramAuthLink} target="_blank" class="underline"
-          >Authenticate with Instagram</a
-        >
-        <PrimaryButton
-          text="Save Claim"
-          class="lg:w-48"
-          onClick={() => {
-            next(async () => {
-              try {
-                let vc = await verifyInstagramPost();
-                let nextClaimMap = readClaimMap;
-                nextClaimMap.instagram.preparedContent = JSON.parse(vc);
-                nextClaimMap.instagram.draft = contentToDraft(
-                  'instagram',
-                  nextClaimMap.instagram.preparedContent
-                );
-                claimsStream.set(nextClaimMap);
-              } catch (err) {
-                alert.set({
-                  message: err.message || JSON.stringify(err),
-                  variant: 'error',
-                });
+        <div class="flex items-center w-full py-2">
+          <a
+            href={instagramAuthLink}
+            target="_blank"
+            class="lg:w-48 button-container py-4"
+          >
+            Authenticate with Instagram
+          </a>
+        </div>
+        <div class="flex items-center w-full py-2">
+          <PrimaryButton
+            text="Done"
+            class="lg:w-48"
+            onClick={() => {
+              next(async () => {});
+            }}
+          />
+        </div>
+      {/if}
+    </VerificationStep>
+    <VerificationStep
+      step={4}
+      bind:currentStep
+      title="Validate and save claim to your profile"
+      description="Validate and finalize your claim by verifying the signature"
+    >
+      {#if currentStep === 5}
+        <div class="flex items-center w-full py-2">
+          <PrimaryButton
+            text="Verify Claim"
+            class="lg:w-48"
+            onClick={() => {
+              next(async () => {
+                try {
+                  let vc = await verifyInstagramPost();
+                  let nextClaimMap = readClaimMap;
+                  nextClaimMap.instagram.preparedContent = JSON.parse(vc);
+                  nextClaimMap.instagram.draft = contentToDraft(
+                    'instagram',
+                    nextClaimMap.instagram.preparedContent
+                  );
+                  claimsStream.set(nextClaimMap);
+                } catch (err) {
+                  alert.set({
+                    message: err.message || JSON.stringify(err),
+                    variant: 'error',
+                  });
 
-                // To prevent the step from advancing.
-                throw err
-              }
-            });
-          }}
-          disabled={lock}
-        />
-      {:else if currentStep > 4}
-        <div
-          class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
-        >
+                  // To prevent the step from advancing.
+                  throw err;
+                }
+              });
+            }}
+            disabled={lock}
+          />
+        </div>
+      {:else if currentStep > 5}
+        <div class="flex items-center w-full py-2">
           <PrimaryButton
             text="Return to Profile"
             onClick={() => navigate('/connect')}
