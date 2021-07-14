@@ -51,6 +51,12 @@ const urlToTweetId = (url: string): string => {
 export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
   let tweetID = urlToTweetId(tweetURL);
   try {
+    console.log(
+      `${witnessUrl}/witness_tweet?pk=${
+        userData.account.publicKey
+      }&handle=${twitterHandle.replace('@', '')}&tweet_id=${tweetID}`
+    );
+
     let res = await fetch(
       `${witnessUrl}/witness_tweet?pk=${
         userData.account.publicKey

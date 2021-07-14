@@ -51,7 +51,7 @@ fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
 
 fn initialize_logging() {
     use log::Level;
-    console_log::init_with_level(Level::Error).expect("error initializing log");
+    console_log::init_with_level(Level::Trace).expect("error initializing log");
 }
 
 pub fn extract_signature(tweet: String) -> Result<(String, String)> {
@@ -231,7 +231,8 @@ pub async fn witness_discord(
     channel_id: String,
     message_id: String,
 ) -> Promise {
-    initialize_logging();
+    use log::Level;
+    console_log::init_with_level(Level::Trace).expect("error initializing log");
 
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));

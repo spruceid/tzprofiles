@@ -7,7 +7,7 @@ export const validateDiscordHandle = (discordHandle: string): boolean => {
 };
 
 export const getDiscordMessage = (userData, discordHandle) => {
-  return `I am attesting that this Discord handle ${discordHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.`;
+  return `I am attesting that this Discord handle ${discordHandle} is linked to the Tezos account ${userData.account.address} for tzprofiles.`;
 };
 
 export const getDiscordClaim = async (userData, discordHandle) => {
@@ -55,11 +55,19 @@ export const verifyDiscord = async (
 ) => {
   let [channelId, messageId] = discordMessageUrlToIds(discordMessageUrl);
 
+  console.log(discordHandle);
+
   try {
     let res = await fetch(
-      `${witnessUrl}/witness_discord?pk=${userData.account.publicKey}
-      &channelId=${channelId}&messageId=${messageId}&discordHandle=${discordHandle}`
+      `${witnessUrl}/witness_discord?pk=${
+        userData.account.publicKey
+      }&channelId=${channelId}&messageId=${messageId}&discordHandle=${discordHandle.replace(
+        '#',
+        '%23'
+      )}`
     );
+
+    console.log('VC RES', res);
 
     if (res.ok) {
       alert.set({

@@ -140,7 +140,7 @@
       <div class="body">
         Follow these instructions to verify your handle:
         <br />
-        <br />1) Join this channel
+        <br />1) Join this server
         <a target="_blank" href="https://discord.gg/Jef8Y52mqz">here</a>.
         <br />2) Go to #verification.
         <br /> 3) Copy and post the Discord message below.
