@@ -40,7 +40,7 @@ use wee_alloc;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
+pub const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 fn build_vc_(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
@@ -185,15 +185,13 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(twitter::extract_signature(discord_res.content));
-        jserr!(verify_signature(&sig_target, &pk, &sig));
+        // jserr!(verify_signature(&sig_target, &pk, &sig));
 
         let mut props = HashMap::new();
         props.insert(
             "publicKeyJwk".to_string(),
             jserr!(serde_json::to_value(pk.clone())),
         );
-
-        info!("Issue Discord Credential");
 
         let mut evidence_map = HashMap::new();
         evidence_map.insert(

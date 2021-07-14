@@ -205,7 +205,7 @@ async function handler_discord_message(request) {
     const channel_id = searchParams.get("channelId");
     const discord_handle = searchParams.get("discordHandle");
 
-    await wasm_bindgen(wasm); // What is this line for?
+    await wasm_bindgen(wasm);
     const discordVc = await witness_discord(
       TZPROFILES_ME_PRIVATE_KEY,
       pk,
@@ -214,8 +214,6 @@ async function handler_discord_message(request) {
       channel_id,
       message_id
     );
-
-    console.log(discordVc);
 
     return new Response(JSON.stringify(discordVc), {
       status: 200,

@@ -3,14 +3,7 @@ use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
 use serde::Deserialize;
 use serde_json::json;
-use ssi::{
-    blakesig::hash_public_key,
-    jwk::{Algorithm, JWK},
-    jws::verify_bytes,
-    one_or_many::OneOrMany,
-    tzkey::jwk_from_tezos_key,
-    vc::{Credential, Evidence, LinkedDataProofOptions},
-};
+use ssi::{blakesig::hash_public_key, jwk::JWK, vc::Credential};
 use url::Url;
 use uuid::Uuid;
 
@@ -22,25 +15,14 @@ pub struct DiscordResponse {
     pub content: String,
     pub channel_id: String,
     pub author: Author,
-    pub attachments: Vec<String>,
-    pub embeds: Vec<String>,
-    pub mentions: Vec<String>,
-    pub mention_roles: Vec<String>,
-    pub pinned: bool,
-    pub tts: bool,
     pub timestamp: String,
-    pub edited_timestamp: Option<String>,
-    pub flags: u64,
-    pub components: Vec<String>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Author {
     pub id: String,
     pub username: String,
-    pub avatar: String,
     pub discriminator: String,
-    pub public_flags: u64,
 }
 
 pub async fn retrieve_discord_message(
