@@ -73,9 +73,9 @@ module.exports = {
 			{
 				test: /\.s[ac]ss$/i,
 				use: [
-				  "style-loader",
-				  "css-loader",
-				  "sass-loader",
+					"style-loader",
+					"css-loader",
+					"sass-loader",
 				],
 			},
 			{
@@ -107,7 +107,8 @@ module.exports = {
 		}),
 		new webpack.EnvironmentPlugin({
 			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
-			KEPLER_URL: "https://kepler.tzprofiles.com"
+			KEPLER_URL: "https://kepler.tzprofiles.com",
+			EXPLAINER_URL: "https://7bbd84b9.tzvm2021-explainer.pages.dev"
 		})
 	],
 	devtool: prod ? false : 'source-map',
