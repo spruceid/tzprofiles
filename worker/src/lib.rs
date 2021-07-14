@@ -21,6 +21,7 @@ use ssi::{
     vc::{Evidence, LinkedDataProofOptions},
 };
 use std::collections::HashMap;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
 
