@@ -231,8 +231,7 @@ pub async fn witness_discord(
     channel_id: String,
     message_id: String,
 ) -> Promise {
-    use log::Level;
-    console_log::init_with_level(Level::Trace).expect("error initializing log");
+    initialize_logging();
 
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
