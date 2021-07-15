@@ -343,6 +343,8 @@ wallet.subscribe((w) => {
                 ]);
               }
 
+              console.log(nextClaims);
+
               nextClaims = addDefaults(nextClaims);
 
               claimsStream.set(nextClaims);

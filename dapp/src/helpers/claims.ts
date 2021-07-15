@@ -22,13 +22,6 @@ export type ClaimVCType =
   | 'DiscordVerification';
 
 
-// All of the claim types to allow searching for exisitence in a collection.
-const claimTypes: Array<ClaimType> = [
-  'basic', 
-  'ethereum',
-  'twitter'  
-];
-
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
   if (!vc?.type || !Array.isArray(vc.type)) {
@@ -52,7 +45,16 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
   }
 
   return false;
-}
+};
+
+
+// All of the claim types to allow searching for exisitence in a collection.
+const claimTypes: Array<ClaimType> = [
+  'basic',
+  'twitter',
+  'ethereum',
+  'discord',
+];
 
 export interface BasicDraft {
   alias: string;
@@ -134,6 +136,18 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         routeDescription: 'Twitter Account Information',
         proof: 'Tweet',
         title: 'Twitter Verification',
+        type: 'Social Media',
+      };
+    case 'discord':
+      return {
+        description:
+          'This process is used to link your Discord account to your Tezos account by signing a message using your private key, entering your Discord handle, and finally, sending that message in a channel.',
+        display: 'Discord Account Verification',
+        icon: TwitterIcon,
+        route: '/discord',
+        routeDescription: 'Discord Account Information',
+        proof: 'Discord Message',
+        title: 'Discord Verification',
         type: 'Social Media',
       };
   }
