@@ -40,6 +40,8 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
         return 'ethereum';
       case 'TwitterVerification':
         return 'twitter';
+      case 'DiscordVerification':
+        return 'discord';
       default:
     }
   }

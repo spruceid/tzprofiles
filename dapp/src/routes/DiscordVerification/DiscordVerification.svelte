@@ -195,6 +195,7 @@
                 'discord',
                 nextClaimMap.discord.preparedContent
               );
+
               claimsStream.set(nextClaimMap);
               next();
             });

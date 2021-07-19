@@ -25,7 +25,13 @@
   };
 
   let isCredentialSourceDropdownOpen = false;
-  $: shouldDisplayOriginalImage = true;
+
+  onMount(() => {
+    basicDisplay = claimsMap.basic.draft;
+    twitterDisplay = claimsMap.twitter.draft;
+    if (claimsMap.ethereum && claimsMap.ethereum.draft.address)
+      ethereumDisplay = claimsMap.ethereum.draft;
+  });
 </script>
 
 <div

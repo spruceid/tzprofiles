@@ -8,7 +8,6 @@ export const getTweetMessage = (userData, twitterHandle) => {
 
 export const getTwitterClaim = async (userData, twitterHandle) => {
   try {
-    console.log(userData, twitterHandle);
     const sig_target = getTweetMessage(userData, twitterHandle);
     return `Tezos Signed Message: ${sig_target}`;
   } catch (e) {
@@ -51,12 +50,6 @@ const urlToTweetId = (url: string): string => {
 export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
   let tweetID = urlToTweetId(tweetURL);
   try {
-    console.log(
-      `${witnessUrl}/witness_tweet?pk=${
-        userData.account.publicKey
-      }&handle=${twitterHandle.replace('@', '')}&tweet_id=${tweetID}`
-    );
-
     let res = await fetch(
       `${witnessUrl}/witness_tweet?pk=${
         userData.account.publicKey
@@ -68,6 +61,8 @@ export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
         message: "You've completed your Twitter Profile successfully!",
         variant: 'success',
       });
+
+      let temp = await res.text();
 
       return await res.text();
     }

@@ -12,7 +12,6 @@ export const getDiscordMessage = (userData, discordHandle) => {
 
 export const getDiscordClaim = async (userData, discordHandle) => {
   try {
-    console.log(userData, discordHandle);
     const sig_target = getDiscordMessage(userData, discordHandle);
     return `Tezos Signed Message: ${sig_target}`;
   } catch (e) {
@@ -55,10 +54,8 @@ export const verifyDiscord = async (
 ) => {
   let [channelId, messageId] = discordMessageUrlToIds(discordMessageUrl);
 
-  console.log(discordHandle);
-
   try {
-    let res = await fetch(
+    let res: any = await fetch(
       `${witnessUrl}/witness_discord?pk=${
         userData.account.publicKey
       }&channelId=${channelId}&messageId=${messageId}&discordHandle=${discordHandle.replace(
@@ -67,15 +64,14 @@ export const verifyDiscord = async (
       )}`
     );
 
-    console.log('VC RES', res);
-
     if (res.ok) {
       alert.set({
         message: "You've completed your Discord Profile successfully!",
         variant: 'success',
       });
 
-      return await res.text();
+      let answerBody = await res.text();
+      return JSON.parse(answerBody);
     }
     throw new Error(await res.text());
   } catch (e) {
