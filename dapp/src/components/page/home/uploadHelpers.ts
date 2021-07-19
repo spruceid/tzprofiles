@@ -46,3 +46,9 @@ export const isAllOnChain = (cMap: ClaimMap): boolean => {
 export const shouldDisplayPendingStatus = (claim): boolean => {
   return !claim.content && claim.preparedContent;
 };
+
+export const selectDisplayStatus = (claim): string => {
+  if (!claim.content && claim.preparedContent) return 'pending';
+  if (!claim.content && !claim.preparedContent) return 'incomplete';
+  return 'complete';
+};

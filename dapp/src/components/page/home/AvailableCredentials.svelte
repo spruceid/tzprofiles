@@ -20,6 +20,7 @@
     makeDownloadable,
     isAllOnChain,
     shouldDisplayPendingStatus,
+    selectDisplayStatus,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
@@ -41,8 +42,6 @@
   const openModal = () => {
     modalOpen = true;
   };
-
-  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -110,8 +109,8 @@
         <th class="text-left">Status</th>
         <th class="text-left">Action</th>
       </tr>
-      <tbody>
-        {#each Object.values($claimsStream).filter((claim) => claim.content || claim.preparedContent) as claim}
+      <tbody class="table-content-continer">
+        {#each Object.values($claimsStream) as claim}
           <tr>
             <td class="flex flex-row items-center">
               <svelte:component
@@ -127,68 +126,41 @@
               {claim.display.proof}
             </td>
             <td
-              ><div
-                class={`status-tag ${
-                  shouldDisplayPendingStatus(claim)
-                    ? 'status-pending'
-                    : 'status-complete'
-                }`}
-              >
-                {shouldDisplayPendingStatus(claim) ? 'Pending' : 'Complete'}
-              </div></td
-            >
-            <td class="flex flex-row items-center">
-              <IconLink
-                class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
-                icon={DownloadIcon}
-                href={makeDownloadable(claim.content || claim.preparedContent)}
-                download={`${claim.display.display}.json`}
-              />
-              <div
-                on:click={() => {
-                  isCredentialModalOpen = true;
-                  selectedClaimToView = claim;
-                }}
-                class="cursor-pointer"
-              >
-                <ViewIcon />
+              ><div class={`status-tag status-${selectDisplayStatus(claim)}`}>
+                <div class="capitalize">
+                  {selectDisplayStatus(claim)}
+                </div>
               </div>
             </td>
-          </tr>
-        {/each}
-
-        {#each Object.values($claimsStream) as claim}
-          {#if !claim.content && !claim.preparedContent}
-            <tr>
-              <td class="flex flex-row items-center">
-                <svelte:component
-                  this={claim.display.icon}
-                  class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
-                />
-                <div>{claim.display.display}</div>
-              </td>
-              <td class="px-2 sm:px-4 md:px-6">
-                {claim.display.type}
-              </td>
-              <td class="px-2 sm:px-4 md:px-6">
-                {claim.display.proof}
-              </td>
-              <td><div class="status-tag status-incomplete">Incomplete</div></td
-              >
-              {#if claim.preparedContent}
-                <td class="px-2 sm:px-4 md:px-6"> (Unsaved changes) </td>
+            <td class="flex flex-row items-center">
+              {#if selectDisplayStatus(claim) == 'incomplete'}
+                <div
+                  on:click={() => navigate(claim.display.route)}
+                  class="primary-action cursor-pointer inline-block font-medium"
+                >
+                  Verify
+                </div>
               {:else}
-                <td>
-                  <div
-                    on:click={() => navigate(claim.display.route)}
-                    class="primary-action cursor-pointer inline-block font-medium"
-                  >
-                    Verify
-                  </div>
-                </td>
+                <IconLink
+                  class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
+                  icon={DownloadIcon}
+                  href={makeDownloadable(
+                    claim.content || claim.preparedContent
+                  )}
+                  download={`${claim.display.display}.json`}
+                />
+                <div
+                  on:click={() => {
+                    isCredentialModalOpen = true;
+                    selectedClaimToView = claim;
+                  }}
+                  class="cursor-pointer"
+                >
+                  <ViewIcon />
+                </div>
               {/if}
-            </tr>
-          {/if}
+            </td>
+          </tr>
         {/each}
       </tbody>
     </table>
