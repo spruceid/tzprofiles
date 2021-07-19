@@ -8,6 +8,7 @@
     ExplainerToolModal,
     Tooltip,
     InfoIcon,
+    VerificationDescription,
   } from 'components';
   import { claimsStream, userData, wallet, networkStr } from 'src/store';
   import type { ClaimMap } from 'src/helpers';
