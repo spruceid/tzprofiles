@@ -32,6 +32,7 @@
   let instagramHandle: string = '';
 
   let currentStep: number = 1;
+  let authClicked: boolean = false;
   let lock: boolean = false;
   let instagramClaim: string = '';
   let instagramCaption: string = '';
@@ -85,7 +86,7 @@
       step={1}
       bind:currentStep
       title="Enter Instagram Handle"
-      description="Enter your Instagram handle for the account you want to link to your Tezos Profile."
+      description="Enter the Instagram handle you would like to add to your Tezos Profile."
     >
       <div class="flex w-full mt-8">
         <Input
@@ -127,7 +128,7 @@
       step={2}
       bind:currentStep
       title="Signature Prompt"
-      description="Sign a message to prove ownership of your Tezos Profile"
+      description="Sign the message presented to you containing your Instagram handle and additional information."
     >
       {#if currentStep >= 2}
         <div class="flex items-center w-full py-2">
@@ -168,8 +169,8 @@
     <VerificationStep
       step={3}
       bind:currentStep
-      title="Include Signature in Caption"
-      description="Edit (or create a new) Post from your Instagram account which includes the below signature anywhere in it's caption."
+      title="Include Signature in Post"
+      description="Edit an existing post or create a new post from your Instagram account that includes this signature anywhere in its caption."
     >
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2">
@@ -196,21 +197,23 @@
       step={4}
       bind:currentStep
       title="Verify with Instagram"
-      description="Authenticate with Instagram to allow a one-time look up of your posts to find the signature"
+      description="Authenticate with Instagram to enable a one-time look up of your posts to find the signature."
     >
       {#if currentStep === 4}
         <div class="flex items-center w-full py-2">
           <a
             href={instagramAuthLink}
             target="_blank"
-            class="lg:w-48 button-container py-4"
+            class="lg:w-48 button-container py-4 mr-8 text-center"
+            on:click={() => {
+              authClicked = true;
+            }}
           >
-            Authenticate with Instagram
+            Authenticate
           </a>
-        </div>
-        <div class="flex items-center w-full py-2">
           <PrimaryButton
             text="Done"
+            disabled={!authClicked}
             class="lg:w-48"
             onClick={() => {
               next(async () => {});
@@ -220,10 +223,10 @@
       {/if}
     </VerificationStep>
     <VerificationStep
-      step={4}
+      step={5}
       bind:currentStep
-      title="Validate and save claim to your profile"
-      description="Validate and finalize your claim by verifying the signature"
+      title="Validate and Save Claim to Your Profile"
+      description="Finalize your claim by verifying the added signature."
     >
       {#if currentStep === 5}
         <div class="flex items-center w-full py-2">
