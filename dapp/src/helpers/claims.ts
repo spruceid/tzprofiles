@@ -1,7 +1,12 @@
 import SvelteComponentDev from '*.svelte';
 import { BeaconWallet } from '@taquito/beacon-wallet';
-import {PersonOutlined, TwitterIcon, EthereumIcon} from 'components';
 import { signClaim } from 'src/utils';
+import {
+  PersonOutlined,
+  TwitterIcon,
+  EthereumIcon,
+  DiscordIcon,
+} from 'components';
 import * as tzp from 'tzprofiles';
 
 // TODO: Move to store?
@@ -76,9 +81,15 @@ export interface TwitterDraft {
   tweetUrl: string
 }
 
-export type ClaimDraft = BasicDraft 
+export interface DiscordDraft {
+  handle: string;
+}
+
+export type ClaimDraft =
+  | BasicDraft
+  | TwitterDraft
   | EthereumDraft
-  | TwitterDraft 
+  | DiscordDraft;
 
 /*
  * UI Text & Assets
@@ -145,7 +156,7 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         description:
           'This process is used to link your Discord account to your Tezos account by signing a message using your private key, entering your Discord handle, and finally, sending that message in a channel.',
         display: 'Discord Account Verification',
-        icon: TwitterIcon,
+        icon: DiscordIcon,
         route: '/discord',
         routeDescription: 'Discord Account Information',
         proof: 'Discord Message',
@@ -180,7 +191,7 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
       };
   }
 
-  exhaustiveCheck(ct);
+  // exhaustiveCheck(ct);
 };
 
 export interface Claim {
@@ -274,9 +285,16 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
         tweetUrl,
       };
     }
+    case 'discord': {
+      const { evidence } = content;
+
+      return {
+        handle: evidence.handle,
+      };
+    }
   }
 
-  exhaustiveCheck(ct);
+  // exhaustiveCheck(ct);
 };
 
 export const claimToOutlink = (ct: ClaimType, c: Claim): string => {

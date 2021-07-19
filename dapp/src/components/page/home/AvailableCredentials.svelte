@@ -35,15 +35,14 @@
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
 
-  type contentType = 'content' | 'preparedContent';
-  let filterType: contentType;
-
   const closeModal = () => {
     modalOpen = false;
   };
   const openModal = () => {
     modalOpen = true;
   };
+
+  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -114,9 +113,7 @@
       <tbody>
         {#each Object.values($claimsStream).filter((claim) => claim.content || claim.preparedContent) as claim}
           <tr>
-            <td
-              class="flex items-center px-2 my-1 cursor-pointer sm:px-4 md:px-6"
-            >
+            <td class="flex flex-row items-center">
               <svelte:component
                 this={claim.display.icon}
                 class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
@@ -163,7 +160,7 @@
         {#each Object.values($claimsStream) as claim}
           {#if !claim.content && !claim.preparedContent}
             <tr>
-              <td class="px-2 sm:px-4 md:px-6 text-left flex">
+              <td class="flex flex-row items-center">
                 <svelte:component
                   this={claim.display.icon}
                   class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
