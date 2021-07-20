@@ -12,17 +12,15 @@ mod utils;
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
 use js_sys::Promise;
-use serde_json::json;
 use ssi::{
     blakesig::hash_public_key,
     jwk::JWK,
     jws::verify_bytes,
     one_or_many::OneOrMany,
     tzkey::jwk_from_tezos_key,
-    vc::{Credential, Evidence, LinkedDataProofOptions},
+    vc::{Evidence, LinkedDataProofOptions},
 };
 use std::collections::HashMap;
-use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
 
@@ -43,39 +41,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
-fn build_instagram_vc_(pk: &JWK, instagram_handle: &str) -> Result<Credential> {
-    Ok(serde_json::from_value(json!({
-      "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          {
-              "sameAs": "http://schema.org/sameAs",
-              "InstagramVerification": "https://tzprofiles.com/InstagramVerification",
-              "InstagramVerificationPublicPost": {
-                  "@id": "https://tzprofiles.com/InstagramVerificationPublicPost",
-                  "@context": {
-                      "@version": 1.1,
-                      "@protected": true,
-                      "handle": "https://tzprofiles.com/handle",
-                      "timestamp": {
-                          "@id": "https://tzprofiles.com/timestamp",
-                          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
-                      },
-                      "postUrl": "https://tzprofiles.com/postUrl"
-                  }
-              }
-          }
-      ],
-      "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
-      "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
-      "type": ["VerifiableCredential", "InstagramVerification"],
-      "credentialSubject": {
-          "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
-          "sameAs": "https://instagram.com/".to_string() + instagram_handle
-      },
-      "issuer": SPRUCE_DIDWEB
-    }))?)
-}
-
 fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
     info!("Verify tweet signature.");
     let micheline_data = ssi::tzkey::encode_tezos_signed_message(data)?;
@@ -85,7 +50,22 @@ fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
 
 fn initialize_logging() {
     use log::Level;
-    console_log::init_with_level(Level::Trace).expect("error initializing log");
+    console_log::init_with_level(Level::Error).expect("error initializing log");
+}
+
+pub fn extract_signature(tweet: String) -> Result<(String, String)> {
+    let mut sig_target = "".to_string();
+    for line in tweet.split('\n').collect::<Vec<&str>>() {
+        if line.starts_with("sig:") {
+            if sig_target != "" {
+                return Ok((sig_target, line[4..].to_string().clone()));
+            } else {
+                return Err(anyhow!("Signature target is empty."));
+            }
+        }
+        sig_target = format!("{}{}\n", sig_target, line);
+    }
+    Err(anyhow!("Signature not found in tweet."))
 }
 
 #[wasm_bindgen]
@@ -130,7 +110,7 @@ pub async fn witness_instagram_post(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-        let mut vc = jserr!(build_instagram_vc_(&pk, &ig_handle));
+        let mut vc = jserr!(instagram::build_instagram_vc_(&pk, &ig_handle));
         let sig_target = instagram::target_from_handle(&ig_handle, jserr!(&hash_public_key(&pk)));
 
         let mut props = HashMap::new();
@@ -195,8 +175,7 @@ pub async fn witness_tweet(
             ))));
         }
 
-        let (sig_target, sig) =
-            jserr!(twitter::extract_signature(twitter_res.data[0].text.clone()));
+        let (sig_target, sig) = jserr!(extract_signature(twitter_res.data[0].text.clone()));
 
         let mut props = HashMap::new();
         props.insert(
@@ -274,7 +253,7 @@ pub async fn witness_discord(
             ))));
         }
 
-        let (sig_target, sig) = jserr!(twitter::extract_signature(discord_res.content));
+        let (sig_target, sig) = jserr!(extract_signature(discord_res.content));
         jserr!(verify_signature(&sig_target, &pk, &sig));
 
         let mut props = HashMap::new();

@@ -1,6 +1,11 @@
+use crate::SPRUCE_DIDWEB;
 use anyhow::{anyhow, Result};
+use chrono::{SecondsFormat, Utc};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+use ssi::{blakesig::hash_public_key, jwk::JWK, vc::Credential};
 use url::Url;
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
@@ -119,6 +124,39 @@ pub async fn retrieve_post(user: &User, access_token: &str) -> Result<(String, S
     }
 
     Err(anyhow!("No post with signature found in recent posts"))
+}
+
+pub fn build_instagram_vc_(pk: &JWK, instagram_handle: &str) -> Result<Credential> {
+    Ok(serde_json::from_value(json!({
+      "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          {
+              "sameAs": "http://schema.org/sameAs",
+              "InstagramVerification": "https://tzprofiles.com/InstagramVerification",
+              "InstagramVerificationPublicPost": {
+                  "@id": "https://tzprofiles.com/InstagramVerificationPublicPost",
+                  "@context": {
+                      "@version": 1.1,
+                      "@protected": true,
+                      "handle": "https://tzprofiles.com/handle",
+                      "timestamp": {
+                          "@id": "https://tzprofiles.com/timestamp",
+                          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                      },
+                      "postUrl": "https://tzprofiles.com/postUrl"
+                  }
+              }
+          }
+      ],
+      "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
+      "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
+      "type": ["VerifiableCredential", "InstagramVerification"],
+      "credentialSubject": {
+          "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
+          "sameAs": "https://instagram.com/".to_string() + instagram_handle
+      },
+      "issuer": SPRUCE_DIDWEB
+    }))?)
 }
 
 pub async fn trade_code_for_token(auth: Auth) -> Result<String> {
