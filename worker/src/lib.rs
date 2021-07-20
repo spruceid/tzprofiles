@@ -65,7 +65,7 @@ pub fn extract_signature(tweet: String) -> Result<(String, String)> {
         }
         sig_target = format!("{}{}\n", sig_target, line);
     }
-    Err(anyhow!("Signature not found in tweet."))
+    Err(anyhow!("Signature not found in message."))
 }
 
 #[wasm_bindgen]
