@@ -1,5 +1,5 @@
 use crate::SPRUCE_DIDWEB;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
 use serde::Deserialize;
@@ -8,56 +8,58 @@ use ssi::{blakesig::hash_public_key, jwk::JWK, vc::Credential};
 use url::Url;
 use uuid::Uuid;
 
-#[derive(Deserialize)]
-pub struct TwitterResponseData {
-    pub text: String,
+#[derive(Deserialize, Debug)]
+pub struct DiscordResponse {
+    pub id: String,
+    pub content: String,
+    pub channel_id: String,
+    pub author: Author,
+    pub timestamp: String,
 }
 
-#[derive(Deserialize)]
-pub struct TwitterResponseUser {
+#[derive(Deserialize, Debug)]
+pub struct Author {
+    pub id: String,
     pub username: String,
+    pub discriminator: String,
 }
 
-#[derive(Deserialize)]
-pub struct TwitterResponseIncludes {
-    pub users: Vec<TwitterResponseUser>,
-}
-
-#[derive(Deserialize)]
-pub struct TwitterResponse {
-    pub data: Vec<TwitterResponseData>,
-    pub includes: TwitterResponseIncludes,
-}
-
-pub async fn retrieve_tweet(api_token: String, tweet_id: String) -> Result<TwitterResponse> {
+pub async fn retrieve_discord_message(
+    discord_authorization_key: String,
+    channel_id: String,
+    message_id: String,
+) -> Result<DiscordResponse> {
     let mut headers = HeaderMap::new();
-    headers.insert(AUTHORIZATION, format!("Bearer {}", &api_token).parse()?);
+    headers.insert(
+        AUTHORIZATION,
+        format!("Bot {}", &discord_authorization_key).parse()?,
+    );
     let client = reqwest::Client::new();
+    let request_url = format!(
+        "https://discord.com/api/channels/{}/messages/{}",
+        channel_id, message_id
+    );
 
     let res = client
-        .get(Url::parse("https://api.twitter.com/2/tweets")?)
-        .query(&[
-            ("ids", tweet_id),
-            ("expansions", "author_id".to_string()),
-            ("user.fields", "username".to_string()),
-        ])
+        .get(Url::parse(&request_url)?)
         .headers(headers)
         .send()
         .await?
         .json()
         .await?;
+
     Ok(res)
 }
 
-pub fn build_twitter_vc(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
+pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
       "@context": [
           "https://www.w3.org/2018/credentials/v1",
           {
               "sameAs": "http://schema.org/sameAs",
-              "TwitterVerification": "https://tzprofiles.com/TwitterVerification",
-              "TwitterVerificationPublicTweet": {
-                  "@id": "https://tzprofiles.com/TwitterVerificationPublicTweet",
+              "DiscordVerification": "https://tzprofiles.com/DiscordVerification",
+              "DiscordVerificationMessage": {
+                  "@id": "https://tzprofiles.com/DiscordVerificationMessage",
                   "@context": {
                       "@version": 1.1,
                       "@protected": true,
@@ -66,17 +68,18 @@ pub fn build_twitter_vc(pk: &JWK, twitter_handle: &str) -> Result<Credential> {
                           "@id": "https://tzprofiles.com/timestamp",
                           "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
                       },
-                      "tweetId": "https://tzprofiles.com/tweetId"
+                      "channelId": "https://tzprofiles.com/DiscordChannelId",
+                      "messageId": "https://tzprofiles.com/DiscordMessageId",
                   }
               }
           }
       ],
       "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
       "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
-      "type": ["VerifiableCredential", "TwitterVerification"],
+      "type": ["VerifiableCredential", "DiscordVerification"],
       "credentialSubject": {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
-          "sameAs": "https://twitter.com/".to_string() + twitter_handle
+          "sameAs": "urn:discord.com:".to_string() + discord_handle
       },
       "issuer": SPRUCE_DIDWEB
     }))?)
