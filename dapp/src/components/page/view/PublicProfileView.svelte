@@ -18,7 +18,7 @@
   const params = useParams();
 
   const formatWebsite = (url: string): string => {
-    if (url.startsWith('https://' || 'www.')) {
+    if (url.startsWith('https://' || 'www.' || 'http://')) {
       return url;
     }
     return 'http://' + url;
