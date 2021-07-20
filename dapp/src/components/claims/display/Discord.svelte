@@ -6,8 +6,6 @@
   export let claim: Claim;
   $: display = claim.display;
   $: draft = claim.draft as TwitterDraft;
-
-  console.log(claim);
 </script>
 
 <div>
