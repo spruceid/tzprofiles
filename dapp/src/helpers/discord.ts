@@ -30,6 +30,7 @@ export const signDiscordClaim = async (
   wallet: BeaconWallet
 ) => {
   try {
+    console.log(fmtInput);
     const sig = await signClaim(userData, fmtInput, wallet);
     return `sig:${sig}`;
   } catch (e) {
