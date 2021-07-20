@@ -19,7 +19,6 @@
     canUpload,
     makeDownloadable,
     isAllOnChain,
-    shouldDisplayPendingStatus,
     selectDisplayStatus,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
@@ -113,10 +112,12 @@
         {#each Object.values($claimsStream) as claim}
           <tr>
             <td class="flex flex-row items-center">
-              <svelte:component
-                this={claim.display.icon}
-                class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
-              />
+              <div class="icon-container">
+                <svelte:component
+                  this={claim.display.icon}
+                  class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
+                />
+              </div>
               <div>{claim.display.display}</div>
             </td>
             <td class="px-2 sm:px-4 md:px-6">
@@ -142,7 +143,7 @@
                 </div>
               {:else}
                 <IconLink
-                  class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
+                  class="block w-10 h-12 mr-4 sm:w-4 sm:h-4"
                   icon={DownloadIcon}
                   href={makeDownloadable(
                     claim.content || claim.preparedContent

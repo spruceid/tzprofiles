@@ -23,8 +23,6 @@
     return 'http://' + url;
   };
 
-  console.log(claimsMap);
-
   let isCredentialSourceDropdownOpen = false;
   $: shouldDisplayOriginalImage = true;
 </script>
@@ -73,7 +71,7 @@
     </div>
   {/if}
   <div
-    class="cursor-pointer font-semibold mb-4"
+    class="cursor-pointer font-semibold my-4"
     on:click={() =>
       (isCredentialSourceDropdownOpen = !isCredentialSourceDropdownOpen)}
   >
