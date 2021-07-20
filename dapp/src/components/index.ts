@@ -8,4 +8,3 @@ export * from './icons/';
 export * from './form/';
 export * from './alerts/';
 export * from './modals/';
-export * from './FileModal/';

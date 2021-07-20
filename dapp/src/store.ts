@@ -22,6 +22,8 @@ import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 export const keplerInstance = process.env.KEPLER_URL;
 // The witness worker hostname
 export const witnessUrl = process.env.WITNESS_URL;
+// The explainer server hostname
+export const explainerInstance = process.env.EXPLAINER_URL;
 
 // Global variables used in the store with the writable API
 // UserData from a beacon wallet

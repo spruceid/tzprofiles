@@ -31,7 +31,7 @@
       <img
         src={basicDraft.logo || ''}
         class="img-self"
-        alt="profile"
+        alt="profile-logo"
         on:error={() => {
           shouldDisplayOriginalImage = false;
         }}

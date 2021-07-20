@@ -2,6 +2,14 @@
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
+
+  .tooltip {
+    @apply invisible absolute;
+  }
+
+  .has-tooltip:hover .tooltip {
+    @apply visible z-50;
+  }
   html,
   body {
     position: relative;

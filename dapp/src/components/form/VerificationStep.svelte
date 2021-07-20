@@ -39,7 +39,7 @@
       <span class="w-6 h-6 p-2 text-sm font-bold text-center">{step}</span>
     {/if}
   </div>
-  <div class="flex flex-col w-full overflow-visible">
+  <div class="flex flex-col w-full overflow-visible mr-8">
     <div class="mb-4 text-2xl text-left font-bold body">{title}</div>
     {#if description}
       <div class="font-inter body">{description}</div>
