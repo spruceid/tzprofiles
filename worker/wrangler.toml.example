@@ -4,6 +4,3 @@ account_id = ""
 workers_dev = true
 route = ""
 zone_id = ""
-kv_namespaces = [
-    { binding = "INSTAGRAM_CLAIM", preview_id = "", id = "" }
-]
