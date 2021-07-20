@@ -3,8 +3,10 @@
   import { useParams } from 'svelte-navigator';
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
+  import { publicProfileView } from './publicProfileViewHelper';
   import './publicProfileView.scss';
   export let claimsMap: ClaimMap;
+
   // Specially treat the basic profile.
   const basicClaim: Claim | false =
     claimsMap?.basic?.content && claimsMap.basic;
@@ -20,6 +22,8 @@
     }
     return 'http://' + url;
   };
+
+  console.log(claimsMap);
 
   let isCredentialSourceDropdownOpen = false;
   $: shouldDisplayOriginalImage = true;
@@ -53,7 +57,7 @@
       <CopyButton text={$searchAddress} color="gray" class="w-4 h-4 ml-2" />
     </div>
     {#each Object.values(otherClaims) as claim}
-      <ClaimIcon {claim} />
+      <ClaimIcon {claim} tooltip={publicProfileView(claim)} />
     {/each}
   </div>
   {#if basicClaim}
