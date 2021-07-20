@@ -4,17 +4,14 @@
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
   import './publicProfileView.scss';
-
   export let claimsMap: ClaimMap;
   // Specially treat the basic profile.
   const basicClaim: Claim | false =
     claimsMap?.basic?.content && claimsMap.basic;
   const basicDraft = basicClaim?.draft as BasicDraft;
-
   const otherClaims: Array<Claim> = Object.values(claimsMap).filter(
     (x) => x.type !== 'basic' && x.content
   );
-
   const params = useParams();
 
   const formatWebsite = (url: string): string => {
@@ -25,13 +22,7 @@
   };
 
   let isCredentialSourceDropdownOpen = false;
-
-  onMount(() => {
-    basicDisplay = claimsMap.basic.draft;
-    twitterDisplay = claimsMap.twitter.draft;
-    if (claimsMap.ethereum && claimsMap.ethereum.draft.address)
-      ethereumDisplay = claimsMap.ethereum.draft;
-  });
+  $: shouldDisplayOriginalImage = true;
 </script>
 
 <div
@@ -54,7 +45,6 @@
       {basicDraft.alias || ''}
     </div>
   {/if}
-
   <div class="flex flex-row items-center">
     <div class="flex flex-row items-center cursor-pointer bubble-outline">
       <div class="address-container">
@@ -66,7 +56,6 @@
       <ClaimIcon {claim} />
     {/each}
   </div>
-
   {#if basicClaim}
     <!-- Specially treat basicClaim -->
     <a href={formatWebsite(basicDraft.website)} target="_blank">
@@ -86,7 +75,6 @@
   >
     View Credential Sources
   </div>
-
   {#if isCredentialSourceDropdownOpen}
     {#each Object.values(claimsMap).filter((x) => !!x.content) as claim}
       <div class="flex w-full justify-between	my-2">

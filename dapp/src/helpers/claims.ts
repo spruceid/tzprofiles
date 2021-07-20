@@ -323,7 +323,7 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
     }
   }
 
-  exhaustiveCheck(ct);
+  // exhaustiveCheck(ct);
 }
 
 // Create claim from a ClaimType and the result of tzprofilesClient's calls

@@ -12,16 +12,17 @@ mod utils;
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
 use js_sys::Promise;
+use serde_json::json;
 use ssi::{
     blakesig::hash_public_key,
     jwk::JWK,
     jws::verify_bytes,
     one_or_many::OneOrMany,
     tzkey::jwk_from_tezos_key,
-    vc::{Evidence, LinkedDataProofOptions},
+    vc::{Credential, Evidence, LinkedDataProofOptions},
 };
 use std::collections::HashMap;
-
+use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
 
