@@ -17,6 +17,13 @@
 
   const params = useParams();
 
+  const formatWebsite = (url: string): string => {
+    if (url.startsWith('https://' || 'www.' || 'http://')) {
+      return url;
+    }
+    return 'http://' + url;
+  };
+
   let isCredentialSourceDropdownOpen = false;
   $: shouldDisplayOriginalImage = true;
 </script>
@@ -56,7 +63,7 @@
 
   {#if basicClaim}
     <!-- Specially treat basicClaim -->
-    <a href={basicDraft.website || ''} target="_blank">
+    <a href={formatWebsite(basicDraft.website)} target="_blank">
       <div class="my-6">{basicDraft.website || ''}</div>
     </a>
     <div class="break-normal description-section">
