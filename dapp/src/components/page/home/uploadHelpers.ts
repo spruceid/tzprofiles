@@ -1,4 +1,5 @@
-import { ClaimMap } from 'src/helpers';
+import { ClaimMap, Claim } from 'src/helpers';
+// import {Claim} from "src/helpers/claims"
 
 export const canUpload = (claimStream: any): boolean => {
   let claims = Object.values(claimStream);
@@ -51,4 +52,19 @@ export const selectDisplayStatus = (claim): string => {
   if (!claim.content && claim.preparedContent) return 'pending';
   if (!claim.content && !claim.preparedContent) return 'incomplete';
   return 'complete';
+};
+
+const statusDisplayRanking = ['complete', 'pending', 'incomplete'];
+
+export const sortClaimsByStatus = (a: Claim, b: Claim) => {
+  let aRanking = statusDisplayRanking.indexOf(selectDisplayStatus(a));
+  let bRanking = statusDisplayRanking.indexOf(selectDisplayStatus(b));
+
+  if (aRanking < bRanking) {
+    return -1;
+  }
+  if (aRanking > bRanking) {
+    return 1;
+  }
+  return 0;
 };

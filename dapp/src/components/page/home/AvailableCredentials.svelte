@@ -20,6 +20,7 @@
     makeDownloadable,
     isAllOnChain,
     selectDisplayStatus,
+    sortClaimsByStatus,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import 'src/common/style/animation.scss';
@@ -41,6 +42,8 @@
   const openModal = () => {
     modalOpen = true;
   };
+
+  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -109,7 +112,7 @@
         <th class="text-left">Action</th>
       </tr>
       <tbody class="table-content-continer">
-        {#each Object.values($claimsStream) as claim}
+        {#each Object.values($claimsStream).sort(sortClaimsByStatus) as claim}
           <tr>
             <td class="flex flex-row items-center">
               <div class="icon-container">
