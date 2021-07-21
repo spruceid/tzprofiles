@@ -20,24 +20,6 @@ export const getTwitterClaim = async (userData, twitterHandle) => {
   }
 };
 
-export const signTwitterClaim = async (
-  userData,
-  fmtInput: string,
-  wallet: BeaconWallet
-) => {
-  try {
-    const sig = await signClaim(userData, fmtInput, wallet);
-    return `sig:${sig}`;
-  } catch (e) {
-    alert.set({
-      message: e.message || JSON.stringify(e),
-      variant: 'error',
-    });
-
-    throw e;
-  }
-};
-
 const urlToTweetId = (url: string): string => {
   const list = url.split('/');
   const entry = list[list.length - 1];
