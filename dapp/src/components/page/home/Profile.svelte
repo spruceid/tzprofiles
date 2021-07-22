@@ -56,8 +56,6 @@
         nextClaimStream[profile.type] = next;
       }
 
-      console.log('Adding new claims', newClaims);
-
       // TODO: FIx here
       await addClaims(newClaims);
       console.log('Added claims');

@@ -26,7 +26,6 @@ export type ClaimVCType =
   | 'EthereumAddressControl'
   | 'DiscordVerification';
 
-
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
   if (!vc?.type || !Array.isArray(vc.type)) {
@@ -38,7 +37,7 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
 
     switch (type) {
       case 'BasicProfile':
-        return 'basic'
+        return 'basic';
       // NOTE: Ethereum backwards compatibility
       case 'EthereumControl':
       case 'EthereumAddressControl':
@@ -53,7 +52,6 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
 
   return false;
 };
-
 
 // All of the claim types to allow searching for exisitence in a collection.
 const claimTypes: Array<ClaimType> = [
@@ -70,15 +68,14 @@ export interface BasicDraft {
   website: string;
 }
 
-
 export interface EthereumDraft {
   sameAs: string;
   address: string;
 }
 
 export interface TwitterDraft {
-  handle: string
-  tweetUrl: string
+  handle: string;
+  tweetUrl: string;
 }
 
 export interface DiscordDraft {
@@ -125,8 +122,8 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         routeDescription: 'Basic Profile Information',
         proof: 'Self-Attestation',
         title: 'Basic Profile',
-        type: 'Basic Profile'
-      }
+        type: 'Basic Profile',
+      };
     case 'ethereum':
       return {
         description:
@@ -176,7 +173,7 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
         alias: '',
         description: '',
         logo: '',
-        website: ''
+        website: '',
       };
     case 'ethereum':
       return {
@@ -293,8 +290,6 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
       };
     }
   }
-
-  // exhaustiveCheck(ct);
 };
 
 export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
@@ -322,9 +317,7 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
       return `https://www.twitter.com/${draft.handle}`;
     }
   }
-
-  // exhaustiveCheck(ct);
-}
+};
 
 // Create claim from a ClaimType and the result of tzprofilesClient's calls
 export const claimFromTriple = (
@@ -354,65 +347,77 @@ export const isUnsavedDraft = (c: Claim): boolean => {
 };
 
 /*
-* Social Media Functions
-*/
+ * Social Media Functions
+ */
 
-export type socialMediaClaimType = "twitter";
+export type socialMediaClaimType = 'twitter';
 // | "discord"
 // | "instagram"
 
 const socialMediaTitle = (smType: socialMediaClaimType): string => {
   switch (smType) {
-    case 'twitter': 
+    case 'twitter':
       return 'Twitter';
   }
 
   exhaustiveCheck(smType);
-}
+};
 
-const socialMediaHandle = (smType: socialMediaClaimType, handle: string): string => {
+const socialMediaHandle = (
+  smType: socialMediaClaimType,
+  handle: string
+): string => {
   switch (smType) {
-    case 'twitter': 
+    case 'twitter':
       return `@${handle}`;
   }
 
   exhaustiveCheck(smType);
-}
+};
 
 const tzpHandle = (smType: socialMediaClaimType): string => {
   switch (smType) {
-    case 'twitter': 
+    case 'twitter':
       return socialMediaHandle(smType, 'tzprofiles');
   }
 
   exhaustiveCheck(smType);
-}
+};
 
 export const getUnsignedMessage = (
-  smType: socialMediaClaimType, 
+  smType: socialMediaClaimType,
   // TODO: Type better
   userData: any,
   handle: string
 ): string => {
   let addr = userData?.account?.address;
   if (!addr) {
-    throw new Error("Could not find Tezos address in user data");
+    throw new Error('Could not find Tezos address in user data');
   }
-  
-  return `I am attesting that this ${socialMediaTitle(smType)} handle ${socialMediaHandle(smType, handle)} is linked to the Tezos account ${addr} for ${tzpHandle(smType)}`
-}
+
+  return `I am attesting that this ${socialMediaTitle(
+    smType
+  )} handle ${socialMediaHandle(
+    smType,
+    handle
+  )} is linked to the Tezos account ${addr} for ${tzpHandle(smType)}`;
+};
 
 export const getPreparedUnsignedMessage = (
-  smType: socialMediaClaimType, 
+  smType: socialMediaClaimType,
   // TODO: Type better
   userData: any,
   handle: string
 ): string => {
-  return `Tezos Signed Message: ${getUnsignedMessage(smType, userData, handle)}`;
-}
+  return `Tezos Signed Message: ${getUnsignedMessage(
+    smType,
+    userData,
+    handle
+  )}`;
+};
 
 export const getSignedClaim = async (
-  smType: socialMediaClaimType, 
+  smType: socialMediaClaimType,
   // TODO: Type better
   userData: any,
   handle: string,
@@ -420,22 +425,26 @@ export const getSignedClaim = async (
 ): Promise<string> => {
   const msg = `${getPreparedUnsignedMessage(smType, userData, handle)}\n\n`;
   const sig = await signClaim(userData, msg, wallet);
-  return `sig:${sig}`
-}
+  return `sig:${sig}`;
+};
 
 export const getFullSocialMediaClaim = async (
-  smType: socialMediaClaimType, 
+  smType: socialMediaClaimType,
   // TODO: Type better
   userData: any,
   handle: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  return `${getUnsignedMessage(smType, userData, handle)}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`
-}
+  return `${getUnsignedMessage(
+    smType,
+    userData,
+    handle
+  )}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`;
+};
 
-/* 
-* Things that should be built in
-*/
+/*
+ * Things that should be built in
+ */
 
 // Because === is referential equality and JSON stringify mixes up keys.
 const deepEqual = (object1: object, object2: object): boolean => {
@@ -455,8 +464,8 @@ const deepEqual = (object1: object, object2: object): boolean => {
     const val2 = object2[key];
     const areObjects = isObject(val1) && isObject(val2);
     if (
-      areObjects && !deepEqual(val1, val2) 
-      || !areObjects && val1 !== val2
+      (areObjects && !deepEqual(val1, val2)) ||
+      (!areObjects && val1 !== val2)
     ) {
       return false;
     }

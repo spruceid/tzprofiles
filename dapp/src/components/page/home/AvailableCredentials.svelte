@@ -42,8 +42,6 @@
   const openModal = () => {
     modalOpen = true;
   };
-
-  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">

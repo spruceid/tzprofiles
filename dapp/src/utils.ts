@@ -18,7 +18,8 @@ export const signClaim = async (
 };
 
 export const getMichelineStringBytes = (str: string) => {
-  const strLength = ((char2Bytes(str).length)/2).toString(16).padStart(8, '0');
-  const bytes = `0501${strLength}${char2Bytes(str)}`;
+  const convertedBytes = char2Bytes(str);
+  const strLength = (convertedBytes.length / 2).toString(16).padStart(8, '0');
+  const bytes = `0501${strLength}${convertedBytes}`;
   return bytes;
 };
