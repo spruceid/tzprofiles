@@ -7,6 +7,7 @@
     contractAddress,
     addToKepler,
     addClaims,
+    fetchOrbitId,
   } from 'src/store';
   import {
     canUpload,
@@ -34,7 +35,11 @@
         return !!claim.preparedContent;
       });
 
-      const orbit = getCurrentOrbit(nextClaimStream);
+      let orbit;
+      orbit = getCurrentOrbit(nextClaimStream);
+      if (!orbit) {
+        orbit = await fetchOrbitId();
+      }
 
       const urls = await addToKepler(
         orbit,

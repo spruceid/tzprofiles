@@ -9,7 +9,7 @@ import BeaconEvent from 'enums/BeaconEvent';
 import * as contractLib from 'tzprofiles';
 import * as helpers from './helpers/index';
 
-import { Kepler, authenticator, Action } from 'kepler-sdk';
+import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
 import { verifyCredential } from 'didkit-wasm';
 import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 
@@ -97,6 +97,12 @@ export const addToKepler = async (
 
     throw e;
   }
+};
+
+export const fetchOrbitId = async () => {
+  let pkh = await localWallet.getPKH();
+  let id = await getOrbitId(pkh, { domain: process.env.KEPLER_URL, index: 0 });
+  return id;
 };
 
 export const saveToKepler = async (
