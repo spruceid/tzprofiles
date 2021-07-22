@@ -10,6 +10,7 @@
   import {
     IconLink,
     DownloadIcon,
+    DeleteIcon,
     FileModal,
     ViewIcon,
     ClaimDisplay,
@@ -21,8 +22,11 @@
     isAllOnChain,
     selectDisplayStatus,
     sortClaimsByStatus,
+    shouldDisplayPendingStatus,
+    deleteSingleCredential,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
+  import DeleteCredential from './DeleteCredential.svelte';
   import 'src/common/style/animation.scss';
 
   let navigate = useNavigate();
@@ -33,8 +37,12 @@
   });
 
   let modalOpen = false;
+  let isDeleteModalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
+
+  let selectedClaimToDelete = null;
+  let isDeleting = false;
 
   const closeModal = () => {
     modalOpen = false;
@@ -42,6 +50,8 @@
   const openModal = () => {
     modalOpen = true;
   };
+
+  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -127,11 +137,49 @@
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.proof}
             </td>
-            <td
+            <td <<<<<<< HEAD
               ><div class={`status-tag status-${selectDisplayStatus(claim)}`}>
                 <div class="capitalize">
                   {selectDisplayStatus(claim)}
                 </div>
+                ======= >
+                <div
+                  class={`status-tag ${
+                    shouldDisplayPendingStatus(claim)
+                      ? 'status-pending'
+                      : 'status-complete'
+                  }`}
+                >
+                  {shouldDisplayPendingStatus(claim) ? 'Pending' : 'Complete'}
+                </div>
+              </div></td
+            >
+            <td class="flex flex-row items-center">
+              <IconLink
+                class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
+                icon={DownloadIcon}
+                href={makeDownloadable(claim.content || claim.preparedContent)}
+                download={`${claim.display.display}.json`}
+              />
+              <div
+                on:click={() => {
+                  isCredentialModalOpen = true;
+                  selectedClaimToView = claim;
+                }}
+                class="cursor-pointer mr-3"
+              >
+                <ViewIcon />
+                >>>>>>> Initialize
+              </div>
+
+              <div
+                class="cursor-pointer"
+                on:click={() => {
+                  isDeleteModalOpen = true;
+                  selectedClaimToDelete = claim;
+                }}
+              >
+                <DeleteIcon />
               </div>
             </td>
             <td class="flex flex-row items-center">
@@ -182,5 +230,11 @@
     ><div class="w-full">
       <ClaimDisplay claim={selectedClaimToView} />
     </div>
+  </FileModal>
+{/if}
+
+{#if isDeleteModalOpen}
+  <FileModal onClose={() => (isDeleteModalOpen = false)}
+    ><DeleteCredential claim={selectedClaimToDelete} />
   </FileModal>
 {/if}

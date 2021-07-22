@@ -60,8 +60,8 @@
       await addClaims(newClaims);
       console.log('Added claims');
       claimsStream.set(nextClaimStream);
+
       onClose();
-      // Close modal
     } catch (e) {
       alert.set({
         message: `Error in add claim ${e?.message || e}`,
