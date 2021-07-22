@@ -1,7 +1,11 @@
 <script lang="ts">
   import { deleteSingleCredential } from './uploadHelpers';
+  import { LoadingSpinner } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  export let claim;
+  import { Claim } from 'src/helpers/claims';
+
+  export let claim: Claim;
+  export let onClose: () => void;
 
   let isDeleting = false;
 </script>
@@ -9,14 +13,24 @@
 <div class="w-full">
   <div class="text-2xl font-bold body mb-2">Delete Credential</div>
   <div class="body mb-6">This action cannot be reversed</div>
-  <PrimaryButton
-    small
-    text={isDeleting ? 'Deleting ...' : 'Delete'}
-    disabled={isDeleting}
-    onClick={async () => {
-      isDeleting = true;
-      await deleteSingleCredential(claim);
-      isDeleting = false;
-    }}
-  />
+
+  {#if isDeleting}
+    <div class="w-full flex flex-col items-center">
+      <LoadingSpinner class="rotating my-6" />
+      Please be patient
+    </div>
+  {/if}
+
+  {#if !isDeleting}
+    <PrimaryButton
+      small
+      text={'Delete'}
+      onClick={async () => {
+        isDeleting = true;
+        await deleteSingleCredential(claim);
+        isDeleting = false;
+        onClose();
+      }}
+    />
+  {/if}
 </div>

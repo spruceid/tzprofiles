@@ -206,7 +206,6 @@ export const originate = async (): Promise<void> => {
 export const addClaims = async (
   claimsList: Array<helpers.Claim>
 ): Promise<string> => {
-  console.log(claimsList);
   if (!localClient) {
     alert.set({
       message: 'No wallet detected',
@@ -229,7 +228,6 @@ export const addClaims = async (
     return ['VerifiableCredential', claim.irl || ''];
   });
 
-  console.log(claimsArgsList);
   return await localClient.addClaims(localContractAddress, claimsArgsList);
 };
 

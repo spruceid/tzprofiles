@@ -23,7 +23,6 @@
     selectDisplayStatus,
     sortClaimsByStatus,
     shouldDisplayPendingStatus,
-    deleteSingleCredential,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import DeleteCredential from './DeleteCredential.svelte';
@@ -42,7 +41,6 @@
   let selectedClaimToView = null;
 
   let selectedClaimToDelete = null;
-  let isDeleting = false;
 
   const closeModal = () => {
     modalOpen = false;
@@ -235,6 +233,9 @@
 
 {#if isDeleteModalOpen}
   <FileModal onClose={() => (isDeleteModalOpen = false)}
-    ><DeleteCredential claim={selectedClaimToDelete} />
+    ><DeleteCredential
+      claim={selectedClaimToDelete}
+      onClose={() => (isDeleteModalOpen = false)}
+    />
   </FileModal>
 {/if}
