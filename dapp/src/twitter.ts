@@ -1,6 +1,4 @@
 import { witnessUrl, alert } from 'src/store';
-import { BeaconWallet } from '@taquito/beacon-wallet';
-import { signClaim } from 'src/utils';
 
 export const getTweetMessage = (userData, twitterHandle) => {
   return `I am attesting that this Twitter handle @${twitterHandle} is linked to the Tezos account ${userData.account.address} for @tzprofiles.`;
@@ -43,8 +41,6 @@ export const verifyTweet = async (userData, twitterHandle, tweetURL) => {
         message: "You've completed your Twitter Profile successfully!",
         variant: 'success',
       });
-
-      let temp = await res.text();
 
       return await res.text();
     }

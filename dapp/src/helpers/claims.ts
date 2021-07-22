@@ -350,14 +350,15 @@ export const isUnsavedDraft = (c: Claim): boolean => {
  * Social Media Functions
  */
 
-export type socialMediaClaimType = 'twitter';
-// | "discord"
+export type socialMediaClaimType = 'twitter' | 'discord';
 // | "instagram"
 
 const socialMediaTitle = (smType: socialMediaClaimType): string => {
   switch (smType) {
     case 'twitter':
       return 'Twitter';
+    case 'discord':
+      return 'Discord';
   }
 
   exhaustiveCheck(smType);
@@ -370,6 +371,8 @@ const socialMediaHandle = (
   switch (smType) {
     case 'twitter':
       return `@${handle}`;
+    case 'discord':
+      return `${handle}`;
   }
 
   exhaustiveCheck(smType);
@@ -378,6 +381,8 @@ const socialMediaHandle = (
 const tzpHandle = (smType: socialMediaClaimType): string => {
   switch (smType) {
     case 'twitter':
+      return socialMediaHandle(smType, 'tzprofiles');
+    case 'discord':
       return socialMediaHandle(smType, 'tzprofiles');
   }
 

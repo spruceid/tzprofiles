@@ -6,15 +6,13 @@
     PrimaryButton,
     VerificationStep,
   } from 'components';
-  import { claimsStream, wallet, userData } from 'src/store';
+  import { claimsStream, wallet, userData, alert } from 'src/store';
+  import { validateDiscordHandle, verifyDiscord } from 'src/helpers/discord';
   import {
-    validateDiscordHandle,
-    getDiscordClaim,
-    getDiscordMessage,
-    signDiscordClaim,
-    verifyDiscord,
-  } from 'src/helpers/discord';
-  import { contentToDraft } from 'src/helpers';
+    contentToDraft,
+    getFullSocialMediaClaim,
+    getPreparedUnsignedMessage,
+  } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
 
@@ -83,13 +81,23 @@
         {#if currentStep === 1}
           <PrimaryButton
             text="Submit"
-            onClick={() => {
-              next(() => getDiscordClaim($userData, discordHandle)).then(
-                (res) => {
-                  discordClaim = res;
-                  discordMessage = getDiscordMessage($userData, discordHandle);
+            onClick={async () => {
+              next(async () => {
+                try {
+                  discordClaim = await getPreparedUnsignedMessage(
+                    'discord',
+                    $userData,
+                    discordHandle
+                  );
+                } catch (err) {
+                  alert.set({
+                    variant: 'error',
+                    message: `Failed to create Twitter claim: ${
+                      err?.message || JSON.stringify(err)
+                    }`,
+                  });
                 }
-              );
+              });
             }}
             class="ml-4 lg:ml-0"
             disabled={validateDiscordHandle(discordHandle)}
@@ -120,16 +128,16 @@
         <PrimaryButton
           text="Signature Prompt"
           class="mt-8 lg:w-48"
-          onClick={() => {
-            next(() =>
-              signDiscordClaim($userData, `${discordClaim}\n\n`, $wallet)
-            ).then(
-              (sig) =>
-                (discordMessage = `${getDiscordMessage(
-                  $userData,
-                  discordHandle
-                )}\n\n${sig}`)
-            );
+          onClick={async () => {
+            next(async () => {
+              discordMessage = await getFullSocialMediaClaim(
+                'discord',
+                $userData,
+                discordHandle,
+                $wallet
+              );
+              console.log(discordMessage);
+            });
           }}
           disabled={lock}
         />
