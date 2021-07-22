@@ -1,13 +1,39 @@
 <script lang="ts">
-  import { deleteSingleCredential } from './uploadHelpers';
   import { LoadingSpinner } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  import { Claim } from 'src/helpers/claims';
+  import { Claim, newClaim } from 'src/helpers/claims';
+  import { claimsStream, alert, removeClaims } from 'src/store';
 
   export let claim: Claim;
   export let onClose: () => void;
 
   let isDeleting = false;
+
+  const deleteSingleCredential = async (claim: Claim) => {
+    try {
+      await removeClaims([claim]);
+
+      const nextClaimStream = $claimsStream;
+
+      for (const [key, value] of Object.entries(nextClaimStream)) {
+        if (value.type === claim.type) {
+          nextClaimStream[key] = newClaim(claim.type);
+        }
+      }
+
+      claimsStream.set(nextClaimStream);
+
+      alert.set({
+        message: 'Successfully removed credential',
+        variant: 'success',
+      });
+    } catch (error) {
+      alert.set({
+        message: error,
+        variant: 'error',
+      });
+    }
+  };
 </script>
 
 <div class="w-full">

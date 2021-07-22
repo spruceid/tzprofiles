@@ -1,6 +1,7 @@
 import { ClaimMap, Claim } from 'src/helpers';
 import { removeClaims, claimsStream, alert } from 'src/store';
 
+
 export const canUpload = (claimStream: any): boolean => {
   let claims = Object.values(claimStream);
   for (let i = 0, n = claims.length; i < n; i++) {
@@ -47,6 +48,7 @@ export const isAllOnChain = (cMap: ClaimMap): boolean => {
 export const shouldDisplayPendingStatus = (claim): boolean => {
   return !claim.content && claim.preparedContent;
 };
+<<<<<<< HEAD
 
 export const selectDisplayStatus = (claim): string => {
   if (!claim.content && claim.preparedContent) return 'pending';
@@ -76,3 +78,5 @@ export const deleteSingleCredential = async (claim) => {
     variant: 'success',
   });
 };
+=======
+>>>>>>> Complete MVP flow
