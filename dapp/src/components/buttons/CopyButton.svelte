@@ -20,7 +20,6 @@
       } else {
         copiedText = text;
       }
-
       navigator.clipboard.writeText(
         typeof text === 'function' ? await text() : await text
       );
