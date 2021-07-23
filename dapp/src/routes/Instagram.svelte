@@ -46,7 +46,7 @@
       let res = await fetch(
         `${witnessUrl}/witness_instagram_post?pk=${
           $userData.account.publicKey
-        }&handle=${instagramHandle.trim().replace('@', '')}`
+        }&handle=${instagramHandle.trim().replace('@', '')}&sig_type=tezos`
       );
 
       if (res.ok) {

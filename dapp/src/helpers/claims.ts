@@ -535,6 +535,8 @@ export const getSignedAttestation = async (
   switch (subject.type) {
     case "dns":
       return `tzprofiles-verification=${sig}`;
+    case "instagram":
+      return `__sig:${sig}`
     default:
       return `sig:${sig}`;
   }
@@ -555,6 +557,7 @@ export const getFullAttestation = async (
     case "discord":
     case "github":
     case "twitter":
+    case "instagram":
       return `${getUnsignedAttestation(subject)}${await getSignedAttestation(subject, userData, wallet)}`;
   }
 
