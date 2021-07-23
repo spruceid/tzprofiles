@@ -26,7 +26,7 @@
       );
       alert.set({
         variant: 'success',
-        message: `Copied: ${copiedText}`,
+        message: `Copied: ${copiedText.substring(0, 50)} ...`,
       });
     };
   });
