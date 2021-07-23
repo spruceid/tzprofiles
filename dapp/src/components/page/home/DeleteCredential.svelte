@@ -28,10 +28,8 @@
         variant: 'success',
       });
     } catch (error) {
-      alert.set({
-        message: error,
-        variant: 'error',
-      });
+      isDeleting = false;
+      throw new Error(error.description);
     }
   };
 </script>
@@ -52,10 +50,18 @@
       small
       text={'Delete'}
       onClick={async () => {
-        isDeleting = true;
-        await deleteSingleCredential(claim);
-        isDeleting = false;
-        onClose();
+        try {
+          isDeleting = true;
+          await deleteSingleCredential(claim);
+          isDeleting = false;
+          onClose();
+        } catch (error) {
+          console.log(error);
+          alert.set({
+            message: error,
+            variant: 'error',
+          });
+        }
       }}
     />
   {/if}
