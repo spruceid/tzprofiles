@@ -3,8 +3,9 @@
   import { useParams } from 'svelte-navigator';
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
-  import { publicProfileView } from './publicProfileViewHelper';
+  import { publicProfileViewTooltip } from './publicProfileViewHelper';
   import './publicProfileView.scss';
+
   export let claimsMap: ClaimMap;
 
   // Specially treat the basic profile.
@@ -28,7 +29,7 @@
 </script>
 
 <div
-  class="self-center w-full break-all md:max-w-lg lg:max-w-lg p-6 fade-in rounded-xl bg-white dropshadow-default"
+  class="self-center w-full break-all p-6 fade-in rounded-xl bg-white dropshadow-default public-profile-container"
 >
   {#if basicClaim}
     {#if !basicDraft.logo || !shouldDisplayOriginalImage}
@@ -55,7 +56,7 @@
       <CopyButton text={$searchAddress} color="gray" class="w-4 h-4 ml-2" />
     </div>
     {#each Object.values(otherClaims) as claim}
-      <ClaimIcon {claim} tooltip={publicProfileView(claim)} />
+      <ClaimIcon {claim} tooltip={publicProfileViewTooltip(claim)} />
     {/each}
   </div>
   {#if basicClaim}

@@ -1,5 +1,4 @@
 <style>
-  /*This would all go into the global.css file*/
   [data-tooltip] {
     position: relative;
     z-index: 2;
@@ -22,7 +21,7 @@
     margin-bottom: 5px;
     padding: 7px;
     width: 100%;
-    min-width: 100px;
+    min-width: 130px;
     max-width: 400px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -66,6 +65,8 @@
 
 <script lang="ts">
   import { claimToOutlink } from 'src/helpers';
+  import { selectIconCopyText } from 'src/components/page/view/publicProfileViewHelper';
+  import { CopyButton } from 'components';
   import type { Claim } from 'src/helpers';
 
   export let claim: Claim;
@@ -75,10 +76,11 @@
 <a
   href={claimToOutlink(claim.type, claim)}
   target="_blank"
-  class="mr-2"
   data-tooltip={tooltip}
 >
-  <div class="social-icon-container">
-    <svelte:component this={claim.display.icon} />
-  </div>
+  <CopyButton text={selectIconCopyText(claim)} displayIcon={false} class="mr-2">
+    <div class="social-icon-container cursor-pointer">
+      <svelte:component this={claim.display.icon} />
+    </div>
+  </CopyButton>
 </a>
