@@ -104,12 +104,19 @@ pub async fn witness_instagram_post(
     ig_handle: String,
     ig_link: String,
     sig: String,
+    sig_type: String,
 ) -> Promise {
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-        let mut vc = jserr!(instagram::build_instagram_vc_(&pk, &ig_handle));
+        // TODO: Add support for other signatures when expanding to Rebase:
+        let mut vc = if sig_type == "tezos" {
+            jserr!(instagram::build_tzp_instagram_vc(&pk, &ig_handle))
+        } else {
+            return jserr!(Err(anyhow!(format!("Unknown signature type {}", sig_type))))
+        };
+
         let sig_target = instagram::target_from_handle(&ig_handle, jserr!(&hash_public_key(&pk)));
 
         let mut props = HashMap::new();

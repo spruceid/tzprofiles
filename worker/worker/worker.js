@@ -230,6 +230,7 @@ async function handler_witness_instagram_post(request) {
 
     let pk = decodeURI(searchParams.get("pk"));
     let handle = searchParams.get("handle");
+    let sig_type = searchParams.get("sig_type");
 
     let kvEntry = await INSTAGRAM_CLAIM.get(handle.toLowerCase());
     if (!kvEntry) {
@@ -249,7 +250,8 @@ async function handler_witness_instagram_post(request) {
       pk,
       handle,
       kvObj.link,
-      kvObj.sig
+      kvObj.sig,
+      sig_type
     );
 
     return new Response(vc, { status: 200, headers: headers });
