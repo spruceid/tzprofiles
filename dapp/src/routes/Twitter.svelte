@@ -8,17 +8,14 @@
     VerificationStep,
     CopyTextArea,
   } from 'components';
-
   import { alert, claimsStream, wallet, userData } from 'src/store';
   import { verifyTweet } from 'src/twitter';
-
   import {
     contentToDraft,
     getFullSocialMediaClaim,
     getPreparedUnsignedMessage,
   } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
-
   import { useNavigate } from 'svelte-navigator';
 
   let navigate = useNavigate();

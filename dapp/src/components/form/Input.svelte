@@ -18,14 +18,14 @@
 </script>
 
 <div
-  class="relative transition-all ease-in-out duration-500"
+  class="relative transition-all ease-in-out duration-500 flex flex-row items-center"
   class:w-full={fluid}
   class:opacity-60={disabled}
   class:cursor-not-allowed={disabled}
 >
   {#if prefix}
     <span
-      class="absolute py-3 text-xs left-2 leading-3"
+      class="absolute text-xs left-2 leading-3"
       class:text-gray-350={!value}
       class:text-gray-500={value}
       class:cursor-not-allowed={disabled}

@@ -42,7 +42,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 const SPRUCE_DIDWEB: &str = "did:web:tzprofiles.com";
 
 fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
-    info!("Verify tweet signature.");
     let micheline_data = ssi::tzkey::encode_tezos_signed_message(data)?;
     let (algorithm, sig_bytes) = ssi::tzkey::decode_tzsig(sig)?;
     Ok(verify_bytes(algorithm, &micheline_data, pk, &sig_bytes)?)
@@ -183,7 +182,6 @@ pub async fn witness_tweet(
             jserr!(serde_json::to_value(pk.clone())),
         );
 
-        info!("{:?} {:?} {:?}", sig_target, pk, sig);
         jserr!(verify_signature(&sig_target, &pk, &sig));
 
         info!("Issue credential.");
@@ -243,6 +241,7 @@ pub async fn witness_discord(
             "{}#{}",
             discord_res.author.username, discord_res.author.discriminator
         );
+
         let mut vc = jserr!(discord::build_discord_vc(&pk, &formatted_discord_handle));
 
         // Check for matching handles
