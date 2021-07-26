@@ -79,7 +79,7 @@ pub fn build_discord_vc(pk: &JWK, discord_handle: &str) -> Result<Credential> {
       "type": ["VerifiableCredential", "DiscordVerification"],
       "credentialSubject": {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
-          "sameAs": "urn:discord.com:".to_string() + discord_handle
+          "sameAs": "urn:discord:".to_string() + discord_handle
       },
       "issuer": SPRUCE_DIDWEB
     }))?)
