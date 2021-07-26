@@ -1,5 +1,4 @@
-from dipdup.models import OperationData, Transaction, Origination, BigMapDiff, BigMapData, BigMapAction
-from dipdup.context import HandlerContext, RollbackHandlerContext
+from dipdup.context import RollbackHandlerContext
 
 
 async def on_rollback(ctx: RollbackHandlerContext) -> None:

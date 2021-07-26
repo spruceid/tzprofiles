@@ -1,21 +1,21 @@
-spec_version: 1.0
+spec_version: 1.1
 package: tzprofiles_indexer
 
-database:
-  kind: postgres
-  host: db
-  port: 5432
-  user: dipdup
-  password: ${POSTGRES_PASSWORD:-changeme}
-  database: dipdup
-
 # database:
-#   kind: sqlite
-#   path: tzprofiles.sqlite3
+#   kind: postgres
+#   host: db
+#   port: 5432
+#   user: dipdup
+#   password: ${POSTGRES_PASSWORD:-changeme}
+#   database: dipdup
 
-hasura:
-  url: http://hasura:8080
-  admin_secret: ${ADMIN_SECRET:-changeme}
+database:
+  kind: sqlite
+  path: tzprofiles.sqlite3
+
+# hasura:
+#   url: http://hasura:8080
+#   admin_secret: ${ADMIN_SECRET:-changeme}
 
 contracts:
   tzprofile_old:
@@ -65,3 +65,4 @@ indexes:
           - type: origination
             similar_to: tzprofile_old
     stateless: True
+    subscribe_by_entrypoints: True

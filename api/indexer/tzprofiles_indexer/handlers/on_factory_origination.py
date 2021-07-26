@@ -13,9 +13,7 @@ async def on_factory_origination(
     ctx: HandlerContext,
     tzprofile_origination: Origination[TzprofileStorage],
 ) -> None:
-    originated_contract = cast(
-        str, tzprofile_origination.data.originated_contract_address
-    )
+    originated_contract = cast(str, tzprofile_origination.data.originated_contract_address)
     index_name = f"tzprofiles_{originated_contract}"
     ctx.add_contract(
         name=originated_contract,
@@ -27,4 +25,3 @@ async def on_factory_origination(
         template="tzprofiles",
         values=dict(contract=originated_contract),
     )
-

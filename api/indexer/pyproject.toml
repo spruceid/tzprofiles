@@ -7,8 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-dipdup = "^1.0.2"
-aiohttp = "^3.7.4"
+dipdup = {path = "../../../dipdup", develop = true}
 
 [tool.poetry.dev-dependencies]
 
