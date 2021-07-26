@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any, Dict
 from dipdup.context import HandlerContext
 from dipdup.datasources.datasource import Datasource
@@ -9,7 +10,7 @@ TZP_API = env['TZP_API'].rstrip('/')
 # TODO: For DipDup: inject datasource classes?
 class TZPDatasource(Datasource):
     async def run(self) -> None:
-        pass
+        await self._http.__aenter__()
 
     async def resolve(self, address: str) -> Dict[str, Any]:
         return await self._http.request(
@@ -23,4 +24,6 @@ class TZPDatasource(Datasource):
 
 
 async def on_configure(ctx: HandlerContext) -> None:
-    ctx.datasources['tzp'] = TZPDatasource(TZP_API)
+    datasource = TZPDatasource(TZP_API)
+    asyncio.create_task(datasource.run())
+    ctx.datasources['tzp'] = datasource
