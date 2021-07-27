@@ -162,6 +162,7 @@
                     claim.content || claim.preparedContent
                   )}
                   downloadFileName={`${claim.display.display}.json`}
+                  {claim}
                 />
               {/if}
             </td>

@@ -2,6 +2,7 @@
   import { LoadingSpinner } from 'components';
   import { PrimaryButton } from 'components/buttons';
   import { Claim, newClaim } from 'src/helpers/claims';
+  import { selectDisplayStatus } from './uploadHelpers';
   import { claimsStream, alert, removeClaims } from 'src/store';
 
   export let claim: Claim;
@@ -11,7 +12,9 @@
 
   const deleteSingleCredential = async (claim: Claim) => {
     try {
-      await removeClaims([claim]);
+      if (selectDisplayStatus(claim) === 'complete') {
+        await removeClaims([claim]);
+      }
 
       const nextClaimStream = $claimsStream;
 
@@ -36,6 +39,7 @@
 
 <div class="w-full">
   <div class="text-2xl font-bold body mb-2">Delete Credential</div>
+  <div class="body mb-6">- {claim.display.display}</div>
   <div class="body mb-6">This action cannot be reversed</div>
 
   {#if isDeleting}

@@ -6,6 +6,7 @@
   export let onClickDelete;
   export let href;
   export let downloadFileName;
+  export let claim;
 
   let isOpen = false;
 
