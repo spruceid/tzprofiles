@@ -71,6 +71,8 @@
 
   export let claim: Claim;
   export let tooltip: Boolean | String = false;
+
+  const enableCopy = ['discord'];
 </script>
 
 <a
@@ -78,7 +80,12 @@
   target="_blank"
   data-tooltip={tooltip}
 >
-  <CopyButton text={selectIconCopyText(claim)} displayIcon={false} class="mr-2">
+  <CopyButton
+    text={selectIconCopyText(claim)}
+    displayIcon={false}
+    disabled={!enableCopy.includes(claim.type)}
+    class="mr-2"
+  >
     <div class="social-icon-container cursor-pointer">
       <svelte:component this={claim.display.icon} />
     </div>
