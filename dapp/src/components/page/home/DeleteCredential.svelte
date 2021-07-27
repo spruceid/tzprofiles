@@ -31,7 +31,6 @@
         variant: 'success',
       });
     } catch (error) {
-      isDeleting = false;
       throw new Error(error.description);
     }
   };
@@ -57,14 +56,15 @@
         try {
           isDeleting = true;
           await deleteSingleCredential(claim);
-          isDeleting = false;
-          onClose();
         } catch (error) {
           console.log(error);
           alert.set({
             message: error,
             variant: 'error',
           });
+        } finally {
+          isDeleting = false;
+          onClose();
         }
       }}
     />
