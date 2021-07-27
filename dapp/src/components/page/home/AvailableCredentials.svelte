@@ -26,6 +26,7 @@
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import DeleteCredential from './DeleteCredential.svelte';
+  import MoreModal from './MoreModal/MoreModal.svelte';
   import 'src/common/style/animation.scss';
 
   let navigate = useNavigate();
@@ -170,15 +171,12 @@
                 >>>>>>> Initialize
               </div>
 
-              <div
-                class="cursor-pointer"
-                on:click={() => {
+              <MoreModal
+                onClickDelete={() => {
                   isDeleteModalOpen = true;
                   selectedClaimToDelete = claim;
                 }}
-              >
-                <DeleteIcon />
-              </div>
+              />
             </td>
             <td class="flex flex-row items-center">
               {#if selectDisplayStatus(claim) == 'incomplete'}
