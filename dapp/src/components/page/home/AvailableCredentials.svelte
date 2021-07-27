@@ -7,14 +7,7 @@
     networkStr,
   } from 'src/store';
   import './availablecredentials.scss';
-  import {
-    IconLink,
-    DownloadIcon,
-    DeleteIcon,
-    FileModal,
-    ViewIcon,
-    ClaimDisplay,
-  } from 'components';
+  import { FileModal, ViewIcon, ClaimDisplay } from 'components';
   import { PrimaryButton } from 'components/buttons';
   import {
     canUpload,
@@ -22,7 +15,6 @@
     isAllOnChain,
     selectDisplayStatus,
     sortClaimsByStatus,
-    shouldDisplayPendingStatus,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import DeleteCredential from './DeleteCredential.svelte';
@@ -136,48 +128,13 @@
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.proof}
             </td>
-            <td <<<<<<< HEAD
+            <td
               ><div class={`status-tag status-${selectDisplayStatus(claim)}`}>
                 <div class="capitalize">
                   {selectDisplayStatus(claim)}
                 </div>
-                ======= >
-                <div
-                  class={`status-tag ${
-                    shouldDisplayPendingStatus(claim)
-                      ? 'status-pending'
-                      : 'status-complete'
-                  }`}
-                >
-                  {shouldDisplayPendingStatus(claim) ? 'Pending' : 'Complete'}
-                </div>
               </div></td
             >
-            <td class="flex flex-row items-center">
-              <IconLink
-                class="block w-10 h-12 mr-3 sm:w-4 sm:h-4"
-                icon={DownloadIcon}
-                href={makeDownloadable(claim.content || claim.preparedContent)}
-                download={`${claim.display.display}.json`}
-              />
-              <div
-                on:click={() => {
-                  isCredentialModalOpen = true;
-                  selectedClaimToView = claim;
-                }}
-                class="cursor-pointer mr-3"
-              >
-                <ViewIcon />
-                >>>>>>> Initialize
-              </div>
-
-              <MoreModal
-                onClickDelete={() => {
-                  isDeleteModalOpen = true;
-                  selectedClaimToDelete = claim;
-                }}
-              />
-            </td>
             <td class="flex flex-row items-center">
               {#if selectDisplayStatus(claim) == 'incomplete'}
                 <div
@@ -187,23 +144,25 @@
                   Verify
                 </div>
               {:else}
-                <IconLink
-                  class="block w-10 h-12 mr-4 sm:w-4 sm:h-4"
-                  icon={DownloadIcon}
-                  href={makeDownloadable(
-                    claim.content || claim.preparedContent
-                  )}
-                  download={`${claim.display.display}.json`}
-                />
                 <div
                   on:click={() => {
                     isCredentialModalOpen = true;
                     selectedClaimToView = claim;
                   }}
-                  class="cursor-pointer"
+                  class="cursor-pointer mr-4"
                 >
                   <ViewIcon />
                 </div>
+                <MoreModal
+                  onClickDelete={() => {
+                    isDeleteModalOpen = true;
+                    selectedClaimToDelete = claim;
+                  }}
+                  href={makeDownloadable(
+                    claim.content || claim.preparedContent
+                  )}
+                  downloadFileName={`${claim.display.display}.json`}
+                />
               {/if}
             </td>
           </tr>

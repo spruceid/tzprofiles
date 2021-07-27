@@ -4,7 +4,8 @@
   import './MoreModal.scss';
 
   export let onClickDelete;
-  export let onClickDownload;
+  export let href;
+  export let downloadFileName;
 
   let isOpen = false;
 
@@ -39,13 +40,26 @@
   {#if isOpen}
     <div class="panel-container">
       <div
-        class="cursor-pointer"
+        class="cursor-pointer my-3"
         on:click={() => {
           closePanel();
           onClickDelete();
         }}
       >
         Delete
+      </div>
+
+      <div class="cursor-pointer my-3" on:click={() => closePanel()}>
+        <a
+          aria-label=""
+          alt=""
+          title=""
+          {href}
+          download={downloadFileName}
+          class="text-black"
+        >
+          Download
+        </a>
       </div>
     </div>
   {/if}
