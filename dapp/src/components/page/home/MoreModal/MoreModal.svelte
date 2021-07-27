@@ -13,10 +13,6 @@
     isOpen = false;
   };
 
-  const openPanel = () => {
-    isOpen = true;
-  };
-
   const togglePanel = () => {
     isOpen = !isOpen;
   };
