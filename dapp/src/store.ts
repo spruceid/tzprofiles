@@ -66,11 +66,10 @@ export const tzktBase: Writable<string> = writable<string>(
 export const alert: Writable<{
   message: string;
   variant: 'error' | 'warning' | 'success' | 'info';
-}> =
-  writable<{
-    message: string;
-    variant: 'error' | 'warning' | 'success' | 'info';
-  }>(null);
+}> = writable<{
+  message: string;
+  variant: 'error' | 'warning' | 'success' | 'info';
+}>(null);
 
 /*
  * Kepler Interactions
@@ -612,4 +611,9 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
     variant: 'error',
   });
   throw new Error(`No contract found for ${wallet}`);
+};
+
+export const fetchPkh = async () => {
+  let pkh = await localWallet.getPKH();
+  return pkh;
 };
