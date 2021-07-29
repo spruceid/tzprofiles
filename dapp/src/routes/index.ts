@@ -11,4 +11,5 @@ export { default as Search } from './Search/Search.svelte';
 export { default as Splash } from './Splash/Splash.svelte';
 export { default as View } from './View.svelte';
 export { default as DiscordVerification } from './DiscordVerification/DiscordVerification.svelte';
+export { default as DnsVerification } from './DnsVerification/DnsVerification.svelte';
 export * from './context';
