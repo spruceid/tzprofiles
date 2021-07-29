@@ -9,7 +9,7 @@ import BeaconEvent from 'enums/BeaconEvent';
 import * as contractLib from 'tzprofiles';
 import * as helpers from './helpers/index';
 
-import { Kepler, authenticator, Action } from 'kepler-sdk';
+import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
 import { verifyCredential } from 'didkit-wasm';
 import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 
@@ -66,11 +66,10 @@ export const tzktBase: Writable<string> = writable<string>(
 export const alert: Writable<{
   message: string;
   variant: 'error' | 'warning' | 'success' | 'info';
-}> =
-  writable<{
-    message: string;
-    variant: 'error' | 'warning' | 'success' | 'info';
-  }>(null);
+}> = writable<{
+  message: string;
+  variant: 'error' | 'warning' | 'success' | 'info';
+}>(null);
 
 /*
  * Kepler Interactions
@@ -81,7 +80,7 @@ export const addToKepler = async (
   ...obj: Array<any>
 ): Promise<Array<string>> => {
   try {
-    let addresses = await helpers.addToKepler(localKepler, orbit, ...obj);
+    let addresses = await helpers.addToKepler(localKepler, orbit, await localWallet.getPKH(), ...obj);
 
     alert.set({
       message: 'Successfully uploaded to Kepler',
@@ -97,6 +96,12 @@ export const addToKepler = async (
 
     throw e;
   }
+};
+
+export const fetchOrbitId = async () => {
+  let pkh = await localWallet.getPKH();
+  let id = await getOrbitId(pkh, { domain: process.env.KEPLER_URL, index: 0 });
+  return id;
 };
 
 export const saveToKepler = async (

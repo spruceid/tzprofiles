@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { SvelteComponent, onMount } from 'svelte';
-  import { ClipboardIcon } from 'components';
+  import { SvelteComponent } from 'svelte';
 
   export let icon: typeof SvelteComponent;
   export let title: string = '';

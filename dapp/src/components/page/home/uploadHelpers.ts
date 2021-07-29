@@ -1,5 +1,5 @@
 import { ClaimMap, Claim } from 'src/helpers';
-// import {Claim} from "src/helpers/claims"
+import { removeClaims, claimsStream, alert } from 'src/store';
 
 export const canUpload = (claimStream: any): boolean => {
   let claims = Object.values(claimStream);
@@ -67,4 +67,12 @@ export const sortClaimsByStatus = (a: Claim, b: Claim) => {
     return 1;
   }
   return 0;
+};
+
+export const deleteSingleCredential = async (claim) => {
+  await removeClaims([claim]);
+  alert.set({
+    message: 'Successfully removed credential',
+    variant: 'success',
+  });
 };

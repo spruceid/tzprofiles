@@ -7,6 +7,7 @@
     contractAddress,
     addToKepler,
     addClaims,
+    fetchOrbitId,
   } from 'src/store';
   import {
     canUpload,
@@ -34,7 +35,11 @@
         return !!claim.preparedContent;
       });
 
-      const orbit = getCurrentOrbit(nextClaimStream);
+      let orbit;
+      orbit = getCurrentOrbit(nextClaimStream);
+      if (!orbit) {
+        orbit = await fetchOrbitId();
+      }
 
       const urls = await addToKepler(
         orbit,
@@ -60,8 +65,8 @@
       await addClaims(newClaims);
       console.log('Added claims');
       claimsStream.set(nextClaimStream);
+
       onClose();
-      // Close modal
     } catch (e) {
       alert.set({
         message: `Error in add claim ${e?.message || e}`,

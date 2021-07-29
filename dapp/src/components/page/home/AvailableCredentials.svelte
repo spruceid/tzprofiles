@@ -7,13 +7,7 @@
     networkStr,
   } from 'src/store';
   import './availablecredentials.scss';
-  import {
-    IconLink,
-    DownloadIcon,
-    FileModal,
-    ViewIcon,
-    ClaimDisplay,
-  } from 'components';
+  import { FileModal, ViewIcon, ClaimDisplay } from 'components';
   import { PrimaryButton } from 'components/buttons';
   import {
     canUpload,
@@ -23,6 +17,8 @@
     sortClaimsByStatus,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
+  import DeleteCredential from './DeleteCredential.svelte';
+  import MoreModal from './MoreModal/MoreModal.svelte';
   import 'src/common/style/animation.scss';
 
   let navigate = useNavigate();
@@ -33,8 +29,11 @@
   });
 
   let modalOpen = false;
+  let isDeleteModalOpen = false;
   let isCredentialModalOpen = false;
   let selectedClaimToView = null;
+
+  let selectedClaimToDelete = null;
 
   const closeModal = () => {
     modalOpen = false;
@@ -42,6 +41,8 @@
   const openModal = () => {
     modalOpen = true;
   };
+
+  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -132,8 +133,8 @@
                 <div class="capitalize">
                   {selectDisplayStatus(claim)}
                 </div>
-              </div>
-            </td>
+              </div></td
+            >
             <td class="flex flex-row items-center">
               {#if selectDisplayStatus(claim) == 'incomplete'}
                 <div
@@ -143,23 +144,26 @@
                   Verify
                 </div>
               {:else}
-                <IconLink
-                  class="block w-10 h-12 mr-4 sm:w-4 sm:h-4"
-                  icon={DownloadIcon}
-                  href={makeDownloadable(
-                    claim.content || claim.preparedContent
-                  )}
-                  download={`${claim.display.display}.json`}
-                />
                 <div
                   on:click={() => {
                     isCredentialModalOpen = true;
                     selectedClaimToView = claim;
                   }}
-                  class="cursor-pointer"
+                  class="cursor-pointer mr-4"
                 >
                   <ViewIcon />
                 </div>
+                <MoreModal
+                  onClickDelete={() => {
+                    isDeleteModalOpen = true;
+                    selectedClaimToDelete = claim;
+                  }}
+                  href={makeDownloadable(
+                    claim.content || claim.preparedContent
+                  )}
+                  downloadFileName={`${claim.display.display}.json`}
+                  {claim}
+                />
               {/if}
             </td>
           </tr>
@@ -182,5 +186,14 @@
     ><div class="w-full">
       <ClaimDisplay claim={selectedClaimToView} />
     </div>
+  </FileModal>
+{/if}
+
+{#if isDeleteModalOpen}
+  <FileModal onClose={() => (isDeleteModalOpen = false)}
+    ><DeleteCredential
+      claim={selectedClaimToDelete}
+      onClose={() => (isDeleteModalOpen = false)}
+    />
   </FileModal>
 {/if}
