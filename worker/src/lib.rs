@@ -50,7 +50,7 @@ fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
 
 fn initialize_logging() {
     use log::Level;
-    console_log::init_with_level(Level::Error).expect("error initializing log");
+    console_log::init_with_level(Level::Trace).expect("error initializing log");
 }
 
 pub fn extract_signature(tweet: String) -> Result<(String, String)> {
@@ -369,6 +369,15 @@ pub async fn dns_lookup(
 
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })
+}
+
+#[wasm_bindgen]
+pub async fn dns_lookup(domain: String) {
+    initialize_logging();
+
+    info!("Hello");
+
+    dns::retrieve_txt(domain);
 }
 
 #[test]
