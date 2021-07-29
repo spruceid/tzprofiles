@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { searchAddress } from 'src/store';
   import { useParams } from 'svelte-navigator';
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
@@ -53,7 +52,7 @@
       <div class="address-container">
         {$params.address}
       </div>
-      <CopyButton text={$searchAddress} color="gray" class="w-4 h-4 ml-2" />
+      <CopyButton text={$params.address} color="gray" class="w-4 h-4 ml-2" />
     </div>
     {#each Object.values(otherClaims) as claim}
       <ClaimIcon {claim} tooltip={publicProfileViewTooltip(claim)} />
