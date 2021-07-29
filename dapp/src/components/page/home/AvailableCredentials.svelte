@@ -40,6 +40,7 @@
   const closeModal = () => {
     modalOpen = false;
   };
+
   const openModal = () => {
     modalOpen = true;
   };
