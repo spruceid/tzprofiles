@@ -49,9 +49,15 @@ export const shouldDisplayPendingStatus = (claim): boolean => {
 };
 
 export const selectDisplayStatus = (claim): string => {
-  if (!claim.content && claim.preparedContent) return 'pending';
+  if (!claim.content && claim.preparedContent) return 'Awaiting Upload';
   if (!claim.content && !claim.preparedContent) return 'incomplete';
   return 'complete';
+};
+
+export const statusTextToClassMapping = {
+  'Awaiting Upload': 'pending',
+  complete: 'complete',
+  incomplete: 'incomplete',
 };
 
 const statusDisplayRanking = ['complete', 'pending', 'incomplete'];
