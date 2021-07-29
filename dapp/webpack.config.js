@@ -99,7 +99,7 @@ module.exports = {
     }),
     new webpack.EnvironmentPlugin({
       WITNESS_URL: 'https://tzprofiles_witness.rebase-verifier.workers.dev',
-      KEPLER_URL: 'http://localhost:8000/', // https://kepler.tzprofiles.com
+      KEPLER_URL: 'https://kepler.tzprofiles.com',
       EXPLAINER_URL: 'https://explainer.tzprofiles.com',
     }),
   ],
