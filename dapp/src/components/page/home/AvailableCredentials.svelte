@@ -82,8 +82,6 @@
                   }tzkt.io/${$contractAddress}`
                 )}
             />
-          {:else}
-            <div class="opacity-50">No contract detected</div>
           {/if}
         </div>
 
