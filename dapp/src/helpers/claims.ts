@@ -6,6 +6,7 @@ import {
   TwitterIcon,
   EthereumIcon,
   DiscordIcon,
+  GlobeIcon,
 } from 'components';
 import * as tzp from 'tzprofiles';
 
@@ -16,7 +17,7 @@ export const exhaustiveCheck = (arg: never) => {
 };
 
 // The types of claims supported by the UI.
-export type ClaimType = 'basic' | 'twitter' | 'ethereum' | 'discord';
+export type ClaimType = 'basic' | 'twitter' | 'ethereum' | 'discord' | 'dns';
 
 // NOTE: Ethereum backwards compatibility
 export type ClaimVCType =
@@ -24,7 +25,8 @@ export type ClaimVCType =
   | 'TwitterVerification'
   | 'EthereumControl'
   | 'EthereumAddressControl'
-  | 'DiscordVerification';
+  | 'DiscordVerification'
+  | 'DnsVerification';
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -46,6 +48,8 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
         return 'twitter';
       case 'DiscordVerification':
         return 'discord';
+      case 'DnsVerification':
+        return 'dns';
       default:
     }
   }
@@ -59,6 +63,7 @@ const claimTypes: Array<ClaimType> = [
   'twitter',
   'ethereum',
   'discord',
+  'dns',
 ];
 
 export interface BasicDraft {
@@ -82,11 +87,16 @@ export interface DiscordDraft {
   handle: string;
 }
 
+export interface DnsDraft {
+  address: string;
+}
+
 export type ClaimDraft =
   | BasicDraft
   | TwitterDraft
   | EthereumDraft
-  | DiscordDraft;
+  | DiscordDraft
+  | DnsDraft;
 
 /*
  * UI Text & Assets
@@ -158,6 +168,18 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         routeDescription: 'Discord Account Information',
         proof: 'Discord Message',
         title: 'Discord Verification',
+        type: 'Social Media',
+      };
+    case 'dns':
+      return {
+        description:
+          'This process is used to link your web domain to your Tezos account by entering your domain, signing a message using your private key, entering the information into the TXT, and finally retrieving that data to verify.',
+        display: 'Domain Verification',
+        icon: GlobeIcon,
+        route: '/dns',
+        routeDescription: 'Domain Ownership',
+        proof: 'Dns Message',
+        title: 'Dns Verification',
         type: 'Social Media',
       };
   }
