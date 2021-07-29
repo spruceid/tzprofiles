@@ -80,7 +80,7 @@ export const addToKepler = async (
   ...obj: Array<any>
 ): Promise<Array<string>> => {
   try {
-    let addresses = await helpers.addToKepler(localKepler, orbit, ...obj);
+    let addresses = await helpers.addToKepler(localKepler, orbit, await localWallet.getPKH(), ...obj);
 
     alert.set({
       message: 'Successfully uploaded to Kepler',
@@ -611,9 +611,4 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
     variant: 'error',
   });
   throw new Error(`No contract found for ${wallet}`);
-};
-
-export const fetchPkh = async () => {
-  let pkh = await localWallet.getPKH();
-  return pkh;
 };

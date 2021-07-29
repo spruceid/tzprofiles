@@ -1,9 +1,9 @@
 import { Kepler, getOrbitId } from 'kepler-sdk';
-import { fetchPkh } from 'src/store';
 
 export const addToKepler = async (
   kepler: Kepler,
   orbit: string,
+  pkh: string,
   ...obj: Array<any>
 ) => {
   obj.forEach((o) => console.log(o));
@@ -16,10 +16,9 @@ export const addToKepler = async (
 
     const res = await kepler.put(orbit, f, ...obj);
     console.log('RES', res);
-    // if (res.status === 404) {
-    //   const ownPkh = await fetchPkh();
-    //   await saveToKepler(kepler, ownPkh, ...[f, ...obj]);
-    // }
+    if (res.status === 404) {
+      await saveToKepler(kepler, pkh, ...[f, ...obj]);
+    }
     if (!res.ok || res.status !== 200) {
       throw new Error(`Failed to create orbit: ${res.statusText}`);
     }
@@ -65,7 +64,7 @@ export const saveToKepler = async (
           domain: process.env.KEPLER_URL,
           index: 0,
         });
-        return await addToKepler(kepler, id, ...[f, ...obj]);
+        return await addToKepler(kepler, id, pkh, ...[f, ...obj]);
       } catch (err) {
         throw err;
       }
