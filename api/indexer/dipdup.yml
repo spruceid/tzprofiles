@@ -1,21 +1,9 @@
 spec_version: 1.1
 package: tzprofiles_indexer
 
-# database:
-#   kind: postgres
-#   host: db
-#   port: 5432
-#   user: dipdup
-#   password: ${POSTGRES_PASSWORD:-changeme}
-#   database: dipdup
-
 database:
   kind: sqlite
   path: tzprofiles.sqlite3
-
-# hasura:
-#   url: http://hasura:8080
-#   admin_secret: ${ADMIN_SECRET:-changeme}
 
 contracts:
   tzprofile_old:
@@ -28,7 +16,7 @@ contracts:
 datasources:
   tzkt:
     kind: tzkt
-    url: https://api.tzkt.io
+    url: https://pro.tzkt.io/tmp
 
 templates:
   tzprofiles:
@@ -66,3 +54,14 @@ indexes:
             similar_to: tzprofile_old
     stateless: True
     subscribe_by_entrypoints: True
+
+jobs:
+  fetch_claims:
+    callback: fetch_claims
+    interval: 5
+    atomic: False
+
+sentry:
+  dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
+  environment: local
+  debug: true

@@ -12,26 +12,14 @@ async def on_origination(
     ctx: HandlerContext,
     tzprofile_origination: Origination[TzprofileStorage],
 ) -> None:
-    if (tzp := ctx.datasources.get('tzp')) is None:
-        raise RuntimeError('`tzp` datasource is missing')
-    tzp = cast(TZPDatasource, tzp)
-
     originated_contract = cast(str, tzprofile_origination.data.originated_contract_address)
-    profile, created = await models.TZProfile.get_or_create(
-        account=tzprofile_origination.storage.owner,
+    owner = tzprofile_origination.storage.owner
+    ctx.logger.info(f"New profile: {originated_contract}, owner {owner}")
+    await models.TZProfile.get_or_create(
+        account=owner,
         defaults={
             "contract": originated_contract,
-            "valid_claims": [],
-            "invalid_claims": [],
-            "errored": False,
+            "valid_claims": None,
+            "invalid_claims": None,
         },
     )
-    if created:
-        try:
-            claims = await tzp.resolve(originated_contract)
-            profile.valid_claims = claims["valid"]
-            profile.invalid_claims = claims["invalid"]
-        except Exception as e:
-            ctx.logger.error(e)
-            profile.errored = True  # type: ignore
-        await profile.save()

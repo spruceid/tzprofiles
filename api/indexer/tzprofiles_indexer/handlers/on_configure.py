@@ -5,7 +5,7 @@ from dipdup.datasources.datasource import Datasource
 from dipdup.config import HTTPConfig
 from os import environ as env
 
-TZP_API = env['TZP_API'].rstrip('/')
+TZP_API = env.get('TZP_API', 'https://api.tzprofiles.com').rstrip('/')
 
 # TODO: For DipDup: inject datasource classes?
 class TZPDatasource(Datasource):
@@ -20,7 +20,7 @@ class TZPDatasource(Datasource):
         )
 
     def _default_http_config(self) -> HTTPConfig:
-        return HTTPConfig()
+        return HTTPConfig(retry_count=0)
 
 
 async def on_configure(ctx: HandlerContext) -> None:
