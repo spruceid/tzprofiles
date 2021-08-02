@@ -9,7 +9,10 @@
   } from 'components';
   import { claimsStream, wallet, userData, alert } from 'src/store';
   import { verifyDnsInfo } from 'src/helpers/dns';
-  import { getSignedClaim, getPreparedUnsignedMessage } from 'src/helpers';
+  import {
+    getPreparedUnsignedMessage,
+    getDnsFullSignedClaim,
+  } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
 
@@ -133,7 +136,7 @@
           class="mt-8 lg:w-48"
           onClick={async () => {
             next(async () => {
-              dnsMessage = await getSignedClaim(
+              dnsMessage = await getDnsFullSignedClaim(
                 'dns',
                 $userData,
                 domainUrl,

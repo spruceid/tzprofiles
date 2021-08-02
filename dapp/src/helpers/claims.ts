@@ -475,6 +475,32 @@ export const getFullSocialMediaClaim = async (
   )}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`;
 };
 
+export const getSignedDnsClaim = async (
+  smType: socialMediaClaimType,
+  // TODO: Type better
+  userData: any,
+  handle: string,
+  wallet: BeaconWallet
+): Promise<string> => {
+  const msg = `${getPreparedUnsignedMessage(smType, userData, handle)}`;
+  const sig = await signClaim(userData, msg, wallet);
+  return `sig:${sig}`;
+};
+
+export const getDnsFullSignedClaim = async (
+  smType: socialMediaClaimType,
+  // TODO: Type better
+  userData: any,
+  handle: string,
+  wallet: BeaconWallet
+): Promise<string> => {
+  return `${getUnsignedMessage(
+    smType,
+    userData,
+    handle
+  )}*${await getSignedDnsClaim(smType, userData, handle, wallet)}`;
+};
+
 /*
  * Things that should be built in
  */

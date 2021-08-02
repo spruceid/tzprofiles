@@ -372,12 +372,70 @@ pub async fn dns_lookup(
 }
 
 #[wasm_bindgen]
-pub async fn dns_lookup(domain: String) {
+pub async fn dns_lookup(
+    secret_key_jwk: String,
+    public_key_tezos: String,
+    domain: String,
+) -> Promise {
     initialize_logging();
 
-    info!("Hello");
+    future_to_promise(async move {
+        let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
+        let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-    dns::retrieve_txt(domain);
+        let dns_result = jserr!(dns::retrieve_dns_response(domain.clone()).await);
+
+        let mut vc = jserr!(dns::build_dns_vc(&pk, &domain));
+
+        // Check for matching domains?
+
+        let mut signature_to_resolve = "".to_string();
+        for answer in dns_result.Answer {
+            let trimmed_string: &str = &answer.data[1..answer.data.len() - 1];
+            signature_to_resolve = trimmed_string.to_string();
+        }
+
+        let (sig_target, sig) = jserr!(dns::extract_dns_signature(signature_to_resolve));
+        info!("{:?} {:?}", sig_target, sig);
+
+        jserr!(verify_signature(&sig_target, &pk, &sig));
+
+        let mut props = HashMap::new();
+        props.insert(
+            "publicKeyJwk".to_string(),
+            jserr!(serde_json::to_value(pk.clone())),
+        );
+
+        let mut evidence_map = HashMap::new();
+
+        evidence_map.insert("domain".to_string(), serde_json::Value::String(domain));
+
+        evidence_map.insert(
+            "timestamp".to_string(),
+            serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
+        );
+
+        let evidence = Evidence {
+            id: None,
+            type_: vec!["DnsVerificationMessage".to_string()],
+            property_set: Some(evidence_map),
+        };
+        vc.evidence = Some(OneOrMany::One(evidence));
+
+        let proof = jserr!(
+            vc.generate_proof(
+                &sk,
+                &LinkedDataProofOptions {
+                    verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
+                    ..Default::default()
+                }
+            )
+            .await
+        );
+        vc.proof = Some(OneOrMany::One(proof));
+
+        Ok(jserr!(serde_json::to_string(&vc)).into())
+    })
 }
 
 #[test]
