@@ -372,7 +372,7 @@ export const isUnsavedDraft = (c: Claim): boolean => {
  * Social Media Functions
  */
 
-export type socialMediaClaimType = 'twitter' | 'discord';
+export type socialMediaClaimType = 'twitter' | 'discord' | 'dns';
 // | "instagram"
 
 const socialMediaTitle = (smType: socialMediaClaimType): string => {
@@ -381,6 +381,8 @@ const socialMediaTitle = (smType: socialMediaClaimType): string => {
       return 'Twitter';
     case 'discord':
       return 'Discord';
+    case 'dns':
+      return 'DNS';
   }
 
   exhaustiveCheck(smType);
@@ -395,6 +397,8 @@ const socialMediaHandle = (
       return `@${handle}`;
     case 'discord':
       return `${handle}`;
+    case 'dns':
+      return `${handle}`;
   }
 
   exhaustiveCheck(smType);
@@ -405,6 +409,8 @@ const tzpHandle = (smType: socialMediaClaimType): string => {
     case 'twitter':
       return socialMediaHandle(smType, 'tzprofiles');
     case 'discord':
+      return socialMediaHandle(smType, 'tzprofiles');
+    case 'dns':
       return socialMediaHandle(smType, 'tzprofiles');
   }
 

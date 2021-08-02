@@ -8,12 +8,8 @@
     VerificationStep,
   } from 'components';
   import { claimsStream, wallet, userData, alert } from 'src/store';
-  import { fetchDnsInfo } from 'src/helpers/dns';
-  import {
-    contentToDraft,
-    getFullSocialMediaClaim,
-    getPreparedUnsignedMessage,
-  } from 'src/helpers';
+  import { verifyDnsInfo } from 'src/helpers/dns';
+  import { getSignedClaim, getPreparedUnsignedMessage } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
 
@@ -29,7 +25,7 @@
   let currentStep: number = 1;
   let lock: boolean = false;
   let dnsClaim: string = '';
-  let discordMessage: string = '';
+  let dnsMessage: string = '';
 
   const next = (func: () => Promise<any> = async () => '') => {
     return new Promise<any>((resolve, _) => {
@@ -45,7 +41,10 @@
   };
 
   onMount(async () => {
-    await fetchDnsInfo('www.thekevinz.com');
+    await verifyDnsInfo(
+      'thekevinz.com',
+      'sig:edsigu4qNiJfj6Tk6uh29ti1vwvM6jf6pfuCkQTihajjSXsSAQNvdY8g7zCy3D3HnRzXtueFE9Lf1r2DkB3Xr94UiHd2hPE3HxA'
+    );
   });
 </script>
 
@@ -90,7 +89,7 @@
               next(async () => {
                 try {
                   dnsClaim = await getPreparedUnsignedMessage(
-                    'discord',
+                    'dns',
                     $userData,
                     domainUrl
                   );
@@ -130,17 +129,17 @@
       {/if}
       {#if currentStep === 2}
         <PrimaryButton
-          text="Signature Prompt"
+          text="Sign Message"
           class="mt-8 lg:w-48"
           onClick={async () => {
             next(async () => {
-              discordMessage = await getFullSocialMediaClaim(
-                'discord',
+              dnsMessage = await getSignedClaim(
+                'dns',
                 $userData,
                 domainUrl,
                 $wallet
               );
-              console.log(discordMessage);
+              console.log(dnsMessage);
             });
           }}
           disabled={lock}
@@ -148,17 +147,19 @@
       {/if}
     </VerificationStep>
 
-    <VerificationStep step={3} bind:currentStep title="Send Discord Message">
-      <div class="body">Follow these instructions to verify your handle:</div>
+    <VerificationStep step={3} bind:currentStep title="Add Record to Your DNS">
+      <div class="body">
+        Add this signed message to your DNS profile as a TXT entry.
+      </div>
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
           <textarea
             class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
-            bind:value={discordMessage}
+            bind:value={dnsMessage}
             readonly
             disabled
           />
-          <CopyButton text={discordMessage} />
+          <CopyButton text={dnsMessage} />
         </div>
       {/if}
       {#if currentStep === 3}
@@ -172,7 +173,22 @@
       {/if}
     </VerificationStep>
 
-    {#if currentStep > 3}
+    <VerificationStep step={4} bind:currentStep title="Verify Signed Message">
+      <div class="body">Verify your signed message below</div>
+
+      <div class="flex flex-col lg:flex-row">
+        <PrimaryButton
+          text="Verify Signature"
+          class="mt-8 lg:w-48"
+          onClick={async () => {
+            let res = await verifyDnsInfo(domainUrl, dnsMessage);
+            if (res) next();
+          }}
+        />
+      </div>
+    </VerificationStep>
+
+    {#if currentStep > 4}
       <div
         class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
       >
