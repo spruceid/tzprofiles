@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useNavigate } from 'svelte-navigator';
+  import { onMount, onDestroy } from 'svelte';
   import {
     claimsStream,
     loadingContracts,
@@ -15,6 +16,7 @@
     isAllOnChain,
     selectDisplayStatus,
     sortClaimsByStatus,
+    statusTextToClassMapping,
   } from './uploadHelpers';
   import Profile from './Profile.svelte';
   import DeleteCredential from './DeleteCredential.svelte';
@@ -38,11 +40,23 @@
   const closeModal = () => {
     modalOpen = false;
   };
+
   const openModal = () => {
     modalOpen = true;
   };
 
-  console.log($claimsStream);
+  onMount(() => {
+    if (canUpload($claimsStream)) {
+      window.addEventListener('beforeunload', (e) => {
+        e.preventDefault();
+        return (e.returnValue = '');
+      });
+    }
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('beforeunload', () => {});
+  });
 </script>
 
 <div class="table-container fade-in dropshadow-default">
@@ -68,8 +82,6 @@
                   }tzkt.io/${$contractAddress}`
                 )}
             />
-          {:else}
-            <div class="opacity-50">No contract detected</div>
           {/if}
         </div>
 
@@ -79,7 +91,7 @@
               {#if !isAllOnChain($claimsStream)}
                 <PrimaryButton
                   small
-                  text="Add Claims to Profile"
+                  text="Upload Claims"
                   onClick={async () => {
                     openModal();
                   }}
@@ -129,7 +141,11 @@
               {claim.display.proof}
             </td>
             <td
-              ><div class={`status-tag status-${selectDisplayStatus(claim)}`}>
+              ><div
+                class={`status-tag status-${
+                  statusTextToClassMapping[selectDisplayStatus(claim)]
+                }`}
+              >
                 <div class="capitalize">
                   {selectDisplayStatus(claim)}
                 </div>
