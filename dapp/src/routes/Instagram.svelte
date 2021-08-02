@@ -14,6 +14,7 @@
     contentToDraft,
     getPreparedUnsignedMessage,
     getSignedClaim,
+    getUnsignedMessage,
   } from 'src/helpers';
   import type { ClaimMap, ClaimUIAssets } from 'src/helpers';
 
@@ -46,7 +47,7 @@
       let res = await fetch(
         `${witnessUrl}/witness_instagram_post?pk=${
           $userData.account.publicKey
-        }&handle=${instagramHandle.trim().replace('@', '')}&sig_type=tezos&sig_target=${encodeURIComponent(instagramClaim)}`
+        }&handle=${instagramHandle.trim().replace('@', '')}&sig_type=tezos&sig_target=${getUnsignedMessage('instagram', $userData, instagramHandle)}`
       );
 
       if (res.ok) {
