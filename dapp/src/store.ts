@@ -386,9 +386,9 @@ network.subscribe((network) => {
     tzktBaseTemp = 'http://localhost:5000';
     tzktBase.set(tzktBaseTemp);
   } else {
-    networkStr.set(network === NetworkType.EDONET ? 'edo2net' : network);
+    networkStr.set(network);
     // TODO can't read from writeable, but then I don't understand why others work.
-    networkStrTemp = network === NetworkType.EDONET ? 'edo2net' : network;
+    networkStrTemp = network;
     strNetwork = network;
 
     urlNode = `https://${network}.smartpy.io/`;

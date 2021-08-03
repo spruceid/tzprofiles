@@ -75,9 +75,7 @@
                 window.open(
                   `https://${
                     currentNetwork
-                      ? currentNetwork === 'edonet.'
-                        ? 'edo2net.'
-                        : `${currentNetwork}.`
+                      ? `${currentNetwork}.`
                       : ''
                   }tzkt.io/${$contractAddress}`
                 )}
