@@ -385,7 +385,7 @@ pub async fn dns_lookup(
 
         let dns_result = jserr!(dns::retrieve_dns_response(domain.clone()).await);
 
-        let mut vc = jserr!(dns::build_dns_vc(&pk, &domain));
+        let mut vc = jserr!(dns::build_dns_vc(&pk));
 
         let mut signature_to_resolve = "".to_string();
         for answer in dns_result.Answer {
