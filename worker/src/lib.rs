@@ -387,16 +387,15 @@ pub async fn dns_lookup(
 
         let mut vc = jserr!(dns::build_dns_vc(&pk, &domain));
 
-        // Check for matching domains?
-
         let mut signature_to_resolve = "".to_string();
         for answer in dns_result.Answer {
-            let trimmed_string: &str = &answer.data[1..answer.data.len() - 1];
-            signature_to_resolve = trimmed_string.to_string();
+            let trimmed_signature: &str = &answer.data[1..answer.data.len() - 1];
+            if trimmed_signature.starts_with("TZP") {
+                signature_to_resolve = trimmed_signature.to_string();
+            }
         }
 
         let (sig_target, sig) = jserr!(dns::extract_dns_signature(signature_to_resolve));
-        info!("{:?} {:?}", sig_target, sig);
 
         jserr!(verify_signature(&sig_target, &pk, &sig));
 
@@ -426,7 +425,7 @@ pub async fn dns_lookup(
             vc.generate_proof(
                 &sk,
                 &LinkedDataProofOptions {
-                    verification_method: Some(format!("{}#controller", SPRUCE_DIDWEB)),
+                    verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
                 }
             )

@@ -1,32 +1,27 @@
 import { witnessUrl, alert } from 'src/store';
 
-export const verifyDnsInfo = async (domain: string, signature) => {
+export const verifyDnsInfo = async (domain: string, userData: any) => {
   try {
     const res: any = await fetch(
-      `https://cloudflare-dns.com/dns-query?name=${domain}&type=txt&ct=application/dns-json`
+      `${witnessUrl}/dns_lookup?domain=${domain}&pk=${userData.account.publicKey}`
     );
-    const body = await res.text();
-    let txtEntries = JSON.parse(body).Answer;
-    if (txtEntries.length === 0) throw new Error('No TXT entries');
 
-    for (let i = 0; i < txtEntries.length; i++) {
-      if (txtEntries[i].data.includes(signature)) {
-        alert.set({
-          message: 'Signature matched',
-          variant: 'success',
-        });
+    if (res.ok) {
+      alert.set({
+        message: "You've completed your DNS verification successfully!",
+        variant: 'success',
+      });
 
-        return true;
-      }
+      let answerBody = await res.text();
+      return JSON.parse(answerBody);
     }
-
+    throw new Error(await res.text());
+  } catch (err) {
     alert.set({
-      message: 'No signature found',
+      message: err.message || JSON.stringify(err),
       variant: 'error',
     });
 
-    return false;
-  } catch (err) {
-    console.log(err);
+    throw err;
   }
 };

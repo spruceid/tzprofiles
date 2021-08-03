@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import {
     BasePage,
     CopyButton,
@@ -10,7 +9,8 @@
   import { claimsStream, wallet, userData, alert } from 'src/store';
   import { verifyDnsInfo } from 'src/helpers/dns';
   import {
-    getPreparedUnsignedMessage,
+    contentToDraft,
+    getPreparedUnsignedDnsMessage,
     getDnsFullSignedClaim,
   } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
@@ -42,13 +42,6 @@
         .finally(() => (lock = false));
     });
   };
-
-  onMount(async () => {
-    await verifyDnsInfo(
-      'thekevinz.com',
-      'sig:edsigu4qNiJfj6Tk6uh29ti1vwvM6jf6pfuCkQTihajjSXsSAQNvdY8g7zCy3D3HnRzXtueFE9Lf1r2DkB3Xr94UiHd2hPE3HxA'
-    );
-  });
 </script>
 
 <BasePage
@@ -91,10 +84,9 @@
             onClick={async () => {
               next(async () => {
                 try {
-                  dnsClaim = await getPreparedUnsignedMessage(
-                    'dns',
-                    $userData,
-                    domainUrl
+                  dnsClaim = getPreparedUnsignedDnsMessage(
+                    domainUrl,
+                    $userData
                   );
                 } catch (err) {
                   alert.set({
@@ -137,12 +129,10 @@
           onClick={async () => {
             next(async () => {
               dnsMessage = await getDnsFullSignedClaim(
-                'dns',
                 $userData,
                 domainUrl,
                 $wallet
               );
-              console.log(dnsMessage);
             });
           }}
           disabled={lock}
@@ -152,7 +142,8 @@
 
     <VerificationStep step={3} bind:currentStep title="Add Record to Your DNS">
       <div class="body">
-        Add this signed message to your DNS profile as a TXT entry.
+        Add this signed message to your DNS profile as a TXT entry. The DNS
+        provider might take a few minutes to update.
       </div>
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
@@ -179,16 +170,27 @@
     <VerificationStep step={4} bind:currentStep title="Verify Signed Message">
       <div class="body">Verify your signed message below</div>
 
-      <div class="flex flex-col lg:flex-row">
-        <PrimaryButton
-          text="Verify Signature"
-          class="mt-8 lg:w-48"
-          onClick={async () => {
-            let res = await verifyDnsInfo(domainUrl, dnsMessage);
-            if (res) next();
-          }}
-        />
-      </div>
+      {#if currentStep === 4}
+        <div class="flex flex-col lg:flex-row">
+          <PrimaryButton
+            text="Verify Signature"
+            class="mt-8 lg:w-48"
+            onClick={() => {
+              next(() => verifyDnsInfo(domainUrl, $userData)).then((vc) => {
+                let nextClaimMap = readClaimMap;
+                nextClaimMap.dns.preparedContent = JSON.parse(vc);
+                nextClaimMap.dns.draft = contentToDraft(
+                  'dns',
+                  nextClaimMap.dns.preparedContent
+                );
+
+                claimsStream.set(nextClaimMap);
+                next();
+              });
+            }}
+          />
+        </div>
+      {/if}
     </VerificationStep>
 
     {#if currentStep > 4}

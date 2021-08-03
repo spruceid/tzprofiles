@@ -475,30 +475,39 @@ export const getFullSocialMediaClaim = async (
   )}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`;
 };
 
+// dns
+export const getUnsignedDnsMessage = (domain: string, userData: any) => {
+  let addr = userData?.account?.address;
+  return `TZP: ${domain} is linked to ${addr}`;
+};
+
+export const getPreparedUnsignedDnsMessage = (
+  domain: string,
+  userData: any
+) => {
+  return `Tezos Signed Message: ${getUnsignedDnsMessage(domain, userData)}`;
+};
+
 export const getSignedDnsClaim = async (
-  smType: socialMediaClaimType,
-  // TODO: Type better
   userData: any,
-  handle: string,
+  domain: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  const msg = `${getPreparedUnsignedMessage(smType, userData, handle)}`;
-  const sig = await signClaim(userData, msg, wallet);
+  const unsignedMessage = `${getPreparedUnsignedDnsMessage(domain, userData)}`;
+  const sig = await signClaim(userData, unsignedMessage, wallet);
   return `sig:${sig}`;
 };
 
 export const getDnsFullSignedClaim = async (
-  smType: socialMediaClaimType,
-  // TODO: Type better
   userData: any,
-  handle: string,
+  domain: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  return `${getUnsignedMessage(
-    smType,
+  return `${getUnsignedDnsMessage(domain, userData)}=${await getSignedDnsClaim(
     userData,
-    handle
-  )}*${await getSignedDnsClaim(smType, userData, handle, wallet)}`;
+    domain,
+    wallet
+  )}`;
 };
 
 /*
