@@ -317,6 +317,7 @@ pub async fn dns_lookup(
     secret_key_jwk: String,
     public_key_tezos: String,
     domain: String,
+    message: String,
 ) -> Promise {
     initialize_logging();
 
@@ -324,21 +325,15 @@ pub async fn dns_lookup(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-        let dns_result = jserr!(dns::retrieve_dns_response(domain.clone()).await);
+        let dns_result = jserr!(dns::retrieve_txt_records(domain.clone()).await);
 
         let mut vc = jserr!(dns::build_dns_vc(&pk));
 
-        let mut signature_to_resolve = "".to_string();
-        for answer in dns_result.Answer {
-            let trimmed_signature: &str = &answer.data[1..answer.data.len() - 1];
-            if trimmed_signature.starts_with("TZP") {
-                signature_to_resolve = trimmed_signature.to_string();
-            }
-        }
+        let signature_to_resolve = dns::find_signature_to_resolve(dns_result);
 
-        let (sig_target, sig) = jserr!(dns::extract_dns_signature(signature_to_resolve));
+        let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
 
-        jserr!(verify_signature(&sig_target, &pk, &sig));
+        jserr!(verify_signature(&message, &pk, &sig));
 
         let mut props = HashMap::new();
         props.insert(
@@ -347,8 +342,6 @@ pub async fn dns_lookup(
         );
 
         let mut evidence_map = HashMap::new();
-
-        evidence_map.insert("domain".to_string(), serde_json::Value::String(domain));
 
         evidence_map.insert(
             "timestamp".to_string(),

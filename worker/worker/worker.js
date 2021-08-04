@@ -210,11 +210,11 @@ async function handler_dns_lookup(request) {
     const { searchParams } = new URL(request.url);
 
     const pk = decodeURI(searchParams.get("pk"));
-
-    let domain = decodeURI(searchParams.get("domain"));
+    const domain = decodeURI(searchParams.get("domain"));
+    const message = decodeURI(searchParams.get("message"));
 
     await wasm_bindgen(wasm);
-    const dns_vc = await dns_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, domain);
+    const dns_vc = await dns_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, domain, message);
 
     return new Response(JSON.stringify(dns_vc), {
       status: 200,
@@ -311,7 +311,7 @@ async function handleRequest(request) {
   r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
-  r.get("/dns_lookup", (request) => handler_dns_lookup(request));
+  r.get("/witness_dns", (request) => handler_dns_lookup(request));
   const resp = await r.route(request);
   return resp;
 }

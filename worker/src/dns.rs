@@ -8,6 +8,7 @@ use url::Url;
 use uuid::Uuid;
 
 #[derive(Deserialize, Debug)]
+// #[serde(rename = "name")]
 pub struct DnsResponse {
     pub Answer: Vec<AnswerResponse>,
 }
@@ -18,22 +19,29 @@ pub struct AnswerResponse {
     pub data: String,
 }
 
-pub fn extract_dns_signature(tweet: String) -> Result<(String, String)> {
-    let mut sig_target = "".to_string();
-    for line in tweet.split('=').collect::<Vec<&str>>() {
-        if line.starts_with("sig:") {
-            if sig_target != "" {
-                return Ok((sig_target, line[4..].to_string().clone()));
-            } else {
-                return Err(anyhow!("Signature target is empty."));
-            }
+pub fn find_signature_to_resolve(dns_result: DnsResponse) -> String {
+    let mut signature_to_resolve = "".to_string();
+    for answer in dns_result.Answer {
+        let trimmed_signature: &str = &answer.data[1..answer.data.len() - 1];
+        if trimmed_signature.starts_with("tzprofiles-verification") {
+            signature_to_resolve = trimmed_signature.to_string();
         }
-        sig_target = format!("{}{}", sig_target, line);
     }
-    Err(anyhow!("Signature not found in message."))
+    return signature_to_resolve;
 }
 
-pub async fn retrieve_dns_response(domain: String) -> Result<DnsResponse> {
+pub fn extract_dns_signature(record: String) -> Result<String> {
+    let split = record.split("=");
+    let str_list = split.collect::<Vec<&str>>();
+
+    if str_list.len() != 2 {
+        return Err(anyhow!("Signature isn't matched"));
+    }
+
+    Ok(str_list[1].clone().to_string())
+}
+
+pub async fn retrieve_txt_records(domain: String) -> Result<DnsResponse> {
     let client = reqwest::Client::new();
     let request_url = format!(
         "https://cloudflare-dns.com/dns-query?name={}&type=txt&ct=application/dns-json",
@@ -62,7 +70,7 @@ pub fn build_dns_vc(pk: &JWK) -> Result<Credential> {
                   "@context": {
                       "@version": 1.1,
                       "@protected": true,
-                      "handle": "https://tzprofiles.com/handle",
+                      "dns": "https://tzprofiles.com/dns",
                       "timestamp": {
                           "@id": "https://tzprofiles.com/timestamp",
                           "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
