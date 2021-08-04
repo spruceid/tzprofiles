@@ -327,9 +327,9 @@ pub async fn dns_lookup(
 
         let dns_result = jserr!(dns::retrieve_txt_records(domain.clone()).await);
 
-        let mut vc = jserr!(dns::build_dns_vc(&pk));
+        let mut vc = jserr!(dns::build_dns_vc(&pk, domain));
 
-        let signature_to_resolve = dns::find_signature_to_resolve(dns_result);
+        let signature_to_resolve = jserr!(dns::find_signature_to_resolve(dns_result));
 
         let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
 

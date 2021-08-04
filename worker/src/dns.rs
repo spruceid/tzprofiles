@@ -19,15 +19,18 @@ pub struct AnswerResponse {
     pub data: String,
 }
 
-pub fn find_signature_to_resolve(dns_result: DnsResponse) -> String {
-    let mut signature_to_resolve = "".to_string();
+pub fn find_signature_to_resolve(dns_result: DnsResponse) -> Result<String> {
     for answer in dns_result.answer {
-        let trimmed_signature: &str = &answer.data[1..answer.data.len() - 1];
+        let mut trimmed_signature: &str = &answer.data;
+        if trimmed_signature.starts_with('"') {
+            trimmed_signature = &answer.data[1..answer.data.len() - 1];
+        }
         if trimmed_signature.starts_with("tzprofiles-verification") {
-            signature_to_resolve = trimmed_signature.to_string();
+            return Ok(trimmed_signature.to_string());
         }
     }
-    return signature_to_resolve;
+
+    return Err(anyhow!("Signature not found"));
 }
 
 pub fn extract_dns_signature(record: String) -> Result<String> {
@@ -58,7 +61,7 @@ pub async fn retrieve_txt_records(domain: String) -> Result<DnsResponse> {
     Ok(res)
 }
 
-pub fn build_dns_vc(pk: &JWK) -> Result<Credential> {
+pub fn build_dns_vc(pk: &JWK, domain: String) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
       "@context": [
           "https://www.w3.org/2018/credentials/v1",
@@ -70,12 +73,10 @@ pub fn build_dns_vc(pk: &JWK) -> Result<Credential> {
                   "@context": {
                       "@version": 1.1,
                       "@protected": true,
-                      "dns": "https://tzprofiles.com/dns",
                       "timestamp": {
                           "@id": "https://tzprofiles.com/timestamp",
                           "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
                       },
-                      "domain": "https://tzprofiles.com/domain",
                   }
               }
           }
@@ -85,6 +86,7 @@ pub fn build_dns_vc(pk: &JWK) -> Result<Credential> {
       "type": ["VerifiableCredential", "DnsVerification"],
       "credentialSubject": {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
+          "sameAs": format!("dns:{}", domain)
       },
       "issuer": SPRUCE_DIDWEB
     }))?)
