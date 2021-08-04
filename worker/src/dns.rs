@@ -22,7 +22,7 @@ pub struct AnswerResponse {
 pub fn find_signature_to_resolve(dns_result: DnsResponse) -> Result<String> {
     for answer in dns_result.answer {
         let mut trimmed_signature: &str = &answer.data;
-        if trimmed_signature.starts_with('"') {
+        if trimmed_signature.starts_with('"') && trimmed_signature.ends_with('"') {
             trimmed_signature = &answer.data[1..answer.data.len() - 1];
         }
         if trimmed_signature.starts_with("tzprofiles-verification") {
