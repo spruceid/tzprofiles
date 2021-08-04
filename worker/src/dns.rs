@@ -8,9 +8,9 @@ use url::Url;
 use uuid::Uuid;
 
 #[derive(Deserialize, Debug)]
-// #[serde(rename = "name")]
 pub struct DnsResponse {
-    pub Answer: Vec<AnswerResponse>,
+    #[serde(rename = "Answer")]
+    pub answer: Vec<AnswerResponse>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -21,7 +21,7 @@ pub struct AnswerResponse {
 
 pub fn find_signature_to_resolve(dns_result: DnsResponse) -> String {
     let mut signature_to_resolve = "".to_string();
-    for answer in dns_result.Answer {
+    for answer in dns_result.answer {
         let trimmed_signature: &str = &answer.data[1..answer.data.len() - 1];
         if trimmed_signature.starts_with("tzprofiles-verification") {
             signature_to_resolve = trimmed_signature.to_string();
