@@ -173,13 +173,13 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
     case 'dns':
       return {
         description:
-          'This process is used to link your web domain to your Tezos account by entering your domain, signing a message using your private key, entering the information into the TXT, and finally retrieving that data to verify.',
+          'This process is used to link your domain name to your Tezos account by signing a message using your private key, storing the signature in a TXT record, and finally retrieving that data for verification.',
         display: 'Domain Verification',
         icon: GlobeIcon,
         route: '/dns',
         routeDescription: 'Domain Ownership',
-        proof: 'Dns Message',
-        title: 'Dns Verification',
+        proof: 'DNS Message',
+        title: 'DNS Verification',
         type: 'Social Media',
       };
   }
@@ -478,7 +478,7 @@ export const getFullSocialMediaClaim = async (
 // dns
 export const getUnsignedDnsMessage = (domain: string, userData: any) => {
   let addr = userData?.account?.address;
-  return `TZP: ${domain} is linked to ${addr}`;
+  return `${domain} is linked to ${addr}`;
 };
 
 export const getPreparedUnsignedDnsMessage = (
@@ -495,7 +495,7 @@ export const getSignedDnsClaim = async (
 ): Promise<string> => {
   const unsignedMessage = `${getPreparedUnsignedDnsMessage(domain, userData)}`;
   const sig = await signClaim(userData, unsignedMessage, wallet);
-  return `sig:${sig}`;
+  return `tzprofiles-verification=${sig}`;
 };
 
 export const getDnsFullSignedClaim = async (

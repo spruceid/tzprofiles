@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useNavigate } from 'svelte-navigator';
   import {
     BasePage,
     CopyButton,
@@ -7,14 +8,15 @@
     VerificationStep,
   } from 'components';
   import { claimsStream, wallet, userData, alert } from 'src/store';
-  import { verifyDnsInfo } from 'src/helpers/dns';
+  import { verifyDnsInfo, isValidUrl } from 'src/helpers/dns';
   import {
     contentToDraft,
     getPreparedUnsignedDnsMessage,
-    getDnsFullSignedClaim,
+    getUnsignedDnsMessage,
+    getSignedDnsClaim,
   } from 'src/helpers';
+  import { newDisplay } from 'src/helpers/claims';
   import type { ClaimMap } from 'src/helpers';
-  import { useNavigate } from 'svelte-navigator';
 
   let navigate = useNavigate();
 
@@ -57,22 +59,19 @@
         <div class="mr-3">DNS Verification</div>
       </div>
       <div class="body">
-        This process is used to link your web domain to your Tezos account by
-        entering your domain, signing a message using your private key, entering
-        the information into the TXT, and finally retrieving that data to
-        verify.
+        {newDisplay('dns').description}
       </div>
     </div>
 
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Enter Domain"
-      description="Enter the domain you want want to verify ownership for."
+      title="Enter Domain Name"
+      description="Enter the domain you want want to prove ownership of."
     >
       <div class="flex w-full mt-8">
         <Input
-          placeholder="Enter domain"
+          placeholder="Enter domain name"
           class="mr-8"
           bind:value={domainUrl}
           disabled={currentStep !== 1}
@@ -84,6 +83,11 @@
             onClick={async () => {
               next(async () => {
                 try {
+                  let isValid = isValidUrl(domainUrl);
+
+                  if (!isValid) {
+                    throw new Error('Invalid domain');
+                  }
                   dnsClaim = getPreparedUnsignedDnsMessage(
                     domainUrl,
                     $userData
@@ -95,6 +99,7 @@
                       err?.message || JSON.stringify(err)
                     }`,
                   });
+                  throw new Error(err.message);
                 }
               });
             }}
@@ -128,7 +133,7 @@
           class="mt-8 lg:w-48"
           onClick={async () => {
             next(async () => {
-              dnsMessage = await getDnsFullSignedClaim(
+              dnsMessage = await getSignedDnsClaim(
                 $userData,
                 domainUrl,
                 $wallet
@@ -140,10 +145,10 @@
       {/if}
     </VerificationStep>
 
-    <VerificationStep step={3} bind:currentStep title="Add Record to Your DNS">
+    <VerificationStep step={3} bind:currentStep title="Upload TXT Record">
       <div class="body">
-        Add this signed message to your DNS profile as a TXT entry. The DNS
-        provider might take a few minutes to update.
+        Create a new TXT record for `@` and put the following text as the value.
+        Keep in mind that DNS propagation can take a few minutes
       </div>
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
@@ -176,7 +181,13 @@
             text="Verify Signature"
             class="mt-8 lg:w-48"
             onClick={() => {
-              next(() => verifyDnsInfo(domainUrl, $userData)).then((vc) => {
+              next(() =>
+                verifyDnsInfo(
+                  domainUrl,
+                  $userData,
+                  getUnsignedDnsMessage(domainUrl, $userData)
+                )
+              ).then((vc) => {
                 let nextClaimMap = readClaimMap;
                 nextClaimMap.dns.preparedContent = JSON.parse(vc);
                 nextClaimMap.dns.draft = contentToDraft(
