@@ -3,6 +3,7 @@
   import Ethereum from './Ethereum.svelte';
   import Twitter from './Twitter.svelte';
   import Discord from './Discord.svelte';
+  import Dns from './Dns.svelte';
   import type { Claim } from 'src/helpers';
 
   export let claim: Claim;
@@ -16,6 +17,8 @@
   <Twitter twitterClaim={claim} />
 {:else if claim?.type === 'discord'}
   <Discord {claim} />
+{:else if claim?.type === 'dns'}
+  <Dns {claim} />
 {:else}
   <div>Unknown claim type: {claim?.type}</div>
 {/if}
