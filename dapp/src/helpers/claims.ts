@@ -311,7 +311,22 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
         handle: evidence.handle,
       };
     }
+    case 'dns': {
+      const { credentialSubject } = content;
+      let sameAsString: string = credentialSubject.sameAs;
+
+      return {
+        address: sameAsString.substring(4, sameAsString.length),
+      };
+    }
   }
+};
+
+export const formatWebsite = (url: string): string => {
+  if (url.match(/^(https:\/\/|http:\/\/|www\.).*$/g)) {
+    return url;
+  }
+  return 'http://' + url;
 };
 
 export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
@@ -337,6 +352,10 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
     case 'twitter': {
       draft = draft as TwitterDraft;
       return `https://www.twitter.com/${draft.handle}`;
+    }
+    case 'dns': {
+      draft = draft as DnsDraft;
+      return formatWebsite(draft.address);
     }
   }
 };
