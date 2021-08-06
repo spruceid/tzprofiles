@@ -48,10 +48,13 @@
       </div>
       <CopyButton text={$params.address} color="gray" class="w-4 h-4 ml-2" />
     </div>
+  </div>
+  <div class="flex flex-row items-center mt-2">
     {#each Object.values(otherClaims) as claim}
       <ClaimIcon {claim} tooltip={publicProfileViewTooltip(claim)} />
     {/each}
   </div>
+
   {#if basicClaim}
     <!-- Specially treat basicClaim -->
     <a href={formatWebsite(basicDraft.website)} target="_blank">

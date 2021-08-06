@@ -151,6 +151,22 @@
         copy and put the following text as the value. Keep in mind that DNS
         propagation can take some time. This process may take a few minutes for
         the verification to successfully complete.
+
+        <br /><br />
+        For more information on how to add a TXT record, check out these example
+        guides:
+        <a
+          href="https://www.godaddy.com/help/add-a-txt-record-19232"
+          target="_blank">Go Daddy</a
+        >,
+        <a
+          href="https://www.namecheap.com/support/knowledgebase/article.aspx/317/2237/how-do-i-add-txtspfdkimdmarc-records-for-my-domain/"
+          target="_blank">Namecheap</a
+        >,
+        <a
+          href="https://vercel.com/support/articles/how-to-manage-vercel-dns-records"
+          target="_blank">Vercel</a
+        >
       </div>
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
