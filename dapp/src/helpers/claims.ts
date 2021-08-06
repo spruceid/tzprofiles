@@ -173,14 +173,14 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
     case 'dns':
       return {
         description:
-          'This process is used to link your domain name to your Tezos account by signing a message using your private key, storing the signature in a TXT record, and finally retrieving that data for verification.',
-        display: 'Domain Verification',
+          'This process is used to link your web domain name to your Tezos account by signing a message using your private key, storing the signature in a TXT record, and finally retrieving that data for verification.',
+        display: 'Web Domain Verification',
         icon: GlobeIcon,
         route: '/dns',
         routeDescription: 'Domain Ownership',
-        proof: 'DNS Message',
+        proof: 'TXT Record',
         title: 'DNS Verification',
-        type: 'Social Media',
+        type: 'Domain Ownership',
       };
   }
 

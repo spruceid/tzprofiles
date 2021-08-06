@@ -19,8 +19,6 @@
 
   let isCredentialSourceDropdownOpen = false;
   $: shouldDisplayOriginalImage = true;
-
-  console.log(claimsMap);
 </script>
 
 <div

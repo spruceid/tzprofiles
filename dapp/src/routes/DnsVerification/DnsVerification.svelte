@@ -66,12 +66,12 @@
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Enter Domain Name"
+      title="Enter Web Domain Name"
       description="Enter the domain you want want to prove ownership of."
     >
       <div class="flex w-full mt-8">
         <Input
-          placeholder="Enter domain name"
+          placeholder="Enter web domain name"
           class="mr-8"
           bind:value={domainUrl}
           disabled={currentStep !== 1}
@@ -147,8 +147,10 @@
 
     <VerificationStep step={3} bind:currentStep title="Upload TXT Record">
       <div class="body">
-        Create a new TXT record for `@` and put the following text as the value.
-        Keep in mind that DNS propagation can take a few minutes
+        In your DNS settings for your website, add a new TXT record for @ and
+        copy and put the following text as the value. Keep in mind that DNS
+        propagation can take some time. This process may take a few minutes for
+        the verification to successfully complete.
       </div>
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
