@@ -20,10 +20,7 @@ export const verifyDiscord = async (
     let res: any = await fetch(
       `${witnessUrl}/witness_discord?pk=${
         userData.account.publicKey
-      }&channelId=${channelId}&messageId=${messageId}&discordHandle=${discordHandle.replace(
-        '#',
-        '%23'
-      )}`
+      }&channelId=${channelId}&messageId=${messageId}&discordHandle=${encodeURIComponent(discordHandle)}`
     );
 
     if (res.ok) {
