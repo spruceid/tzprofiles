@@ -7,6 +7,8 @@ export const selectIconCopyText = (claim): string => {
   switch (claim.type) {
     case 'discord':
       return claim.draft.handle;
+    case 'dns':
+      return claim.draft.address;
     default:
       return '';
   }

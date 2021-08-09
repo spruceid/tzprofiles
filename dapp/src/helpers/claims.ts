@@ -363,10 +363,6 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
       draft = draft as TwitterDraft;
       return `https://www.twitter.com/${draft.handle}`;
     }
-    case 'dns': {
-      draft = draft as DnsDraft;
-      return formatWebsite(draft.address);
-    }
   }
 };
 
