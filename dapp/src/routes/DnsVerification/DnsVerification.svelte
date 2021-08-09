@@ -67,7 +67,7 @@
       step={1}
       bind:currentStep
       title="Enter Web Domain Name"
-      description="Enter the domain you want want to prove ownership of."
+      description="Please enter the web domain you wish to prove ownership of."
     >
       <div class="flex w-full mt-8">
         <Input
@@ -113,7 +113,7 @@
     <VerificationStep
       step={2}
       bind:currentStep
-      title="Sign Prompt"
+      title="Signature Prompt"
       description="Sign the message presented to you containing your domain."
     >
       {#if currentStep >= 2}
@@ -166,7 +166,7 @@
         <a
           href="https://vercel.com/support/articles/how-to-manage-vercel-dns-records"
           target="_blank">Vercel</a
-        >
+        >.
       </div>
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
