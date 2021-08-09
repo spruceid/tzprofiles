@@ -322,6 +322,16 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
   }
 };
 
+export const checkIsWebsiteLive = async (url: string): Promise<boolean> => {
+  try {
+    await fetch(`https://${url}`);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
 export const formatWebsite = (url: string): string => {
   if (url.match(/^(https:\/\/|http:\/\/|www\.).*$/g)) {
     return url;

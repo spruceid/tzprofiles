@@ -57,8 +57,6 @@
   onDestroy(() => {
     window.removeEventListener('beforeunload', () => {});
   });
-
-  console.log($claimsStream);
 </script>
 
 <div class="table-container fade-in dropshadow-default">

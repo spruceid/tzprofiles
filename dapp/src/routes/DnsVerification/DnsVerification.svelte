@@ -15,7 +15,7 @@
     getUnsignedDnsMessage,
     getSignedDnsClaim,
   } from 'src/helpers';
-  import { newDisplay } from 'src/helpers/claims';
+  import { newDisplay, checkIsWebsiteLive } from 'src/helpers/claims';
   import type { ClaimMap } from 'src/helpers';
 
   let navigate = useNavigate();
@@ -83,6 +83,9 @@
             onClick={async () => {
               next(async () => {
                 try {
+                  domainUrl = domainUrl.trim();
+
+                  checkIsWebsiteLive(domainUrl);
                   let isValid = isValidUrl(domainUrl);
 
                   if (!isValid) {
@@ -147,10 +150,10 @@
 
     <VerificationStep step={3} bind:currentStep title="Upload TXT Record">
       <div class="body">
-        In your DNS settings for your website, add a new TXT record for @ and
-        copy and put the following text as the value. Keep in mind that DNS
-        propagation can take some time. This process may take a few minutes for
-        the verification to successfully complete.
+        In your DNS settings, add a new TXT record for @ and copy and put the
+        following text as the value. Keep in mind that DNS propagation can take
+        some time. This process may take a few minutes for the verification to
+        successfully complete.
 
         <br /><br />
         For more information on how to add a TXT record, check out these example
