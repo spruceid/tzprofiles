@@ -1,6 +1,5 @@
-from dipdup.models import OperationData, Transaction, Origination, BigMapDiff, BigMapData, BigMapAction
-from dipdup.context import HandlerContext, RollbackHandlerContext
-from typing import Optional
+from dipdup.models import Origination
+from dipdup.context import HandlerContext
 from typing import cast
 
 
@@ -27,4 +26,3 @@ async def on_factory_origination(
         template="tzprofiles",
         values=dict(contract=originated_contract),
     )
-

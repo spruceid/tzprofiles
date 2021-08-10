@@ -1,17 +1,9 @@
-from dipdup.models import (
-    OperationData,
-    Transaction,
-    Origination,
-    BigMapDiff,
-    BigMapData,
-    BigMapAction,
-)
-from dipdup.context import HandlerContext, RollbackHandlerContext
+from dipdup.models import Origination
+from dipdup.context import HandlerContext
 
 import tzprofiles_indexer.models as models
 
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
-from tzprofiles_indexer.handlers import TZP_API
 from tzprofiles_indexer.handlers import resolve_tzp
 
 
@@ -30,7 +22,9 @@ async def on_origination(
     )
     if created:
         try:
-            claims = await resolve_tzp(tzprofile_origination.data.originated_contract_address)
+            claims = await resolve_tzp(
+                tzprofile_origination.data.originated_contract_address
+            )
             profile.valid_claims = claims["valid"]
             profile.invalid_claims = claims["invalid"]
         except Exception as e:

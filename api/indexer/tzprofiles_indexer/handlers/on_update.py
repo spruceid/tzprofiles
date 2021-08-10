@@ -1,18 +1,10 @@
-from dipdup.models import (
-    OperationData,
-    Transaction,
-    Origination,
-    BigMapDiff,
-    BigMapData,
-    BigMapAction,
-)
-from dipdup.context import HandlerContext, RollbackHandlerContext
+from dipdup.models import Transaction
+from dipdup.context import HandlerContext
 
 import tzprofiles_indexer.models as models
 
 from tzprofiles_indexer.types.tzprofile.parameter.default import DefaultParameter
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
-from tzprofiles_indexer.handlers import TZP_API
 from tzprofiles_indexer.handlers import resolve_tzp
 
 

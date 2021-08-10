@@ -1,4 +1,4 @@
-spec_version: 1.0
+spec_version: 1.1
 package: tzprofiles_indexer
 
 database:
@@ -9,13 +9,13 @@ database:
   password: ${POSTGRES_PASSWORD:-changeme}
   database: dipdup
 
-# database:
-#   kind: sqlite
-#   path: tzprofiles.sqlite3
-
 hasura:
   url: http://hasura:8080
   admin_secret: ${ADMIN_SECRET:-changeme}
+
+# database:
+#   kind: sqlite
+#   path: tzprofiles.sqlite3
 
 contracts:
   tzprofile_old:
@@ -28,7 +28,7 @@ contracts:
 datasources:
   tzkt:
     kind: tzkt
-    url: https://api.tzkt.io
+    url: ${TZKT_URL:-https://api.tzkt.io}
 
 templates:
   tzprofiles:
@@ -65,3 +65,4 @@ indexes:
           - type: origination
             similar_to: tzprofile_old
     stateless: True
+    # last_block: 1591300
