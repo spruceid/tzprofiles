@@ -1,6 +1,12 @@
 export const publicProfileViewTooltip = (claim): string | Boolean => {
-  if (claim.type == 'discord') return `${claim.draft.handle}`;
-  return false;
+  switch (claim.type) {
+    case 'discord':
+      return claim.draft.handle;
+    case 'dns':
+      return claim.draft.address;
+    default:
+      return '';
+  }
 };
 
 export const selectIconCopyText = (claim): string => {
