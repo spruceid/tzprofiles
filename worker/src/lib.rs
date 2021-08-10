@@ -53,9 +53,12 @@ fn initialize_logging() {
     console_log::init_with_level(Level::Error).expect("error initializing log");
 }
 
-pub fn extract_signature(tweet: String) -> Result<(String, String)> {
+// This assumes a signature preceeded by it's source material, like format!("{}{}", sig_target, signature)
+// Also assumes there is at least one `\n` separating the two, but that it is included in the signature.
+// These assumptions hold for Twitter/Discord, but not Instagram
+pub fn extract_signature(post: String) -> Result<(String, String)> {
     let mut sig_target = "".to_string();
-    for line in tweet.split('\n').collect::<Vec<&str>>() {
+    for line in post.split('\n').collect::<Vec<&str>>() {
         if line.starts_with("sig:") {
             if sig_target != "" {
                 return Ok((sig_target, line[4..].to_string().clone()));
@@ -105,6 +108,7 @@ pub async fn witness_instagram_post(
     ig_handle: String,
     ig_link: String,
     sig: String,
+    sig_target: String,
     sig_type: String,
 ) -> Promise {
     future_to_promise(async move {
@@ -117,8 +121,6 @@ pub async fn witness_instagram_post(
         } else {
             return jserr!(Err(anyhow!(format!("Unknown signature type {}", sig_type))));
         };
-
-        let sig_target = instagram::target_from_handle(&ig_handle, jserr!(&hash_public_key(&pk)));
 
         let mut props = HashMap::new();
         props.insert(

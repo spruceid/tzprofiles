@@ -229,7 +229,8 @@ async function handler_witness_instagram_post(request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    let pk = decodeURI(searchParams.get("pk"));
+    let pk = decodeURIComponent(searchParams.get("pk"));
+    let sig_target = decodeURIComponent(searchParams.get("sig_target"));
     let handle = searchParams.get("handle");
     let sig_type = searchParams.get("sig_type");
 
@@ -246,7 +247,15 @@ async function handler_witness_instagram_post(request) {
     const { witness_instagram_post } = wasm_bindgen;
     await wasm_bindgen(wasm);
 
-    const vc = await witness_instagram_post(TZPROFILES_ME_PRIVATE_KEY, pk, handle, kvObj.link, kvObj.sig, sig_type);
+    const vc = await witness_instagram_post(
+      TZPROFILES_ME_PRIVATE_KEY,
+      pk,
+      handle,
+      kvObj.link,
+      kvObj.sig,
+      sig_target,
+      sig_type,
+    );
 
     return new Response(vc, { status: 200, headers: headers });
   } catch (error) {
@@ -274,7 +283,7 @@ async function handler_instagram_login(request) {
     const res = `<html>
     <body>
       <p>Instagram claim has been prepared.</p> 
-      <p>Please return to Tezos Profiles to save it to your profile!</p> 
+      <p>Please return to the previous window to save it to your profile!</p> 
     </body>
 </html>`;
 
