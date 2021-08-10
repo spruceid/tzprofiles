@@ -348,6 +348,11 @@ pub async fn dns_lookup(
             serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
         );
 
+        evidence_map.insert(
+            "dnsServer".to_string(),
+            serde_json::Value::String("https://cloudflare-dns.com/dns-query".to_string()),
+        );
+
         let evidence = Evidence {
             id: None,
             type_: vec!["DnsVerificationMessage".to_string()],
