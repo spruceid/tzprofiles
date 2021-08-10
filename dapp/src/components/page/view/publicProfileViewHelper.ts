@@ -5,7 +5,7 @@ export const publicProfileViewTooltip = (claim): string | Boolean => {
     case 'dns':
       return claim.draft.address;
     default:
-      return '';
+      return false;
   }
 };
 
