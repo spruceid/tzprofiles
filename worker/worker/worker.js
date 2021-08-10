@@ -303,7 +303,7 @@ async function handler_instagram_login(request) {
     const res = `<html>
     <body>
       <p>Instagram claim has been prepared.</p> 
-      <p>Please return to Tezos Profiles to save it to your profile!</p> 
+      <p>Please return to the previous window to save it to your profile!</p> 
     </body>
 </html>`;
 

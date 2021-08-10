@@ -575,12 +575,12 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
           let vc = JSON.parse(contentStr);
           let ct = claimTypeFromVC(vc);
           if (!ct) {
-            throw new Error(
+            console.error(
               `No claim type found in vc: ${JSON.stringify(vc?.type)}`
             );
+          } else {
+            nextSearchClaims[ct] = claimFromTriple(ct, triple);
           }
-
-          nextSearchClaims[ct] = claimFromTriple(ct, triple);
         });
 
         searchClaims.set(nextSearchClaims);
