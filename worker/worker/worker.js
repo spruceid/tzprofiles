@@ -227,18 +227,20 @@ async function handler_dns_lookup(request) {
   }
 }
 
-async function handle_gist_lookup(request) {
+async function handle_github_lookup(request) {
   try {
     const { gist_lookup } = wasm_bindgen;
     const { searchParams } = new URL(request.url);
 
     const pk = decodeURI(searchParams.get("pk"));
     const gistId = decodeURI(searchParams.get("gistId"));
+    const githubUsername = decodeURI(searchParams.get("githubUsername"));
+    const message = decodeURI(searchParams.get("message"));
 
     await wasm_bindgen(wasm);
-    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, "");
+    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, message, githubUsername);
 
-    return new Response(JSON.stringify({ hello: "hello" }), {
+    return new Response(JSON.stringify(dns_vc), {
       status: 200,
       headers: headers,
     });
@@ -334,7 +336,7 @@ async function handleRequest(request) {
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
-  r.get("/witness_gist", (request) => handle_gist_lookup(request));
+  r.get("/witness_github", (request) => handle_github_lookup(request));
 
   const resp = await r.route(request);
   return resp;

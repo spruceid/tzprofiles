@@ -53,3 +53,4 @@ opt-level = "z"
 [package.metadata.wasm-pack.profile.profiling]
 wasm-opt = ['-g', '-O']
 # opt-level = "z"
+

@@ -383,6 +383,7 @@ pub async fn gist_lookup(
     public_key_tezos: String,
     gist_id: String,
     message: String,
+    github_username: String,
 ) -> Promise {
     initialize_logging();
 
@@ -392,47 +393,50 @@ pub async fn gist_lookup(
 
         let dns_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
 
-        info!("{:?}", dns_result);
+        let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
 
-        let mut vc = jserr!(dns::build_dns_vc(&pk, message));
+        let sig = jserr!(github::extract_gist_message(
+            dns_result.files.tzprofiles_verification.content
+        ));
 
-        // let signature_to_resolve = jserr!(dns::find_signature_to_resolve(dns_result));
+        jserr!(verify_signature(&message, &pk, &sig));
 
-        // let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
+        let mut props = HashMap::new();
+        props.insert(
+            "publicKeyJwk".to_string(),
+            jserr!(serde_json::to_value(pk.clone())),
+        );
 
-        // jserr!(verify_signature(&message, &pk, &sig));
+        let mut evidence_map = HashMap::new();
 
-        // let mut props = HashMap::new();
-        // props.insert(
-        //     "publicKeyJwk".to_string(),
-        //     jserr!(serde_json::to_value(pk.clone())),
-        // );
+        evidence_map.insert(
+            "timestamp".to_string(),
+            serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
+        );
 
-        // let mut evidence_map = HashMap::new();
+        evidence_map.insert(
+            "gistApiAddress".to_string(),
+            serde_json::Value::String("https://api.github.com/gists/".to_string()),
+        );
 
-        // evidence_map.insert(
-        //     "timestamp".to_string(),
-        //     serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
-        // );
+        let evidence = Evidence {
+            id: None,
+            type_: vec!["GithubVerificationMessage".to_string()],
+            property_set: Some(evidence_map),
+        };
+        vc.evidence = Some(OneOrMany::One(evidence));
 
-        // let evidence = Evidence {
-        //     id: None,
-        //     type_: vec!["DnsVerificationMessage".to_string()],
-        //     property_set: Some(evidence_map),
-        // };
-        // vc.evidence = Some(OneOrMany::One(evidence));
-
-        // let proof = jserr!(
-        //     vc.generate_proof(
-        //         &sk,
-        //         &LinkedDataProofOptions {
-        //             verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
-        //             ..Default::default()
-        //         }
-        //     )
-        //     .await
-        // );
-        // vc.proof = Some(OneOrMany::One(proof));
+        let proof = jserr!(
+            vc.generate_proof(
+                &sk,
+                &LinkedDataProofOptions {
+                    verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
+                    ..Default::default()
+                }
+            )
+            .await
+        );
+        vc.proof = Some(OneOrMany::One(proof));
 
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })
