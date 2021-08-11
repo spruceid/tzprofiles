@@ -1,7 +1,6 @@
 use crate::SPRUCE_DIDWEB;
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
-use log::info;
 use reqwest::header::{HeaderMap, USER_AGENT};
 use serde::Deserialize;
 use serde_json::json;

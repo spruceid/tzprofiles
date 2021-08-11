@@ -395,6 +395,14 @@ pub async fn gist_lookup(
 
         let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
 
+        // check for matching usernames
+        if github_username != dns_result.owner.login {
+            jserr!(Err(anyhow!(format!(
+                "Different Github username {} v. {}",
+                github_username, dns_result.owner.login
+            ))));
+        }
+
         let sig = jserr!(github::extract_gist_message(
             dns_result.files.tzprofiles_verification.content
         ));

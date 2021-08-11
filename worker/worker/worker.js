@@ -213,8 +213,6 @@ async function handler_dns_lookup(request) {
     const domain = decodeURI(searchParams.get("domain"));
     const message = decodeURI(searchParams.get("message"));
 
-    console.log(pk, domain, message);
-
     await wasm_bindgen(wasm);
     const dns_vc = await dns_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, domain, message);
 
@@ -337,7 +335,6 @@ async function handleRequest(request) {
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
   r.get("/witness_github", (request) => handle_github_lookup(request));
-
   const resp = await r.route(request);
   return resp;
 }
