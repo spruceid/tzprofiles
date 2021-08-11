@@ -1,6 +1,5 @@
 extern crate wasm_bindgen;
 
-#[macro_use]
 extern crate log;
 use log::info;
 

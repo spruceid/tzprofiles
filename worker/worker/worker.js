@@ -237,7 +237,7 @@ async function handle_github_lookup(request) {
     await wasm_bindgen(wasm);
     const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, githubUsername);
 
-    return new Response(JSON.stringify(dns_vc), {
+    return new Response(dns_vc, {
       status: 200,
       headers: headers,
     });
