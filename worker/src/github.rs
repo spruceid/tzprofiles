@@ -1,5 +1,5 @@
 use crate::SPRUCE_DIDWEB;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, USER_AGENT};
 use serde::Deserialize;
@@ -27,17 +27,6 @@ pub struct Owner {
 #[derive(Deserialize, Debug)]
 pub struct GistContent {
     pub content: String,
-}
-
-pub fn extract_gist_message(gist_message: String) -> Result<String> {
-    let split = gist_message.split("=");
-    let str_list = split.collect::<Vec<&str>>();
-
-    if str_list.len() != 2 {
-        return Err(anyhow!("Signature isn't matched"));
-    }
-
-    Ok(str_list[1].clone().to_string())
 }
 
 pub async fn retrieve_gist_message(gist_id: String) -> Result<GithubResponse> {
@@ -74,7 +63,9 @@ pub fn build_gist_vc(pk: &JWK, github_username: String) -> Result<Credential> {
                           "@id": "https://tzprofiles.com/timestamp",
                           "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
                       },
-                      "gistApiAddress": "https://tzprofiles.com/gistApiAddress"
+                      "gistId": "https://tzprofiles.com/gistId",
+                      "gistApiAddress": "https://tzprofiles.com/gistApiAddress",
+                      "gistMessage": "https://tzprofiles.com/gistMessage"
                   }
               }
           }

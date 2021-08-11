@@ -233,10 +233,9 @@ async function handle_github_lookup(request) {
     const pk = decodeURI(searchParams.get("pk"));
     const gistId = decodeURI(searchParams.get("gistId"));
     const githubUsername = decodeURI(searchParams.get("githubUsername"));
-    const message = decodeURI(searchParams.get("message"));
 
     await wasm_bindgen(wasm);
-    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, message, githubUsername);
+    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, githubUsername);
 
     return new Response(JSON.stringify(dns_vc), {
       status: 200,

@@ -51,7 +51,7 @@ fn verify_signature(data: &str, pk: &JWK, sig: &str) -> Result<()> {
 
 fn initialize_logging() {
     use log::Level;
-    console_log::init_with_level(Level::Trace).expect("error initializing log");
+    console_log::init_with_level(Level::Error).expect("error initializing log");
 }
 
 pub fn extract_signature(tweet: String) -> Result<(String, String)> {
@@ -382,7 +382,6 @@ pub async fn gist_lookup(
     secret_key_jwk: String,
     public_key_tezos: String,
     gist_id: String,
-    message: String,
     github_username: String,
 ) -> Promise {
     initialize_logging();
@@ -391,23 +390,23 @@ pub async fn gist_lookup(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-        let dns_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
+        let gist_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
 
         let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
 
         // check for matching usernames
-        if github_username != dns_result.owner.login {
+        if github_username.to_lowercase() != gist_result.owner.login.to_lowercase() {
             jserr!(Err(anyhow!(format!(
                 "Different Github username {} v. {}",
-                github_username, dns_result.owner.login
+                github_username, gist_result.owner.login
             ))));
         }
 
-        let sig = jserr!(github::extract_gist_message(
-            dns_result.files.tzprofiles_verification.content
+        let (sig_target, sig) = jserr!(extract_signature(
+            gist_result.files.tzprofiles_verification.content.clone()
         ));
 
-        jserr!(verify_signature(&message, &pk, &sig));
+        jserr!(verify_signature(&sig_target, &pk, &sig));
 
         let mut props = HashMap::new();
         props.insert(
@@ -423,8 +422,25 @@ pub async fn gist_lookup(
         );
 
         evidence_map.insert(
+            "gistId".to_string(),
+            serde_json::Value::String(gist_id.to_string()),
+        );
+
+        evidence_map.insert(
             "gistApiAddress".to_string(),
             serde_json::Value::String("https://api.github.com/gists/".to_string()),
+        );
+
+        evidence_map.insert(
+            "gistMessage".to_string(),
+            serde_json::Value::String(
+                gist_result
+                    .files
+                    .tzprofiles_verification
+                    .content
+                    .clone()
+                    .to_string(),
+            ),
         );
 
         let evidence = Evidence {
