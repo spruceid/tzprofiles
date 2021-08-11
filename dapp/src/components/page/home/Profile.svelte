@@ -1,29 +1,19 @@
 <script lang="ts">
   import { Card, PrimaryButton, LoadingSpinner } from 'components';
+import { prepareIssueCredential } from 'didkit-wasm';
   import {
     alert,
     claimsStream,
-    networkStr,
     contractAddress,
-    addToKepler,
     addClaims,
-    fetchOrbitId,
   } from 'src/store';
   import {
     canUpload,
-    getCurrentOrbit,
     isAllOnChain,
     shouldDisplayPendingStatus,
   } from './uploadHelpers';
-  import { contentToDraft } from 'src/helpers';
 
   export let onClose: () => void;
-
-  let currentNetwork: string;
-
-  networkStr.subscribe((x) => {
-    currentNetwork = x;
-  });
 
   $: isAddingClaims = false;
 
@@ -35,33 +25,20 @@
         return !!claim.preparedContent;
       });
 
-      let orbit;
-      orbit = getCurrentOrbit(nextClaimStream);
-      if (!orbit) {
-        orbit = await fetchOrbitId();
-      }
-
-      const urls = await addToKepler(
-        orbit,
-        ...newClaims.map((claim) => claim.preparedContent)
-      );
-
-      for (let i = newClaims.length, x = 0; i > x; i--) {
-        let profile = newClaims[i - 1];
-        let next = nextClaimStream[profile.type];
-
-        next.irl = urls.pop();
-        // Is a string because findNewClaims checked.
-        next.content = profile.preparedContent;
-        next.preparedContent = false;
-        next.draft = contentToDraft(next.type, next.content);
-        next.onChain = true;
-
-        nextClaimStream[profile.type] = next;
-      }
-
-      // TODO: FIx here
       await addClaims(newClaims);
+
+      let claimKeys = Object.keys(nextClaimStream);
+
+      for (let i = 0, x = claimKeys.length; i < x; i++) {
+        let k = claimKeys[i];
+        let claim = nextClaimStream[k];
+        if (claim.preparedContent) {
+          claim.content = claim.preparedContent;
+          claim.preparedContent = false;
+          nextClaimStream[k] = claim;
+        }
+      }
+
       claimsStream.set(nextClaimStream);
 
       onClose();

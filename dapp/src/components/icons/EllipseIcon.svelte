@@ -1,6 +1,6 @@
 <script lang="ts">
-  let clazz: string = '';
-  export { clazz as class };
+  // let clazz: string = '';
+  // export { clazz as class };
   export let color: string = '#b3b3b3';
 </script>
 

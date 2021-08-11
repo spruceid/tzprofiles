@@ -1,12 +1,12 @@
 <script lang="ts">
+  import { NetworkType } from '@airgap/beacon-sdk';
   import { BasePage, VerificationStep, PrimaryButton } from 'components';
   import {
     originate,
+    network,
     userData,
-    networkStr,
     claimsStream,
     contractAddress,
-    saveToKepler,
     alert,
   } from 'src/store';
   import type { ClaimMap } from 'src/helpers';
@@ -16,14 +16,14 @@
 
   let navigate = useNavigate();
 
-  let currentNetwork: string;
+  let currentNetwork: NetworkType;
   let currentContractAddress: string;
 
   contractAddress.subscribe((x) => {
     currentContractAddress = x;
   });
 
-  networkStr.subscribe((x) => {
+  network.subscribe((x) => {
     currentNetwork = x;
   });
 
@@ -74,31 +74,6 @@
     }
   };
 
-  const upload = async () => {
-    retry = false;
-    try {
-      const nextClaimStream = $claimsStream;
-      const newClaims = Object.values(nextClaimStream).filter((claim) => {
-        return !!claim.preparedContent;
-      });
-      const urls = await saveToKepler(
-        ...newClaims.map((claim) => claim.preparedContent)
-      );
-
-      newClaims.reverse().forEach((profile) => {
-        let next = nextClaimStream[profile.type];
-        next.irl = urls.pop();
-      });
-
-      claimsStream.set(nextClaimStream);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      next();
-    } catch (e) {
-      retry = true;
-      throw e;
-    }
-  };
-
   onMount(() => {
     if (
       (redirectCheck($claimsStream) && currentContractAddress) ||
@@ -109,7 +84,6 @@
   });
 
   const deploy = async () => {
-    await upload();
     await generateContract();
   };
 </script>
@@ -169,33 +143,19 @@
     <VerificationStep
       step={2}
       bind:currentStep
-      title="Uploading Credentials to Kepler"
+      title="Uploading Credentials to Kepler and Deploying Contract"
       loading={currentStep === 2 && !retry}
       error={currentStep === 2 && retry}
     >
       {#if retry && currentStep === 2}
-        <div class="w-40">
-          <PrimaryButton text="Retry" onClick={() => upload()} />
-        </div>
-      {/if}
-    </VerificationStep>
-
-    <VerificationStep
-      step={3}
-      bind:currentStep
-      title="Deploying Your Tezos Profile"
-      loading={currentStep === 3 && !retry}
-      error={currentStep === 3 && retry}
-    >
-      {#if retry && currentStep === 3}
         <div class="w-40">
           <PrimaryButton text="Retry" onClick={() => generateContract()} />
         </div>
       {/if}
     </VerificationStep>
 
-    <VerificationStep step={4} bind:currentStep title="Profile Deployed">
-      {#if currentStep > 3}
+    <VerificationStep step={3} bind:currentStep title="Profile Deployed">
+      {#if currentStep > 2}
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Return to Profile"

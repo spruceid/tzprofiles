@@ -1,7 +1,5 @@
 <script lang="ts">
-  let clazz: string = '';
-  export let color: string = 'white';
-  export { clazz as class };
+  // export let color: string = 'white';
 </script>
 
 <svg

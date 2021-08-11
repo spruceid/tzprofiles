@@ -1,11 +1,12 @@
 <script lang="ts">
   import { useNavigate } from 'svelte-navigator';
   import { onMount, onDestroy } from 'svelte';
+  import { NetworkType } from '@airgap/beacon-sdk';
   import {
     claimsStream,
     loadingContracts,
     contractAddress,
-    networkStr,
+    network,
   } from 'src/store';
   import './availablecredentials.scss';
   import { FileModal, ViewIcon, ClaimDisplay } from 'components';
@@ -25,8 +26,8 @@
 
   let navigate = useNavigate();
 
-  let currentNetwork: string;
-  networkStr.subscribe((x) => {
+  let currentNetwork: NetworkType;
+  network.subscribe((x) => {
     currentNetwork = x;
   });
 
@@ -174,7 +175,6 @@
                     claim.content || claim.preparedContent
                   )}
                   downloadFileName={`${claim.display.display}.json`}
-                  {claim}
                 />
               {/if}
             </td>

@@ -6,7 +6,7 @@ export const addToKepler = async (
   pkh: string,
   ...obj: Array<any>
 ) => {
-  obj.forEach((o) => console.log(o));
+  // obj.forEach((o) => console.log(o));
   if (kepler) {
     // Get around the error of possibly passing nothing.
     let f = obj.pop();
@@ -15,7 +15,6 @@ export const addToKepler = async (
     }
 
     const res = await kepler.put(orbit, f, ...obj);
-    console.log('RES', res);
     if (res.status === 404) {
       await saveToKepler(kepler, pkh, ...[f, ...obj]);
     }
@@ -36,7 +35,7 @@ export const saveToKepler = async (
   pkh: string,
   ...obj: Array<any>
 ) => {
-  obj.forEach((o) => console.log(o));
+  // obj.forEach((o) => console.log(o));
   if (kepler) {
     // Get around the error of possibly passing nothing.
     let f = obj.pop();

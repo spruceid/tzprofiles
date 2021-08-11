@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { NetworkType } from '@airgap/beacon-sdk';
   import {
     BasePage,
     PrimaryButton,
@@ -10,18 +11,18 @@
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
   import { defaultSearchOpts, search, network, alert } from 'src/store';
-  import type NetworkType from 'enumsNetworkType';
+  import SupportedNetwork from 'enums/SupportedNetwork';
   import { findAddressFromDomain } from './searchHelper';
   import './search.scss';
 
   const navigate = useNavigate();
 
   let address: string = '';
-  let localNetwork: string;
+  let localNetwork: SupportedNetwork;
   let searching: boolean = false;
 
   onMount(() => {
-    localNetwork = $network;
+    localNetwork = SupportedNetwork[$network.toUpperCase()];
   });
 
   const handleKeydown = (event) => {
@@ -32,7 +33,7 @@
   };
 
   const setSelectedNetwork = () => {
-    network.set(localNetwork as NetworkType);
+    network.set(NetworkType[localNetwork.toUpperCase()]);
   };
 
   const searchProfiles = async () => {
