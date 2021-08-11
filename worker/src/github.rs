@@ -12,6 +12,7 @@ use uuid::Uuid;
 pub struct GithubResponse {
     pub files: GithubFile,
     pub owner: Owner,
+    pub history: Vec<History>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -27,6 +28,11 @@ pub struct Owner {
 #[derive(Deserialize, Debug)]
 pub struct GistContent {
     pub content: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct History {
+    pub version: String,
 }
 
 pub async fn retrieve_gist_message(gist_id: String) -> Result<GithubResponse> {
@@ -65,17 +71,18 @@ pub fn build_gist_vc(pk: &JWK, github_username: String) -> Result<Credential> {
                       },
                       "gistId": "https://tzprofiles.com/gistId",
                       "gistApiAddress": "https://tzprofiles.com/gistApiAddress",
-                      "gistMessage": "https://tzprofiles.com/gistMessage"
+                      "gistMessage": "https://tzprofiles.com/gistMessage",
+                      "gistVersion":  "https://tzprofiles.com/gistVersion",
                   }
               }
           }
       ],
       "issuanceDate": Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true),
       "id": format!("urn:uuid:{}", Uuid::new_v4().to_string()),
-      "type": ["VerifiableCredential", "DnsVerification"],
+      "type": ["VerifiableCredential", "GithubVerification"],
       "credentialSubject": {
           "id": format!("did:pkh:tz:{}", &hash_public_key(pk)?),
-          "sameAs": format!("github:{}", github_username)
+          "sameAs": format!("urn:github:{}", github_username)
       },
       "issuer": SPRUCE_DIDWEB
     }))?)

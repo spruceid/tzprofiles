@@ -442,6 +442,11 @@ pub async fn gist_lookup(
             ),
         );
 
+        evidence_map.insert(
+            "gistVersion".to_string(),
+            serde_json::Value::String(gist_result.history.last().unwrap().version.to_string()),
+        );
+
         let evidence = Evidence {
             id: None,
             type_: vec!["GithubVerificationMessage".to_string()],
