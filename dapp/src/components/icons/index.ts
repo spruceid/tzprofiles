@@ -19,3 +19,4 @@ export { default as DiscordIcon } from './DiscordIcon.svelte';
 export { default as EditIcon } from './EditIcon.svelte';
 export { default as DeleteIcon } from './DeleteIcon.svelte';
 export { default as EllipseIcon } from './EllipseIcon.svelte';
+export { default as GlobeIcon } from './GlobeIcon.svelte';

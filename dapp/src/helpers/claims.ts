@@ -6,6 +6,7 @@ import {
   TwitterIcon,
   EthereumIcon,
   DiscordIcon,
+  GlobeIcon,
 } from 'components';
 import * as tzp from 'tzprofiles';
 
@@ -16,7 +17,7 @@ export const exhaustiveCheck = (arg: never) => {
 };
 
 // The types of claims supported by the UI.
-export type ClaimType = 'basic' | 'twitter' | 'ethereum' | 'discord';
+export type ClaimType = 'basic' | 'twitter' | 'ethereum' | 'discord' | 'dns';
 
 // NOTE: Ethereum backwards compatibility
 export type ClaimVCType =
@@ -24,7 +25,8 @@ export type ClaimVCType =
   | 'TwitterVerification'
   | 'EthereumControl'
   | 'EthereumAddressControl'
-  | 'DiscordVerification';
+  | 'DiscordVerification'
+  | 'DnsVerification';
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -46,6 +48,8 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
         return 'twitter';
       case 'DiscordVerification':
         return 'discord';
+      case 'DnsVerification':
+        return 'dns';
       default:
     }
   }
@@ -59,6 +63,7 @@ const claimTypes: Array<ClaimType> = [
   'twitter',
   'ethereum',
   'discord',
+  'dns',
 ];
 
 export interface BasicDraft {
@@ -82,11 +87,16 @@ export interface DiscordDraft {
   handle: string;
 }
 
+export interface DnsDraft {
+  address: string;
+}
+
 export type ClaimDraft =
   | BasicDraft
   | TwitterDraft
   | EthereumDraft
-  | DiscordDraft;
+  | DiscordDraft
+  | DnsDraft;
 
 /*
  * UI Text & Assets
@@ -159,6 +169,18 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         proof: 'Discord Message',
         title: 'Discord Verification',
         type: 'Social Media',
+      };
+    case 'dns':
+      return {
+        description:
+          'This process is used to link your web domain name to your Tezos account by signing a message using your private key, storing the signature in a TXT record, and finally retrieving that data for verification.',
+        display: 'Web Domain Verification',
+        icon: GlobeIcon,
+        route: '/dns',
+        routeDescription: 'Domain Ownership',
+        proof: 'TXT Record',
+        title: 'DNS Verification',
+        type: 'Domain Ownership',
       };
   }
 
@@ -289,7 +311,32 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
         handle: evidence.handle,
       };
     }
+    case 'dns': {
+      const { credentialSubject } = content;
+      let sameAsString: string = credentialSubject.sameAs;
+
+      return {
+        address: sameAsString.substring(4, sameAsString.length),
+      };
+    }
   }
+};
+
+export const checkIsWebsiteLive = async (url: string): Promise<boolean> => {
+  try {
+    await fetch(`https://${url}`);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+export const formatWebsite = (url: string): string => {
+  if (url.match(/^(https:\/\/|http:\/\/|www\.).*$/g)) {
+    return url;
+  }
+  return 'http://' + url;
 };
 
 export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
@@ -350,7 +397,7 @@ export const isUnsavedDraft = (c: Claim): boolean => {
  * Social Media Functions
  */
 
-export type socialMediaClaimType = 'twitter' | 'discord';
+export type socialMediaClaimType = 'twitter' | 'discord' | 'dns';
 // | "instagram"
 
 const socialMediaTitle = (smType: socialMediaClaimType): string => {
@@ -359,6 +406,8 @@ const socialMediaTitle = (smType: socialMediaClaimType): string => {
       return 'Twitter';
     case 'discord':
       return 'Discord';
+    case 'dns':
+      return 'DNS';
   }
 
   exhaustiveCheck(smType);
@@ -373,6 +422,8 @@ const socialMediaHandle = (
       return `@${handle}`;
     case 'discord':
       return `${handle}`;
+    case 'dns':
+      return `${handle}`;
   }
 
   exhaustiveCheck(smType);
@@ -383,6 +434,8 @@ const tzpHandle = (smType: socialMediaClaimType): string => {
     case 'twitter':
       return socialMediaHandle(smType, 'tzprofiles');
     case 'discord':
+      return socialMediaHandle(smType, 'tzprofiles');
+    case 'dns':
       return socialMediaHandle(smType, 'tzprofiles');
   }
 
@@ -445,6 +498,41 @@ export const getFullSocialMediaClaim = async (
     userData,
     handle
   )}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`;
+};
+
+// dns
+export const getUnsignedDnsMessage = (domain: string, userData: any) => {
+  let addr = userData?.account?.address;
+  return `${domain} is linked to ${addr}`;
+};
+
+export const getPreparedUnsignedDnsMessage = (
+  domain: string,
+  userData: any
+) => {
+  return `Tezos Signed Message: ${getUnsignedDnsMessage(domain, userData)}`;
+};
+
+export const getSignedDnsClaim = async (
+  userData: any,
+  domain: string,
+  wallet: BeaconWallet
+): Promise<string> => {
+  const unsignedMessage = `${getPreparedUnsignedDnsMessage(domain, userData)}`;
+  const sig = await signClaim(userData, unsignedMessage, wallet);
+  return `tzprofiles-verification=${sig}`;
+};
+
+export const getDnsFullSignedClaim = async (
+  userData: any,
+  domain: string,
+  wallet: BeaconWallet
+): Promise<string> => {
+  return `${getUnsignedDnsMessage(domain, userData)}=${await getSignedDnsClaim(
+    userData,
+    domain,
+    wallet
+  )}`;
 };
 
 /*

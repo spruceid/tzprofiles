@@ -63,8 +63,12 @@ export const statusTextToClassMapping = {
 const statusDisplayRanking = ['complete', 'pending', 'incomplete'];
 
 export const sortClaimsByStatus = (a: Claim, b: Claim) => {
-  let aRanking = statusDisplayRanking.indexOf(selectDisplayStatus(a));
-  let bRanking = statusDisplayRanking.indexOf(selectDisplayStatus(b));
+  let aRanking = statusDisplayRanking.indexOf(
+    statusTextToClassMapping[selectDisplayStatus(a)]
+  );
+  let bRanking = statusDisplayRanking.indexOf(
+    statusTextToClassMapping[selectDisplayStatus(b)]
+  );
 
   if (aRanking < bRanking) {
     return -1;

@@ -102,6 +102,7 @@
     TwitterVerification,
     TwitterVerificationPublicTweet,
     DiscordVerification,
+    DnsVerification,
   } from './routes';
 
   //This avoids PurgeCSS from deleting classes from production build
@@ -136,6 +137,9 @@
   </Route>
   <Route path="discord">
     <DiscordVerification />
+  </Route>
+  <Route path="dns">
+    <DnsVerification />
   </Route>
   <Route path="twitter">
     <Twitter />

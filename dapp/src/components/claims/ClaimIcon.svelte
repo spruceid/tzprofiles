@@ -72,7 +72,7 @@
   export let claim: Claim;
   export let tooltip: Boolean | String = false;
 
-  const enableCopy = ['discord'];
+  const enableCopy = ['discord', 'dns'];
 </script>
 
 <a

@@ -2,6 +2,7 @@
   import { useParams } from 'svelte-navigator';
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
+  import { formatWebsite } from 'src/helpers/claims';
   import { publicProfileViewTooltip } from './publicProfileViewHelper';
   import './publicProfileView.scss';
 
@@ -15,13 +16,6 @@
     (x) => x.type !== 'basic' && x.content
   );
   const params = useParams();
-
-  const formatWebsite = (url: string): string => {
-    if (url.match(/^(https:\/\/|http:\/\/|www\.).*$/g)) {
-      return url;
-    }
-    return 'http://' + url;
-  };
 
   let isCredentialSourceDropdownOpen = false;
   $: shouldDisplayOriginalImage = true;
@@ -54,10 +48,13 @@
       </div>
       <CopyButton text={$params.address} color="gray" class="w-4 h-4 ml-2" />
     </div>
+  </div>
+  <div class="flex flex-row items-center mt-2">
     {#each Object.values(otherClaims) as claim}
       <ClaimIcon {claim} tooltip={publicProfileViewTooltip(claim)} />
     {/each}
   </div>
+
   {#if basicClaim}
     <!-- Specially treat basicClaim -->
     <a href={formatWebsite(basicDraft.website)} target="_blank">

@@ -74,9 +74,7 @@
               onClick={() =>
                 window.open(
                   `https://${
-                    currentNetwork
-                      ? `${currentNetwork}.`
-                      : ''
+                    currentNetwork ? `${currentNetwork}.` : ''
                   }tzkt.io/${$contractAddress}`
                 )}
             />

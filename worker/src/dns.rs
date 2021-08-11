@@ -77,6 +77,7 @@ pub fn build_dns_vc(pk: &JWK, domain: String) -> Result<Credential> {
                           "@id": "https://tzprofiles.com/timestamp",
                           "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
                       },
+                      "dnsServer": "https://tzprofiles.com/dnsServer",
                   }
               }
           }
