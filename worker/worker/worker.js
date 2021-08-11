@@ -253,8 +253,8 @@ async function handler_witness_instagram_post(request) {
       handle,
       kvObj.link,
       kvObj.sig,
+      sig_target,
       sig_type,
-      sig_target
     );
 
     return new Response(vc, { status: 200, headers: headers });
