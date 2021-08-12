@@ -225,6 +225,27 @@ async function handler_dns_lookup(request) {
   }
 }
 
+async function handle_github_lookup(request) {
+  try {
+    const { gist_lookup } = wasm_bindgen;
+    const { searchParams } = new URL(request.url);
+
+    const pk = decodeURI(searchParams.get("pk"));
+    const gistId = decodeURI(searchParams.get("gistId"));
+    const githubUsername = decodeURI(searchParams.get("githubUsername"));
+
+    await wasm_bindgen(wasm);
+    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, githubUsername);
+
+    return new Response(dns_vc, {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(error, { status: 500, headers: headers });
+  }
+}
+
 async function handler_witness_instagram_post(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -321,6 +342,7 @@ async function handleRequest(request) {
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
+  r.get("/witness_github", (request) => handle_github_lookup(request));
   const resp = await r.route(request);
   return resp;
 }
