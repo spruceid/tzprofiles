@@ -332,6 +332,64 @@ async function handler_data_deletion(request) {
   );
 }
 
+const igDemoPage = `<html>
+	<head>
+		<title>Instagram Claim Demo</title>
+	</head>
+	<body>
+		<div id="sig-cont">
+			<p>1) Paste the following as a line in a post caption (new or edited)</p>
+			<pre>__sig:edsigtkoTNTvGu7wdqwFai8a5rKBB7RX5oMS95DMSGGmy97PaTgNerFTTULowf9WaWzmXbHYfypwHBWm5HRhzoBQNP3iGqWw2EQ</pre>
+		</div>
+		<div id="handle-cont">
+			<p>2)
+				<label>Enter Your Instagram Handle</lable>
+				<input type="text" id="handle"/>
+			</p>
+		</div>
+		<div id="auth-cont">
+			<p>3)
+				<a href="https://api.instagram.com/oauth/authorize?client_id=210009324358917&redirect_uri=https://witness.tzprofiles.com/instagram_login&scope=user_profile,user_media&response_type=code" target="_blank">Visit this link to authorize the post look up</a>
+			</p>
+		</div>
+		<div id="verif-cont">
+		  <p>4) <button id="verif">Click to verify post contains target caption</button></p>
+		  <div id="result-cont"><p>The verification button has not been hit</p></div>
+		</div>
+		<script>
+			function docReady(fn) {
+				if (document.readyState === "complete" || document.readyState === "interactive") {
+					setTimeout(fn, 1);
+				} else {
+					document.addEventListener("DOMContentLoaded", fn);
+				}
+			}
+			docReady(() => {
+				let button = document.getElementById("verif");
+				button.onclick = async () => {
+				  let url = "https://witness.tzprofiles.com/witness_instagram_post?pk=edpkuT9tEXKEVtF4t8AnDRqZXx6DM1KAqXy3LEW5a2rB5AdCbaRk2h&handle=" + document.getElementById("handle").value.trim() + "&sig_type=tezos&sig_target=I%20am%20attesting%20that%20this%20Instagram%20handle%20@evalapplyquote%20is%20linked%20to%20the%20Tezos%20account%20tz1eShazoVt7oZBWZkeQtrGjeaVGCC1Fubmw%20for%20Tezos%20Profiles"
+				  let res = await fetch(url);
+				  if (res.ok) {
+					document.getElementById("result-cont").innerHTML = "You have been verified! :)"
+				  } else {
+					document.getElementById("result-cont").innerHTML = "Verification failed :("
+				  }
+				}
+			})
+		</script>
+	</body>
+</html>`;
+
+async function handler_instagram_demo(_request) {
+  return new Response(igDemoPage, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "text/html",
+    },
+  });
+}
+
 async function handleRequest(request) {
   const r = new Router();
   r.get("/witness_tweet", (request) => handler_witness_tweet(request));
@@ -339,6 +397,7 @@ async function handleRequest(request) {
   r.get("/instagram_login", (request) => handler_instagram_login(request));
   r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
+  r.get("/instagram_demo", (request) => handler_instagram_login(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
   r.get("/witness_github", (request) => handle_github_lookup(request));
