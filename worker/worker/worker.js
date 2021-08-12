@@ -303,7 +303,7 @@ async function handler_instagram_login(request) {
     const res = `<html>
     <body>
       <p>Instagram claim has been prepared.</p> 
-      <p>Please return to the previous window to save it to your profile!</p> 
+      <p>Please return to the previous page to save it to your profile!</p> 
     </body>
 </html>`;
 
@@ -326,7 +326,7 @@ async function handler_instagram_login(request) {
 async function handler_data_deletion(request) {
   return new Response(
     JSON.stringify({
-      code: `${+new Date.now()}`,
+      code: `${Date.now()}`,
       url: `https://tzprofiles.com/instagram-data-deletion`,
     })
   );
@@ -397,7 +397,7 @@ async function handleRequest(request) {
   r.get("/instagram_login", (request) => handler_instagram_login(request));
   r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
-  r.get("/instagram_demo", (request) => handler_instagram_login(request));
+  r.get("/instagram_demo", (request) => handler_instagram_demo(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
   r.get("/witness_github", (request) => handle_github_lookup(request));
