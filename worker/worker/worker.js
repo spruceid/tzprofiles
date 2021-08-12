@@ -278,6 +278,8 @@ async function handler_witness_instagram_post(request) {
       sig_type,
     );
 
+    await INSTAGRAM_CLAIM.delete(handle.toLowerCase())
+
     return new Response(vc, { status: 200, headers: headers });
   } catch (error) {
     return new Response(JSON.stringify(error), {
