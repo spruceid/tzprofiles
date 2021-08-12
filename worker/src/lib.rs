@@ -447,7 +447,7 @@ pub async fn gist_lookup(
             serde_json::Value::String(
                 jserr!(gist_result.history.last().ok_or("No version history found"))
                     .version
-                    .to_string(),
+                    .clone(),
             ),
         );
 
