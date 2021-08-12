@@ -420,10 +420,7 @@ pub async fn gist_lookup(
             serde_json::Value::String(Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)),
         );
 
-        evidence_map.insert(
-            "gistId".to_string(),
-            serde_json::Value::String(gist_id.to_string()),
-        );
+        evidence_map.insert("gistId".to_string(), serde_json::Value::String(gist_id));
 
         evidence_map.insert(
             "gistApiAddress".to_string(),
@@ -432,14 +429,7 @@ pub async fn gist_lookup(
 
         evidence_map.insert(
             "gistMessage".to_string(),
-            serde_json::Value::String(
-                gist_result
-                    .files
-                    .tzprofiles_verification
-                    .content
-                    .clone()
-                    .to_string(),
-            ),
+            serde_json::Value::String(gist_result.files.tzprofiles_verification.content.clone()),
         );
 
         evidence_map.insert(
