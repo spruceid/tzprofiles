@@ -444,7 +444,11 @@ pub async fn gist_lookup(
 
         evidence_map.insert(
             "gistVersion".to_string(),
-            serde_json::Value::String(gist_result.history.last().unwrap().version.to_string()),
+            serde_json::Value::String(
+                jserr!(gist_result.history.last().ok_or("No version history found"))
+                    .version
+                    .to_string(),
+            ),
         );
 
         let evidence = Evidence {
