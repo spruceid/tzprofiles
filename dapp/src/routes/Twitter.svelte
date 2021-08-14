@@ -180,7 +180,7 @@
           text="Verify Tweet"
           class="lg:w-48"
           onClick={() => {
-            next(async () => verifyTweet($userData, twitterHandle, tweetURL, await $wallet.getPKH())).then(
+            next(async () => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
                 let nextClaimMap = readClaimMap;
                 nextClaimMap.twitter.preparedContent = JSON.parse(vc);
