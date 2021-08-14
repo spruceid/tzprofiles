@@ -1,6 +1,7 @@
 export { default as Connect } from './Connect/Connect.svelte';
 export { default as Ethereum } from './Ethereum.svelte';
 export { default as Faq } from './Faq/Faq.svelte';
+export { default as GitHub} from './Github.svelte';
 export { default as Twitter } from './Twitter.svelte';
 export { default as Claims } from './Claims.svelte';
 export { default as BasicProfile } from './BasicProfile.svelte';

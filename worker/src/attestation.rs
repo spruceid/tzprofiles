@@ -24,7 +24,7 @@ pub fn attest(subject: SubjectType) -> String {
             s.key
         ),
         SubjectType::GitHub(s) => format!(
-            "IMPLEMENT {} {}",
+            "I am attesting that this GitHub handle {} is linked to the Tezos account {} for tzprofiles\n\n",
             s.id,
             s.key
         ),

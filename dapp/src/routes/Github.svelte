@@ -9,7 +9,6 @@
     CopyTextArea,
   } from 'components';
   import { alert, claimsStream, wallet, userData } from 'src/store';
-  import { verifyTweet } from 'src/twitter';
   import {
     contentToDraft,
     getFullAttestation,
@@ -25,15 +24,15 @@
     readClaimMap = x;
   });
 
-  let display = readClaimMap?.twitter?.display;
+  let display = readClaimMap?.github?.display;
 
-  let twitterHandle: string = '';
-  let tweetURL: string = '';
+  let githubHandle: string = '';
+  let gistUrl: string = '';
 
   let currentStep: number = 1;
   let lock: boolean = false;
-  let twitterClaim: string = '';
-  let tweetMessage: string = '';
+  let githubClaim: string = '';
+  let githubMessage: string = '';
 
   const next = (func: () => Promise<any> = async () => '') => {
     return new Promise<any>((resolve, _) => {
@@ -47,28 +46,60 @@
         .finally(() => (lock = false));
     });
   };
+
+  const verifyGist = async (): Promise<string> => {
+    try {
+
+      let ref = `${
+        process.env.WITNESS_URL
+      }/witness_github?pk=${
+        $userData.account.publicKey
+      }&handle=${
+        githubHandle
+      }&gistId=${
+        gistUrl.split("/")[gistUrl.split("/").length - 1]
+      }`;
+      let res = await fetch(ref);
+      if (res.ok) {
+        alert.set({
+          message: "You've completed your GitHub Profile successfully!",
+          variant: 'success',
+        });
+
+        return await res.text();
+      }
+      throw new Error(await res.text());
+    } catch (e) {
+      alert.set({
+        message: e.message || JSON.stringify(e),
+        variant: 'error',
+      });
+
+      throw e;
+    }
+  };
 </script>
 
 <BasePage
   class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
-    <VerificationDescription {display} iconColor="#00ACEE" />
+    <VerificationDescription {display} />
 
     <VerificationStep
       step={1}
       bind:currentStep
-      title="Enter Account Handle"
-      description="Enter your Twitter account handle to verify and include in a message signed via your wallet."
+      title="Enter Username"
+      description="Enter your GitHub username to verify and include in a message signed by your wallet."
     >
       <div class="flex w-full mt-8">
         <Input
-          placeholder="Enter your Twitter handle"
+          placeholder="Enter your GitHub username"
           class="mr-8"
-          prefix="@"
-          bind:value={twitterHandle}
+          prefix=""
+          bind:value={githubHandle}
           disabled={currentStep !== 1}
-          name="enter-twitter-handle"
+          name="enter-github-username"
         />
         {#if currentStep === 1}
           <PrimaryButton
@@ -76,17 +107,15 @@
             onClick={() => {
               next(async () => {
                 try {
-                  twitterClaim = await getPreparedUnsignedAttestation(
-                    {
-                      type: 'twitter',
-                      id: twitterHandle,
-                      key: $userData.account.address,
-                    }
-                  );
+                  githubClaim = await getPreparedUnsignedAttestation({
+                    type: 'github',
+                    id: githubHandle,
+                    key: $userData.account.address,
+                  });
                 } catch (err) {
                   alert.set({
                     variant: 'error',
-                    message: `Failed to create Twitter claim: ${
+                    message: `Failed to create GitHub claim: ${
                       err?.message || JSON.stringify(err)
                     }`,
                   });
@@ -94,7 +123,7 @@
               });
             }}
             class="ml-4 lg:ml-0"
-            disabled={twitterHandle.length < 4}
+            disabled={githubHandle.length < 4}
             small
           />
         {/if}
@@ -104,10 +133,10 @@
       step={2}
       bind:currentStep
       title="Signature Prompt"
-      description="Sign the message presented to you containing your Twitter handle and additional information."
+      description="Sign the message presented to you containing your GitHub handle and additional information."
     >
       {#if currentStep >= 2}
-        <CopyTextArea bind:value={twitterClaim} />
+        <CopyTextArea bind:value={githubClaim} />
       {/if}
       {#if currentStep === 2}
         <PrimaryButton
@@ -116,10 +145,10 @@
           onClick={() => {
             next(async () => {
               try {
-                tweetMessage = await getFullAttestation(
+                githubMessage = await getFullAttestation(
                   {
-                    type: 'twitter',
-                    id: twitterHandle,
+                    type: 'github',
+                    id: githubHandle,
                     key: $userData.account.address,
                   },
                   $userData,
@@ -135,23 +164,19 @@
     <VerificationStep
       step={3}
       bind:currentStep
-      title="Tweet Message"
-      description="Tweet out your signed messaged to create a link between your Tezos account and your Twitter profile."
+      title="Gist Message"
+      description="Post your signed message in any public Gist owned by your account, new or pre-existing, to create a link between your Tezos account and your GitHub profile."
     >
       {#if currentStep > 2}
-        <CopyTextArea bind:value={tweetMessage} />
+        <CopyTextArea bind:value={githubMessage} />
       {/if}
       {#if currentStep === 3}
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
-            text="Tweet"
+            text="Create New Gist"
             class="mt-8 lg:w-48 lg:mr-8 bg-blue-350"
             onClick={() => {
-              window.open(
-                `https://twitter.com/intent/tweet?text=${encodeURI(
-                  tweetMessage
-                )}`
-              );
+              window.open('https://gist.github.com/');
             }}
           />
 
@@ -167,31 +192,29 @@
       step={4}
       bind:currentStep
       title="Verify Signature"
-      description="Paste your tweet URL in order to verify it."
+      description="Paste the Gist URL referencing the signature in order to verify it. Remember, it must be a public Gist!"
     >
       {#if currentStep === 4}
         <Input
-          placeholder="Enter your tweet url"
+          placeholder="Enter your gist URL"
           class="my-8"
-          bind:value={tweetURL}
-          name="enter-tweet-url"
+          bind:value={gistUrl}
+          name="enter-gist-url"
         />
         <PrimaryButton
-          text="Verify Tweet"
+          text="Verify Gist"
           class="lg:w-48"
           onClick={() => {
-            next(async () => verifyTweet($userData, twitterHandle, tweetURL)).then(
-              (vc) => {
-                let nextClaimMap = readClaimMap;
-                nextClaimMap.twitter.preparedContent = JSON.parse(vc);
-                nextClaimMap.twitter.draft = contentToDraft(
-                  'twitter',
-                  nextClaimMap.twitter.preparedContent
-                );
-                claimsStream.set(nextClaimMap);
-                next();
-              }
-            );
+            next(verifyGist).then((vc) => {
+              let nextClaimMap = readClaimMap;
+              nextClaimMap.github.preparedContent = JSON.parse(vc);
+              nextClaimMap.github.draft = contentToDraft(
+                'github',
+                nextClaimMap.github.preparedContent
+              );
+              claimsStream.set(nextClaimMap);
+              next();
+            });
           }}
           disabled={lock}
         />
@@ -199,11 +222,11 @@
         <div class="flex items-center w-full py-2">
           <input
             class="w-full p-2 mr-4 overflow-x-auto rounded-lg resize-none bg-gray-650"
-            bind:value={tweetURL}
+            bind:value={gistUrl}
             readonly
             disabled
           />
-          <CopyButton text={tweetURL} />
+          <CopyButton text={gistUrl} />
         </div>
       {/if}
     </VerificationStep>
