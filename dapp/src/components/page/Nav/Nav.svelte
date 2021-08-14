@@ -23,7 +23,6 @@
     '/search',
     '/terms-of-service',
     '/view',
-    '/discord',
   ];
   const path = window.location.pathname;
   let isAdminDropdownOpen = false;

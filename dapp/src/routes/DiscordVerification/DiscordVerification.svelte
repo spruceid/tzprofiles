@@ -10,8 +10,8 @@
   import { validateDiscordHandle, verifyDiscord } from 'src/helpers/discord';
   import {
     contentToDraft,
-    getFullSocialMediaClaim,
-    getPreparedUnsignedMessage,
+    getFullAttestation,
+    getPreparedUnsignedAttestation,
   } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
@@ -84,10 +84,12 @@
             onClick={async () => {
               next(async () => {
                 try {
-                  discordClaim = await getPreparedUnsignedMessage(
-                    'discord',
-                    $userData,
-                    discordHandle
+                  discordClaim = await getPreparedUnsignedAttestation(
+                    {
+                      type: 'discord',
+                      pubkey: $userData.account.address,
+                      handle: discordHandle
+                    }
                   );
                 } catch (err) {
                   alert.set({
@@ -130,13 +132,15 @@
           class="mt-8 lg:w-48"
           onClick={async () => {
             next(async () => {
-              discordMessage = await getFullSocialMediaClaim(
-                'discord',
+              discordMessage = await getFullAttestation(
+                {
+                  type: 'discord',
+                  pubkey: $userData.account.address,
+                  handle: discordHandle
+                },
                 $userData,
-                discordHandle,
                 $wallet
               );
-              console.log(discordMessage);
             });
           }}
           disabled={lock}
@@ -194,7 +198,7 @@
           text="Verify Message"
           class="lg:w-48"
           onClick={() => {
-            next(() =>
+            next(async () =>
               verifyDiscord($userData, discordHandle, discordMessageUrl)
             ).then((vc) => {
               let nextClaimMap = readClaimMap;

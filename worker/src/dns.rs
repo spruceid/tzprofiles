@@ -61,7 +61,7 @@ pub async fn retrieve_txt_records(domain: String) -> Result<DnsResponse> {
     Ok(res)
 }
 
-pub fn build_dns_vc(pk: &JWK, domain: String) -> Result<Credential> {
+pub fn build_dns_vc(pk: &JWK, domain: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
       "@context": [
           "https://www.w3.org/2018/credentials/v1",

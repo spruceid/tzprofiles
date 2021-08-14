@@ -9,6 +9,8 @@ import {
   GlobeIcon,
 } from 'components';
 import * as tzp from 'tzprofiles';
+import { tzprofileChecker } from './publicAttestation';
+import type {variant as Attestation} from './publicAttestation'
 
 // TODO: Move to store?
 export const exhaustiveCheck = (arg: never) => {
@@ -397,142 +399,47 @@ export const isUnsavedDraft = (c: Claim): boolean => {
  * Social Media Functions
  */
 
-export type socialMediaClaimType = 'twitter' | 'discord' | 'dns';
-// | "instagram"
-
-const socialMediaTitle = (smType: socialMediaClaimType): string => {
-  switch (smType) {
-    case 'twitter':
-      return 'Twitter';
-    case 'discord':
-      return 'Discord';
-    case 'dns':
-      return 'DNS';
-  }
-
-  exhaustiveCheck(smType);
+export const getUnsignedAttestation = (attest: Attestation): string => {
+  return tzprofileChecker(attest)
 };
 
-const socialMediaHandle = (
-  smType: socialMediaClaimType,
-  handle: string
+export const getPreparedUnsignedAttestation = (
+  attest: Attestation
 ): string => {
-  switch (smType) {
-    case 'twitter':
-      return `@${handle}`;
-    case 'discord':
-      return `${handle}`;
-    case 'dns':
-      return `${handle}`;
-  }
-
-  exhaustiveCheck(smType);
+  return `Tezos Signed Message: ${getUnsignedAttestation(attest)}`;
 };
 
-const tzpHandle = (smType: socialMediaClaimType): string => {
-  switch (smType) {
-    case 'twitter':
-      return socialMediaHandle(smType, 'tzprofiles');
-    case 'discord':
-      return socialMediaHandle(smType, 'tzprofiles');
-    case 'dns':
-      return socialMediaHandle(smType, 'tzprofiles');
-  }
-
-  exhaustiveCheck(smType);
-};
-
-export const getUnsignedMessage = (
-  smType: socialMediaClaimType,
-  // TODO: Type better
+export const getSignedAttestation = async (
+  attest: Attestation,
+  // NOTE: We only need this for the adder, can we get it from the wallet?
   userData: any,
-  handle: string
-): string => {
-  let addr = userData?.account?.address;
-  if (!addr) {
-    throw new Error('Could not find Tezos address in user data');
-  }
-
-  return `I am attesting that this ${socialMediaTitle(
-    smType
-  )} handle ${socialMediaHandle(
-    smType,
-    handle
-  )} is linked to the Tezos account ${addr} for ${tzpHandle(smType)}`;
-};
-
-export const getPreparedUnsignedMessage = (
-  smType: socialMediaClaimType,
-  // TODO: Type better
-  userData: any,
-  handle: string
-): string => {
-  return `Tezos Signed Message: ${getUnsignedMessage(
-    smType,
-    userData,
-    handle
-  )}`;
-};
-
-export const getSignedClaim = async (
-  smType: socialMediaClaimType,
-  // TODO: Type better
-  userData: any,
-  handle: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  const msg = `${getPreparedUnsignedMessage(smType, userData, handle)}\n\n`;
+  const msg = `${getPreparedUnsignedAttestation(attest)}`;
   const sig = await signClaim(userData, msg, wallet);
-  return `sig:${sig}`;
+  switch (attest.type) {
+    case "dns":
+      return `tzprofiles-verification=${sig}`;
+    default:
+      return `sig:${sig}`;
+  }
 };
 
-export const getFullSocialMediaClaim = async (
-  smType: socialMediaClaimType,
+export const getFullAttestation = async (
+  attest: Attestation,
   // TODO: Type better
+  // NOTE: We only need this for the adder, can we get it from the wallet?
   userData: any,
-  handle: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  return `${getUnsignedMessage(
-    smType,
-    userData,
-    handle
-  )}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`;
-};
-
-// dns
-export const getUnsignedDnsMessage = (domain: string, userData: any) => {
-  let addr = userData?.account?.address;
-  return `${domain} is linked to ${addr}`;
-};
-
-export const getPreparedUnsignedDnsMessage = (
-  domain: string,
-  userData: any
-) => {
-  return `Tezos Signed Message: ${getUnsignedDnsMessage(domain, userData)}`;
-};
-
-export const getSignedDnsClaim = async (
-  userData: any,
-  domain: string,
-  wallet: BeaconWallet
-): Promise<string> => {
-  const unsignedMessage = `${getPreparedUnsignedDnsMessage(domain, userData)}`;
-  const sig = await signClaim(userData, unsignedMessage, wallet);
-  return `tzprofiles-verification=${sig}`;
-};
-
-export const getDnsFullSignedClaim = async (
-  userData: any,
-  domain: string,
-  wallet: BeaconWallet
-): Promise<string> => {
-  return `${getUnsignedDnsMessage(domain, userData)}=${await getSignedDnsClaim(
-    userData,
-    domain,
-    wallet
-  )}`;
+  // special case DNS.
+  // It's this or do a different check on the verifcation side.
+  switch (attest.type) {
+    case "dns":
+      return `${getUnsignedAttestation(attest)}=${await getSignedAttestation(attest, userData, wallet)}`;
+    default:
+      return `${getUnsignedAttestation(attest)}${await getSignedAttestation(attest, userData, wallet)}`;
+  }
 };
 
 /*
