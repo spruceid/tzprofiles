@@ -211,10 +211,9 @@ async function handler_dns_lookup(request) {
 
     const pk = decodeURI(searchParams.get("pk"));
     const domain = decodeURI(searchParams.get("domain"));
-    const message = decodeURI(searchParams.get("message"));
 
     await wasm_bindgen(wasm);
-    const dns_vc = await dns_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, domain, message);
+    const dns_vc = await dns_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, domain);
 
     return new Response(JSON.stringify(dns_vc), {
       status: 200,
@@ -346,3 +345,4 @@ async function handleRequest(request) {
   const resp = await r.route(request);
   return resp;
 }
+

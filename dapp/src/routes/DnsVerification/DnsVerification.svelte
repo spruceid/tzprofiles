@@ -11,9 +11,9 @@
   import { verifyDnsInfo, isValidUrl } from 'src/helpers/dns';
   import {
     contentToDraft,
-    getPreparedUnsignedDnsMessage,
-    getUnsignedDnsMessage,
-    getSignedDnsClaim,
+    getPreparedUnsignedAttestation,
+    getUnsignedAttestation,
+    getSignedAttestation,
   } from 'src/helpers';
   import { newDisplay, checkIsWebsiteLive } from 'src/helpers/claims';
   import type { ClaimMap } from 'src/helpers';
@@ -91,9 +91,12 @@
                   if (!isValid) {
                     throw new Error('Invalid domain');
                   }
-                  dnsClaim = getPreparedUnsignedDnsMessage(
-                    domainUrl,
-                    $userData
+                  dnsClaim = getPreparedUnsignedAttestation(
+                    {
+                      type: 'dns',
+                      domain: domainUrl,
+                      pubkey: $userData.account.address
+                    }
                   );
                 } catch (err) {
                   alert.set({
@@ -136,9 +139,13 @@
           class="mt-8 lg:w-48"
           onClick={async () => {
             next(async () => {
-              dnsMessage = await getSignedDnsClaim(
+              dnsMessage = await getSignedAttestation(
+                {
+                  type: 'dns',
+                  domain: domainUrl,
+                  pubkey: $userData.account.address
+                },
                 $userData,
-                domainUrl,
                 $wallet
               );
             });
@@ -202,11 +209,15 @@
             text="Verify Signature"
             class="mt-8 lg:w-48"
             onClick={() => {
-              next(() =>
+              next(async () =>
                 verifyDnsInfo(
                   domainUrl,
                   $userData,
-                  getUnsignedDnsMessage(domainUrl, $userData)
+                  getUnsignedAttestation({
+                    type: 'dns',
+                    domain: domainUrl,
+                    pubkey: $userData.account.address
+                  }),
                 )
               ).then((vc) => {
                 let nextClaimMap = readClaimMap;

@@ -12,8 +12,8 @@
   import { verifyTweet } from 'src/twitter';
   import {
     contentToDraft,
-    getFullSocialMediaClaim,
-    getPreparedUnsignedMessage,
+    getFullAttestation,
+    getPreparedUnsignedAttestation,
   } from 'src/helpers';
   import type { ClaimMap } from 'src/helpers';
   import { useNavigate } from 'svelte-navigator';
@@ -76,10 +76,12 @@
             onClick={() => {
               next(async () => {
                 try {
-                  twitterClaim = await getPreparedUnsignedMessage(
-                    'twitter',
-                    $userData,
-                    twitterHandle
+                  twitterClaim = await getPreparedUnsignedAttestation(
+                    {
+                      type: 'twitter',
+                      pubkey: $userData.account.address,
+                      handle: twitterHandle,
+                    }
                   );
                 } catch (err) {
                   alert.set({
@@ -114,10 +116,13 @@
           onClick={() => {
             next(async () => {
               try {
-                tweetMessage = await getFullSocialMediaClaim(
-                  'twitter',
+                tweetMessage = await getFullAttestation(
+                  {
+                    type: 'twitter',
+                    pubkey: $userData.account.address,
+                    handle: twitterHandle,
+                  },
                   $userData,
-                  twitterHandle,
                   $wallet
                 );
               } catch (err) {}
@@ -175,7 +180,7 @@
           text="Verify Tweet"
           class="lg:w-48"
           onClick={() => {
-            next(() => verifyTweet($userData, twitterHandle, tweetURL)).then(
+            next(async () => verifyTweet($userData, twitterHandle, tweetURL, await $wallet.getPKH())).then(
               (vc) => {
                 let nextClaimMap = readClaimMap;
                 nextClaimMap.twitter.preparedContent = JSON.parse(vc);

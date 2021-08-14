@@ -3,7 +3,7 @@ import { witnessUrl, alert } from 'src/store';
 export const verifyDnsInfo = async (
   domain: string,
   userData: any,
-  message: string
+  message: string,
 ) => {
   try {
     const res: any = await fetch(

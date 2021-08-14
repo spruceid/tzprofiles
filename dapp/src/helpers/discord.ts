@@ -12,7 +12,7 @@ export const discordMessageUrlToIds = (url: string): string[] => {
 export const verifyDiscord = async (
   userData,
   discordHandle,
-  discordMessageUrl
+  discordMessageUrl,
 ) => {
   let [channelId, messageId] = discordMessageUrlToIds(discordMessageUrl);
 

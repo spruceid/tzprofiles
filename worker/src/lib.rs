@@ -3,12 +3,15 @@ extern crate wasm_bindgen;
 extern crate log;
 use log::info;
 
+mod attestation;
 mod discord;
 mod dns;
 mod github;
 mod instagram;
 mod twitter;
 mod utils;
+
+use attestation::Attestation;
 
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
@@ -55,7 +58,7 @@ fn initialize_logging() {
 
 // This assumes a signature preceeded by it's source material, like format!("{}{}", sig_target, signature)
 // Also assumes there is at least one `\n` separating the two, but that it is included in the signature.
-// These assumptions hold for Twitter/Discord, but not Instagram
+// These assumptions hold for Twitter/Discord, but not Instagram/DNS
 pub fn extract_signature(post: String) -> Result<(String, String)> {
     let mut sig_target = "".to_string();
     for line in post.split('\n').collect::<Vec<&str>>() {
@@ -115,7 +118,6 @@ pub async fn witness_instagram_post(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-        // TODO: Add support for other signatures when expanding to Rebase:
         let mut vc = if sig_type == "tezos" {
             jserr!(instagram::build_tzp_instagram_vc(&pk, &ig_handle))
         } else {
@@ -161,6 +163,16 @@ pub async fn witness_instagram_post(
     })
 }
 
+fn trim_newlines(s: &mut String) {
+    if s.ends_with('\n') {
+        s.pop();
+        if s.ends_with('\r') {
+            s.pop();
+        }
+        return trim_newlines(s);
+    }
+}
+
 #[wasm_bindgen]
 pub async fn witness_tweet(
     secret_key_jwk: String,
@@ -172,6 +184,7 @@ pub async fn witness_tweet(
     initialize_logging();
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
+        let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
         let twitter_res = jserr!(twitter::retrieve_tweet(twitter_token, tweet_id.clone()).await);
         let mut vc = jserr!(twitter::build_twitter_vc(&pk, &twitter_handle));
@@ -185,6 +198,21 @@ pub async fn witness_tweet(
         }
 
         let (sig_target, sig) = jserr!(extract_signature(twitter_res.data[0].text.clone()));
+
+        let correct_attestation = attestation::Twitter {
+            handle: twitter_handle.clone(),
+            pubkey: pkh.clone(),
+        }.attest();
+
+        let v0_attestation = attestation::TwitterV0 {
+            handle: twitter_handle.clone(),
+            pubkey: pkh.clone(),
+        }.attest();
+
+        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone()) || trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone()) {
+            // jserr!(Err(anyhow!(format!("tweet did not match attestation requirement {} v {}", sig_target, correct_attestation))))
+            jserr!(Err(anyhow!(format!("{}{}", sig_target, correct_attestation))))
+        };
 
         let mut props = HashMap::new();
         props.insert(
@@ -242,6 +270,7 @@ pub async fn witness_discord(
 
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
+        let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
         let discord_res = jserr!(
             discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
@@ -263,6 +292,15 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(extract_signature(discord_res.content));
+        let mut correct_attestation = attestation::Discord {
+            handle: discord_handle.clone(),
+            pubkey: pkh.clone(),
+        }.attest();
+
+        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
+            jserr!(Err(anyhow!("Post did not match attestation requirement")))
+        };
+
         jserr!(verify_signature(&sig_target, &pk, &sig));
 
         let mut props = HashMap::new();
@@ -319,23 +357,27 @@ pub async fn dns_lookup(
     secret_key_jwk: String,
     public_key_tezos: String,
     domain: String,
-    message: String,
 ) -> Promise {
     initialize_logging();
 
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
+        let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
         let dns_result = jserr!(dns::retrieve_txt_records(domain.clone()).await);
 
-        let mut vc = jserr!(dns::build_dns_vc(&pk, domain));
+        let mut vc = jserr!(dns::build_dns_vc(&pk, &domain));
 
         let signature_to_resolve = jserr!(dns::find_signature_to_resolve(dns_result));
 
-        let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
+        let comp_target = attestation::Dns {
+            domain: domain,
+            pubkey: pkh,
+        }.attest();
 
-        jserr!(verify_signature(&message, &pk, &sig));
+        let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
+        jserr!(verify_signature(&comp_target, &pk, &sig));
 
         let mut props = HashMap::new();
         props.insert(
