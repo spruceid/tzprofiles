@@ -1,65 +1,42 @@
-pub trait Attestation {
-    fn attest(&self) -> String;
+pub struct Subject {
+    pub id: String,
+    pub key: String,
 }
 
-pub struct Discord {
-    pub handle: String,
-    pub pubkey: String
+pub enum SubjectType {
+    Discord(Subject),
+    Dns(Subject),
+    Github(Subject),
+    Twitter(Subject),
+    TwitterV0(Subject),
 }
 
-impl Attestation for Discord {
-    fn attest(&self) -> String {
-        format!(
+pub fn attest(subject: SubjectType) -> String {
+    match subject {
+        SubjectType::Discord(s) => format!(
             "I am attesting that this discord handle {} is linked to the Tezos account {} for tzprofiles\n\n",
-            self.handle,
-            self.pubkey
-        )
-    }
-}
-
-pub struct Dns {
-    pub domain: String,
-    pub pubkey: String
-}
-
-impl Attestation for Dns {
-    fn attest(&self) -> String {
-        format!(
+            s.id,
+            s.key
+        ),
+        SubjectType::Dns(s) => format!(
             "{} is linked to {}",
-            self.domain,
-            self.pubkey
-        )
-    }
-}
-
-pub struct Twitter {
-    pub handle: String,
-    pub pubkey: String
-}
-
-impl Attestation for Twitter {
-    fn attest(&self) -> String {
-        format!(
+            s.id,
+            s.key
+        ),
+        SubjectType::Github(s) => format!(
+            "IMPLEMENT {} {}",
+            s.id,
+            s.key
+        ),
+        SubjectType::Twitter(s) => format!(
             "I am attesting that this twitter handle @{} is linked to the Tezos account {} for @tzprofiles\n\n",
-            self.handle,
-            self.pubkey
-        )
-    }
-}
-
-pub struct TwitterV0 {
-    pub handle: String,
-    pub pubkey: String
-}
-
-impl Attestation for TwitterV0 {
-    fn attest(&self) -> String {
-        format!(
+            s.id,
+            s.key
+        ),
+        SubjectType::TwitterV0(s) => format!(
             "I am attesting that this twitter handle @{} is linked to the Tezos account {} for @tezos_profiles\n\n",
-            self.handle,
-            self.pubkey
-        )
+            s.id,
+            s.key
+        ) 
     }
 }
-
-

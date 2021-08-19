@@ -11,7 +11,7 @@ mod instagram;
 mod twitter;
 mod utils;
 
-use attestation::Attestation;
+use attestation::{Subject, SubjectType, attest};
 
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
@@ -199,19 +199,18 @@ pub async fn witness_tweet(
 
         let (sig_target, sig) = jserr!(extract_signature(twitter_res.data[0].text.clone()));
 
-        let correct_attestation = attestation::Twitter {
-            handle: twitter_handle.clone(),
-            pubkey: pkh.clone(),
-        }.attest();
+        let correct_attestation = attest(SubjectType::Twitter(Subject {
+            id: twitter_handle.clone(),
+            key: pkh.clone(),
+        }));
 
-        let v0_attestation = attestation::TwitterV0 {
-            handle: twitter_handle.clone(),
-            pubkey: pkh.clone(),
-        }.attest();
+        let v0_attestation = attest(SubjectType::TwitterV0( Subject {
+            id: twitter_handle.clone(),
+            key: pkh.clone(),
+        }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone()) || trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone()) {
-            // jserr!(Err(anyhow!(format!("tweet did not match attestation requirement {} v {}", sig_target, correct_attestation))))
-            jserr!(Err(anyhow!(format!("{}{}", sig_target, correct_attestation))))
+        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone()) && trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone()) {
+            jserr!(Err(anyhow!("Could not match attestation")))
         };
 
         let mut props = HashMap::new();
@@ -292,10 +291,10 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(extract_signature(discord_res.content));
-        let mut correct_attestation = attestation::Discord {
-            handle: discord_handle.clone(),
-            pubkey: pkh.clone(),
-        }.attest();
+        let mut correct_attestation = attest(SubjectType::Discord(Subject {
+            id: discord_handle.clone(),
+            key: pkh.clone(),
+        }));
 
         if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
             jserr!(Err(anyhow!("Post did not match attestation requirement")))
@@ -371,10 +370,10 @@ pub async fn dns_lookup(
 
         let signature_to_resolve = jserr!(dns::find_signature_to_resolve(dns_result));
 
-        let comp_target = attestation::Dns {
-            domain: domain,
-            pubkey: pkh,
-        }.attest();
+        let comp_target = attest(SubjectType::Dns (Subject {
+            id: domain,
+            key: pkh,
+        }));
 
         let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
         jserr!(verify_signature(&comp_target, &pk, &sig));
@@ -425,6 +424,7 @@ pub async fn gist_lookup(
     secret_key_jwk: String,
     public_key_tezos: String,
     gist_id: String,
+    gist_file_name: String,
     github_username: String,
 ) -> Promise {
     initialize_logging();
@@ -432,9 +432,10 @@ pub async fn gist_lookup(
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+        let pkh = jserr!(hash_public_key(&pk));
+        info!("About to get gist result");
 
         let gist_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
-
         let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
 
         // check for matching usernames
@@ -445,9 +446,33 @@ pub async fn gist_lookup(
             ))));
         }
 
+        let target = jserr!(gist_result
+        .files
+        .get(&gist_file_name)
+        .ok_or(anyhow!(format!("Could not find in gists: {}", &gist_file_name))));
+
+        let object = jserr!(target
+        .as_object()
+        .ok_or(anyhow!(format!("Badly formed API entry for gist {}", &gist_file_name))));
+
+        let str_val = jserr!(object.get("content")
+        .ok_or(anyhow!(format!("Badly formed API entry for gist {}", &gist_file_name))));
+
+        let post = jserr!(str_val.as_str()
+        .ok_or(anyhow!(format!("Content was not string for {}", &gist_file_name))));
+
         let (sig_target, sig) = jserr!(extract_signature(
-            gist_result.files.tzprofiles_verification.content.clone()
+            post.to_string()
         ));
+
+        let mut correct_attestation = attest(SubjectType::Github(Subject {
+            id: github_username.clone(),
+            key: pkh
+        }));
+
+        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
+            jserr!(Err(anyhow!("Attestation does not match correct format")));
+        }
 
         jserr!(verify_signature(&sig_target, &pk, &sig));
 
@@ -467,16 +492,6 @@ pub async fn gist_lookup(
         evidence_map.insert("gistId".to_string(), serde_json::Value::String(gist_id));
 
         evidence_map.insert(
-            "gistApiAddress".to_string(),
-            serde_json::Value::String("https://api.github.com/gists/".to_string()),
-        );
-
-        evidence_map.insert(
-            "gistMessage".to_string(),
-            serde_json::Value::String(gist_result.files.tzprofiles_verification.content.clone()),
-        );
-
-        evidence_map.insert(
             "gistVersion".to_string(),
             serde_json::Value::String(
                 jserr!(gist_result.history.last().ok_or("No version history found"))
@@ -487,7 +502,7 @@ pub async fn gist_lookup(
 
         let evidence = Evidence {
             id: None,
-            type_: vec!["GithubVerificationMessage".to_string()],
+            type_: vec!["GitHubVerification".to_string()],
             property_set: Some(evidence_map),
         };
         vc.evidence = Some(OneOrMany::One(evidence));
