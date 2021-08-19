@@ -170,7 +170,7 @@ function handleOptions(request) {
 async function handler_witness_tweet(request) {
   try {
     const { searchParams } = new URL(request.url);
-    let pk = decodeURI(searchParams.get("pk"));
+    let pk = decodeURIComponent(searchParams.get("pk"));
     let handle = searchParams.get("handle");
     let tweet_id = searchParams.get("tweet_id");
     const { witness_tweet } = wasm_bindgen;
@@ -187,7 +187,7 @@ async function handler_discord_message(request) {
     const { witness_discord } = wasm_bindgen;
     const { searchParams } = new URL(request.url);
 
-    const pk = decodeURI(searchParams.get("pk"));
+    const pk = decodeURIComponent(searchParams.get("pk"));
     const message_id = searchParams.get("messageId");
     const channel_id = searchParams.get("channelId");
     const discord_handle = searchParams.get("discordHandle");
@@ -209,7 +209,7 @@ async function handler_dns_lookup(request) {
     const { dns_lookup } = wasm_bindgen;
     const { searchParams } = new URL(request.url);
 
-    const pk = decodeURI(searchParams.get("pk"));
+    const pk = decodeURIComponent(searchParams.get("pk"));
     const domain = decodeURI(searchParams.get("domain"));
 
     await wasm_bindgen(wasm);
@@ -229,12 +229,13 @@ async function handle_github_lookup(request) {
     const { gist_lookup } = wasm_bindgen;
     const { searchParams } = new URL(request.url);
 
-    const pk = decodeURI(searchParams.get("pk"));
-    const gistId = decodeURI(searchParams.get("gistId"));
-    const githubUsername = decodeURI(searchParams.get("githubUsername"));
+    const pk = decodeURIComponent(searchParams.get("pk"));
+    const gistId = decodeURIComponent(searchParams.get("gistId"));
+    const gistFileName = decodeURIComponent(searchParams.get("filename"));
+    const githubUsername = decodeURIComponent(searchParams.get("handle"));
 
     await wasm_bindgen(wasm);
-    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, githubUsername);
+    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, gistFileName, githubUsername);
 
     return new Response(dns_vc, {
       status: 200,
