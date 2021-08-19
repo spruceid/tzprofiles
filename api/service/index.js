@@ -48,13 +48,8 @@ async function retrieve(address, network, query) {
         "https://kepler.tzprofiles.com",
         null
     );
-    let bcdOpts = {
-        base: "https://api.better-call.dev",
-        network: network_string(network),
-        version: 1
-    };
     let clientOpts = {
-        betterCallDevConfig: bcdOpts,
+        tzktBase: `https://api.${network_string(network)}.tzkt.io`,
         keplerClient: localKepler,
         hashContent: hashFunc,
         nodeURL: `https://${network}.smartpy.io`,
