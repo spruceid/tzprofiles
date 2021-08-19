@@ -66,6 +66,7 @@ pub fn build_gist_vc(pk: &JWK, github_username: String) -> Result<Credential> {
                       },
                       "gistId": "https://tzprofiles.com/gistId",
                       "gistVersion":  "https://tzprofiles.com/gistVersion",
+                      "handle": "https://tzprofiles.com/handle"
                   }
               }
           }

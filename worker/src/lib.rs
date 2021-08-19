@@ -239,8 +239,6 @@ pub async fn witness_tweet(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
-        info!("{:?}", vc);
-
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
@@ -433,7 +431,6 @@ pub async fn gist_lookup(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
         let pkh = jserr!(hash_public_key(&pk));
-        info!("About to get gist result");
 
         let gist_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
         let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
@@ -483,6 +480,10 @@ pub async fn gist_lookup(
         );
 
         let mut evidence_map = HashMap::new();
+        evidence_map.insert(
+            "handle".to_string(),
+            serde_json::Value::String(github_username),
+        );
 
         evidence_map.insert(
             "timestamp".to_string(),
@@ -502,7 +503,7 @@ pub async fn gist_lookup(
 
         let evidence = Evidence {
             id: None,
-            type_: vec!["GitHubVerification".to_string()],
+            type_: vec!["GitHubVerificationMessage".to_string()],
             property_set: Some(evidence_map),
         };
         vc.evidence = Some(OneOrMany::One(evidence));
