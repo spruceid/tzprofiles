@@ -231,13 +231,12 @@ async function handle_github_lookup(request) {
 
     const pk = decodeURIComponent(searchParams.get("pk"));
     const gistId = decodeURIComponent(searchParams.get("gistId"));
-    const gistFileName = decodeURIComponent(searchParams.get("filename"));
     const githubUsername = decodeURIComponent(searchParams.get("handle"));
 
     await wasm_bindgen(wasm);
-    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, gistFileName, githubUsername);
+    const vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, githubUsername);
 
-    return new Response(dns_vc, {
+    return new Response(vc, {
       status: 200,
       headers: headers,
     });
