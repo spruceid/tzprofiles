@@ -14,6 +14,6 @@
     "express": "^4.17.1",
     "kepler-sdk": "^0.9.0",
     "node-fetch": "^2.6.1",
-    "tzprofiles": "^1.6.0"
+    "tzprofiles": "^1.6.1"
   }
 }
