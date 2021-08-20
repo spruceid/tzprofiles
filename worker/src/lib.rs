@@ -11,7 +11,7 @@ mod instagram;
 mod twitter;
 mod utils;
 
-use attestation::{Subject, SubjectType, attest};
+use attestation::{attest, Subject, SubjectType};
 
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
@@ -204,12 +204,14 @@ pub async fn witness_tweet(
             key: pkh.clone(),
         }));
 
-        let v0_attestation = attest(SubjectType::TwitterV0( Subject {
+        let v0_attestation = attest(SubjectType::TwitterV0(Subject {
             id: twitter_handle.clone(),
             key: pkh.clone(),
         }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone()) && trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone()) {
+        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone())
+            && trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone())
+        {
             jserr!(Err(anyhow!("Could not match attestation")))
         };
 
@@ -368,7 +370,7 @@ pub async fn dns_lookup(
 
         let signature_to_resolve = jserr!(dns::find_signature_to_resolve(dns_result));
 
-        let comp_target = attest(SubjectType::Dns (Subject {
+        let comp_target = attest(SubjectType::Dns(Subject {
             id: domain,
             key: pkh,
         }));
@@ -422,7 +424,6 @@ pub async fn gist_lookup(
     secret_key_jwk: String,
     public_key_tezos: String,
     gist_id: String,
-    gist_file_name: String,
     github_username: String,
 ) -> Promise {
     initialize_logging();
@@ -438,41 +439,57 @@ pub async fn gist_lookup(
         // check for matching usernames
         if github_username.to_lowercase() != gist_result.owner.login.to_lowercase() {
             jserr!(Err(anyhow!(format!(
-                "Different Github username {} v. {}",
+                "Different GitHub username {} v. {}",
                 github_username, gist_result.owner.login
             ))));
         }
 
-        let target = jserr!(gist_result
-        .files
-        .get(&gist_file_name)
-        .ok_or(anyhow!(format!("Could not find in gists: {}", &gist_file_name))));
+        let mut done = false;
 
-        let object = jserr!(target
-        .as_object()
-        .ok_or(anyhow!(format!("Badly formed API entry for gist {}", &gist_file_name))));
+        for (_k, v) in gist_result.files {
+            let object = match v.as_object() {
+                None => continue,
+                Some(x) => x,
+            };
 
-        let str_val = jserr!(object.get("content")
-        .ok_or(anyhow!(format!("Badly formed API entry for gist {}", &gist_file_name))));
+            let str_val = match object.get("content") {
+                None => continue,
+                Some(x) => x,
+            };
 
-        let post = jserr!(str_val.as_str()
-        .ok_or(anyhow!(format!("Content was not string for {}", &gist_file_name))));
+            let post = match str_val.as_str() {
+                None => continue,
+                Some(x) => x,
+            };
 
-        let (sig_target, sig) = jserr!(extract_signature(
-            post.to_string()
-        ));
+            let (sig_target, sig) = match extract_signature(post.to_string()) {
+                Err(_) => continue,
+                Ok((x, y)) => (x, y),
+            };
 
-        let mut correct_attestation = attest(SubjectType::Github(Subject {
-            id: github_username.clone(),
-            key: pkh
-        }));
+            let mut correct_attestation = attest(SubjectType::GitHub(Subject {
+                id: github_username.clone(),
+                key: pkh.clone(),
+            }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
-            jserr!(Err(anyhow!("Attestation does not match correct format")));
+            if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
+                continue;
+            }
+
+            match verify_signature(&sig_target, &pk, &sig) {
+                Ok(_) => {
+                    done = true;
+                    break;
+                }
+                Err(_) => {}
+            };
         }
 
-        jserr!(verify_signature(&sig_target, &pk, &sig));
-
+        if !done {
+            jserr!(Err(anyhow!(
+                "Did not find file with valid signature in given Gist"
+            )))
+        }
         let mut props = HashMap::new();
         props.insert(
             "publicKeyJwk".to_string(),

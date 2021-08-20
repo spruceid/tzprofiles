@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 
 #[derive(Deserialize, Debug)]
-pub struct GithubResponse {
+pub struct GitHubResponse {
     // This value here is { content: String }
     pub files: Map<String, serde_json::value::Value>,
     // TODO: Use serde_with and get better typing?
@@ -30,7 +30,7 @@ pub struct History {
     pub version: String,
 }
 
-pub async fn retrieve_gist_message(gist_id: String) -> Result<GithubResponse> {
+pub async fn retrieve_gist_message(gist_id: String) -> Result<GitHubResponse> {
     let client = reqwest::Client::new();
     let request_url = format!("https://api.github.com/gists/{}", gist_id);
 

@@ -6,7 +6,7 @@ pub struct Subject {
 pub enum SubjectType {
     Discord(Subject),
     Dns(Subject),
-    Github(Subject),
+    GitHub(Subject),
     Twitter(Subject),
     TwitterV0(Subject),
 }
@@ -23,7 +23,7 @@ pub fn attest(subject: SubjectType) -> String {
             s.id,
             s.key
         ),
-        SubjectType::Github(s) => format!(
+        SubjectType::GitHub(s) => format!(
             "IMPLEMENT {} {}",
             s.id,
             s.key
