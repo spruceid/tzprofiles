@@ -123,7 +123,7 @@
               });
             }}
             class="ml-4 lg:ml-0"
-            disabled={githubHandle.length < 4}
+            disabled={githubHandle.length < 1}
             small
           />
         {/if}
