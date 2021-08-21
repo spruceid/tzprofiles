@@ -87,8 +87,8 @@
                   discordClaim = await getPreparedUnsignedAttestation(
                     {
                       type: 'discord',
-                      pubkey: $userData.account.address,
-                      handle: discordHandle
+                      id: discordHandle,
+                      key: $userData.account.address,
                     }
                   );
                 } catch (err) {
@@ -135,8 +135,8 @@
               discordMessage = await getFullAttestation(
                 {
                   type: 'discord',
-                  pubkey: $userData.account.address,
-                  handle: discordHandle
+                  id: discordHandle,
+                  key: $userData.account.address,
                 },
                 $userData,
                 $wallet

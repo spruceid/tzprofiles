@@ -1,5 +1,5 @@
 <script>
-  import { BrandIcon, TwitterIcon, GithubIcon } from 'components';
+  import { BrandIcon, TwitterIcon, GitHubIcon } from 'components';
 </script>
 
 <div class="items-center text-white sm:flex-row flex-col flex sm:px-12 px-8">
@@ -20,8 +20,8 @@
     href="https://github.com/spruceid/"
     target="_blank"
   >
-    <GithubIcon class="h-8 mr-2" />
-    Github
+    <GitHubIcon class="h-8 mr-2" />
+    GitHub
   </a>
   <a
     class="flex items-center"

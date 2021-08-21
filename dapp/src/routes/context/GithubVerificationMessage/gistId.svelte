@@ -9,21 +9,17 @@
 </script>
 
 <div class="table-font">
-  <h1>GitHub Verification Message :: handle</h1>
-  <h1>Twitter Verification Public Tweet :: handle</h1>
+  <h1>GitHub Verification Message :: gistId</h1>
   <div class="px-2">
     <p>
-      <b>handle</b> is a property of
-      <Link to="/TwitterVerificationPublicTweet"
-        >Twitter Verification Public Tweet</Link
-      >
-
+      <b>tweetId</b> is a property of
       <Link to="/GitHubVerificationMessage"
         >GitHub Verification Message</Link
       >
     </p>
     <p>
-      It represents the handle of a Twitter or Github account, without the leading '@'
+      It represents the gistId number (as text) of the gist containing a
+      cryptographic signature
     </p>
     <p>
       Expected to have the value of <a href="https://schema.org/Text">Text</a>

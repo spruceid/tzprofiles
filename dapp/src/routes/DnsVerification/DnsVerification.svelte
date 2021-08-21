@@ -94,8 +94,8 @@
                   dnsClaim = getPreparedUnsignedAttestation(
                     {
                       type: 'dns',
-                      domain: domainUrl,
-                      pubkey: $userData.account.address
+                      key: $userData.account.address,
+                      id: domainUrl,
                     }
                   );
                 } catch (err) {
@@ -142,8 +142,8 @@
               dnsMessage = await getSignedAttestation(
                 {
                   type: 'dns',
-                  domain: domainUrl,
-                  pubkey: $userData.account.address
+                  id: domainUrl,
+                  key: $userData.account.address,
                 },
                 $userData,
                 $wallet
@@ -215,8 +215,8 @@
                   $userData,
                   getUnsignedAttestation({
                     type: 'dns',
-                    domain: domainUrl,
-                    pubkey: $userData.account.address
+                    id: domainUrl,
+                    key: $userData.account.address
                   }),
                 )
               ).then((vc) => {

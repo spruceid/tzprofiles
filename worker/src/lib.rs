@@ -163,16 +163,6 @@ pub async fn witness_instagram_post(
     })
 }
 
-fn trim_newlines(s: &mut String) {
-    if s.ends_with('\n') {
-        s.pop();
-        if s.ends_with('\r') {
-            s.pop();
-        }
-        return trim_newlines(s);
-    }
-}
-
 #[wasm_bindgen]
 pub async fn witness_tweet(
     secret_key_jwk: String,
@@ -209,8 +199,7 @@ pub async fn witness_tweet(
             key: pkh.clone(),
         }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone())
-            && trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone())
+        if sig_target != correct_attestation && sig_target != v0_attestation
         {
             jserr!(Err(anyhow!("Could not match attestation")))
         };
@@ -291,12 +280,12 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(extract_signature(discord_res.content));
-        let mut correct_attestation = attest(SubjectType::Discord(Subject {
+        let correct_attestation = attest(SubjectType::Discord(Subject {
             id: discord_handle.clone(),
             key: pkh.clone(),
         }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
+        if sig_target != correct_attestation {
             jserr!(Err(anyhow!("Post did not match attestation requirement")))
         };
 
@@ -467,12 +456,12 @@ pub async fn gist_lookup(
                 Ok((x, y)) => (x, y),
             };
 
-            let mut correct_attestation = attest(SubjectType::GitHub(Subject {
+            let correct_attestation = attest(SubjectType::GitHub(Subject {
                 id: github_username.clone(),
                 key: pkh.clone(),
             }));
 
-            if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
+            if sig_target != correct_attestation {
                 continue;
             }
 

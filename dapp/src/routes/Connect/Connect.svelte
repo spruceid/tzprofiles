@@ -59,6 +59,15 @@
           class="my-4"
           onClick={async () => {
             await initWallet();
+            const scrollY = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+
+            document.body.style.height = '100%';
+            document.body.style["overflow-y"] = 'auto';
+            document.body.style["padding-right"] = '0px';
+
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
             navigate('/connect');
           }}
           text="Connect Wallet"
