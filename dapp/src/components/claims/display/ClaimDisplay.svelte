@@ -4,7 +4,7 @@
   import Twitter from './Twitter.svelte';
   import Discord from './Discord.svelte';
   import Dns from './Dns.svelte';
-  import GitHub from './Github.svelte';
+  import GitHub from './GitHub.svelte';
   import type { Claim } from 'src/helpers';
 
   export let claim: Claim;
