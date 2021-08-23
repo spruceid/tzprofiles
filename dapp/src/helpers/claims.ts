@@ -549,17 +549,19 @@ export const getFullAttestation = async (
   userData: any,
   wallet: BeaconWallet
 ): Promise<string> => {
-  // special case DNS.
-  // It's this or do a different check on the verifcation side.
   switch (subject.type) {
+    // Equals seperated.
     case "dns":
       return `${getUnsignedAttestation(subject)}=${await getSignedAttestation(subject, userData, wallet)}`;
+    // User only posts the sig.
+    case "instagram":
+      return `${await getSignedAttestation(subject, userData, wallet)}`;
+    // User posts sig content and sig, signing the seperator used:
     case "discord":
     case "github":
     case "twitter":
       return `${getUnsignedAttestation(subject)}${await getSignedAttestation(subject, userData, wallet)}`;
-    case "instagram":
-      return `${await getSignedAttestation(subject, userData, wallet)}`;
+
   }
 
   exhaustiveCheck(subject.type);
