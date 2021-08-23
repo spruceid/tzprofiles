@@ -557,8 +557,9 @@ export const getFullAttestation = async (
     case "discord":
     case "github":
     case "twitter":
-    case "instagram":
       return `${getUnsignedAttestation(subject)}${await getSignedAttestation(subject, userData, wallet)}`;
+    case "instagram":
+      return `${await getSignedAttestation(subject, userData, wallet)}`;
   }
 
   exhaustiveCheck(subject.type);
