@@ -12,9 +12,9 @@
 
   import {
     contentToDraft,
-    getPreparedUnsignedMessage,
-    getSignedClaim,
-    getUnsignedMessage,
+    getUnsignedAttestation,
+    getPreparedUnsignedAttestation,
+    getSignedAttestation,
   } from 'src/helpers';
   import type { ClaimMap, ClaimUIAssets } from 'src/helpers';
 
@@ -103,10 +103,12 @@
             onClick={() => {
               next(async () => {
                 try {
-                  instagramClaim = getPreparedUnsignedMessage(
-                    'instagram',
-                    $userData,
-                    instagramHandle
+                  instagramClaim = getPreparedUnsignedAttestation(
+                    {
+                      type: 'instagram',
+                      id: instagramHandle,
+                      key: $userData.account.address,
+                    }
                   );
                 } catch (err) {
                   alert.set({
@@ -149,10 +151,13 @@
           onClick={() => {
             next(async () => {
               try {
-                instagramCaption = await getSignedClaim(
-                  'instagram',
+                instagramCaption = await getSignedAttestation(
+                  {
+                    type: 'instagram',
+                    id: instagramHandle,
+                    key: $userData.account.address,
+                  },
                   $userData,
-                  instagramHandle,
                   $wallet
                 );
               } catch (e) {

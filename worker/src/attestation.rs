@@ -30,7 +30,7 @@ pub fn attest(subject: SubjectType) -> String {
             s.key
         ),
         SubjectType::Instagram(s) => format!(
-            "I am attesting that this Instagram handle {} is linked to the Tezos account {} for tzprofiles"
+            "I am attesting that this Instagram handle {} is linked to the Tezos account {} for tzprofiles",
             s.id,
             s.key
         ),
