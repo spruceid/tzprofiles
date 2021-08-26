@@ -250,9 +250,7 @@ async function handler_witness_instagram_post(request) {
     const { searchParams } = new URL(request.url);
 
     let pk = decodeURIComponent(searchParams.get("pk"));
-    let sig_target = decodeURIComponent(searchParams.get("sig_target"));
     let handle = searchParams.get("handle");
-    let sig_type = searchParams.get("sig_type");
 
     let kvEntry = await INSTAGRAM_CLAIM.get(handle.toLowerCase());
     if (!kvEntry) {
@@ -273,8 +271,6 @@ async function handler_witness_instagram_post(request) {
       handle,
       kvObj.link,
       kvObj.sig,
-      sig_target,
-      sig_type,
     );
 
     return new Response(vc, { status: 200, headers: headers });
@@ -295,7 +291,7 @@ async function handler_instagram_login(request) {
     const { handle_instagram_login } = wasm_bindgen;
     await wasm_bindgen(wasm);
 
-    let kvEntry = await handle_instagram_login(IG_APP_ID, IG_APP_SECRET, IG_REDIRECT_URI, code);
+    let kvEntry = await handle_instagram_login(IG_APP_ID, IG_APP_SECRET, IG_REDIRECT_URI_DEV, code);
     let kvObj = JSON.parse(kvEntry);
 
     await INSTAGRAM_CLAIM.put(kvObj.key.toLowerCase(), JSON.stringify(kvObj.val));
