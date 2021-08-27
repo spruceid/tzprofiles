@@ -288,10 +288,16 @@ async function handler_instagram_login(request) {
 
     const code = searchParams.get("code");
 
-    const { handle_instagram_login } = wasm_bindgen;
+    const { handle_instagram_tzp_login } = wasm_bindgen;
     await wasm_bindgen(wasm);
 
-    let kvEntry = await handle_instagram_login(IG_APP_ID, IG_APP_SECRET, IG_REDIRECT_URI_DEV, code);
+    let kvEntry = await handle_instagram_tzp_login(
+      IG_APP_ID, 
+      IG_APP_SECRET, 
+      IG_REDIRECT_URI, 
+      code
+    );
+
     let kvObj = JSON.parse(kvEntry);
 
     await INSTAGRAM_CLAIM.put(kvObj.key.toLowerCase(), JSON.stringify(kvObj.val));
@@ -329,51 +335,81 @@ async function handler_data_deletion(request) {
 }
 
 const igDemoPage = `<html>
-	<head>
-		<title>Instagram Claim Demo</title>
-	</head>
-	<body>
-		<div id="sig-cont">
-			<p>1) Paste the following as a line in a post caption (new or edited)</p>
-			<pre>__sig:edsigtkoTNTvGu7wdqwFai8a5rKBB7RX5oMS95DMSGGmy97PaTgNerFTTULowf9WaWzmXbHYfypwHBWm5HRhzoBQNP3iGqWw2EQ</pre>
-		</div>
-		<div id="handle-cont">
-			<p>2)
-				<label>Enter Your Instagram Handle</lable>
-				<input type="text" id="handle"/>
-			</p>
-		</div>
-		<div id="auth-cont">
-			<p>3)
-				<a href="https://api.instagram.com/oauth/authorize?client_id=210009324358917&redirect_uri=https://witness.tzprofiles.com/instagram_login&scope=user_profile,user_media&response_type=code" target="_blank">Visit this link to authorize the post look up</a>
-			</p>
-		</div>
-		<div id="verif-cont">
-		  <p>4) <button id="verif">Click to verify post contains target caption</button></p>
-		  <div id="result-cont"><p>The verification button has not been hit</p></div>
-		</div>
-		<script>
-			function docReady(fn) {
-				if (document.readyState === "complete" || document.readyState === "interactive") {
-					setTimeout(fn, 1);
-				} else {
-					document.addEventListener("DOMContentLoaded", fn);
-				}
-			}
-			docReady(() => {
-				let button = document.getElementById("verif");
-				button.onclick = async () => {
-				  let url = "https://witness.tzprofiles.com/witness_instagram_post?pk=edpkuT9tEXKEVtF4t8AnDRqZXx6DM1KAqXy3LEW5a2rB5AdCbaRk2h&handle=" + document.getElementById("handle").value.trim() + "&sig_type=tezos&sig_target=I%20am%20attesting%20that%20this%20Instagram%20handle%20@evalapplyquote%20is%20linked%20to%20the%20Tezos%20account%20tz1eShazoVt7oZBWZkeQtrGjeaVGCC1Fubmw%20for%20Tezos%20Profiles"
-				  let res = await fetch(url);
-				  if (res.ok) {
-					document.getElementById("result-cont").innerHTML = "You have been verified! :)"
-				  } else {
-					document.getElementById("result-cont").innerHTML = "Verification failed :("
-				  }
-				}
-			})
-		</script>
-	</body>
+<head>
+    <title>Instagram Claim Demo</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"
+        integrity="sha512-UNM1njAgOFUa74Z0bADwAq8gbTcqZC8Ej4xPSzpnh0l6KMevwvkBvbldF9uR++qKeJ+MOZHRjV1HZjoRvjDfNQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+    <div>
+        <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h1>Instagram Account Ownership Witness</h1>
+            <div id="sig-cont" class="mb-4">
+                <p>1) Paste the following as a line in a post caption (new or edited)</p>
+                <pre id="uuid"></pre>
+            </div>
+            <div id="handle-container" class="mb-4">
+                    <label for="handle" class="block text-gray-700 "> 
+                      2) Enter Your Instagram Handle
+                    </label>
+                    <input 
+                      type="text" 
+                      id="handle" 
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      placeholder="Handle"
+                    />
+            </div>
+            <div id="auth-cont" class="mb-4">
+                <p>3)
+                    Visit <a 
+                        id="outlink"
+                        class="font-bold text-sm text-blue-500 hover:text-blue-800"
+                        href=""
+                        target="_blank">this link</a> to authorize the post look up.
+                </p>
+            </div>
+            <div id="verif-cont" class="mb-4">
+                <p>4) Click to verify post contains target caption: <button 
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        id="witness">Witness</button></p>
+            </div>
+            <div id="verification-result"></div>
+        </form>
+    </div>
+    <script defer>
+        function docReady(fn) {
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                setTimeout(fn, 1);
+            } else {
+                document.addEventListener("DOMContentLoaded", fn);
+            }
+        }
+        docReady(() => {
+            let button = document.getElementById("witness");
+            let uuidElm = document.getElementById("uuid");
+            let outlineElm = document.getElementById("outlink");
+            let verification = 'uuid:' + uuid.v4();
+            let outlink = "https://api.instagram.com/oauth/authorize?client_id=210009324358917&redirect_uri=" + window.location.origin + "/demo_instagram_login&scope=user_profile,user_media&response_type=code"
+            uuidElm.innerHTML = verification;
+            outlineElm.href = outlink;
+
+            button.onclick = async (e) => {
+                e.preventDefault();
+                let url = window.location.origin + "/demo_instagram_witness?&handle=" + document.getElementById("handle").value.trim() + "&uuid=" + verification.slice(5)
+                let res = await fetch(url);
+                if (res.ok) {
+                    document.getElementById("verification-result").innerHTML = "Account ownership witnessed!"
+                } else {
+                    document.getElementById("verification-result").innerHTML = "Verification failed"
+                }
+            }
+        })
+    </script>
+</body>
+
 </html>`;
 
 async function handler_instagram_demo(_request) {
@@ -386,14 +422,89 @@ async function handler_instagram_demo(_request) {
   });
 }
 
+async function handler_instagram_demo_login(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    const code = searchParams.get("code");
+
+    const { handle_demo_instagram_login } = wasm_bindgen;
+    await wasm_bindgen(wasm);
+
+    let kvEntry = await handle_demo_instagram_login(
+      IG_APP_ID, 
+      IG_APP_SECRET, 
+      IG_DEMO_REDIRECT_URI, 
+      code
+    );
+    let kvObj = JSON.parse(kvEntry);
+
+    await INSTAGRAM_CLAIM.put(kvObj.key.toLowerCase(), JSON.stringify(kvObj.val));
+
+    const res = `<html>
+    <body>
+      <p>Instagram account ownership has been witnessed.</p> 
+      <p>Please return to the previous page to redeem your proof of the verification.</p> 
+    </body>
+</html>`;
+
+    return new Response(res, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "text/html",
+      },
+    });
+  } catch (error) {
+    let res = {
+      message: error?.message || error,
+    };
+
+    return new Response(JSON.stringify(res), { status: 500, headers: headers });
+  }
+}
+
+async function handler_instagram_demo_witness(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    let uuid = decodeURIComponent(searchParams.get("uuid"));
+    let handle = searchParams.get("handle");
+
+    let kvEntry = await INSTAGRAM_CLAIM.get(handle.toLowerCase());
+    if (!kvEntry) {
+      throw new Error(`Could not find claim for ${handle}`);
+    }
+
+    let kvObj = JSON.parse(kvEntry);
+    if (!kvObj?.link || !kvObj?.sig) {
+      throw new Error(`Could not find claim for ${handle}`);
+    }
+
+    if (kvObj.sig !== uuid) {
+      throw new Error(`Mismatched UUIDs, ${kvObj.sig} v. ${uuid}`)
+    }
+
+    return new Response(kvEntry, { status: 200, headers: headers });
+  } catch (error) {
+    return new Response(JSON.stringify(error), {
+      status: 500,
+      headers: headers,
+    });
+  }
+}
+
+
 async function handleRequest(request) {
   const r = new Router();
+  r.get("/demo_instagram_ui", (request) => handler_instagram_demo(request));
+  r.get("/demo_instagram_login", (request) => handler_instagram_demo_login(request));
+  r.get("/demo_instagram_witness", (request) => handler_instagram_demo_witness(request));
   r.get("/witness_tweet", (request) => handler_witness_tweet(request));
-  r.get("/witness_instagram_post", (request) => handler_witness_instagram_post(request));
+  r.get("/witness_instagram", (request) => handler_witness_instagram_post(request));
   r.get("/instagram_login", (request) => handler_instagram_login(request));
   r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
-  r.get("/instagram_demo", (request) => handler_instagram_demo(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
   r.get("/witness_github", (request) => handle_github_lookup(request));

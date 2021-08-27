@@ -26,7 +26,11 @@
     readClaimMap = x;
   });
 
-  const instagramAuthLink = `https://api.instagram.com/oauth/authorize?client_id=${process.env.IG_APP_ID}&redirect_uri=${process.env.WITNESS_URL}/instagram_login&scope=user_profile,user_media&response_type=code`;
+  const instagramAuthLink = `https://api.instagram.com/oauth/authorize?client_id=${
+    process.env.IG_APP_ID
+  }&redirect_uri=${
+    process.env.WITNESS_URL
+  }/instagram_login&scope=user_profile,user_media&response_type=code`;
 
   let display: ClaimUIAssets = readClaimMap?.instagram?.display;
 
@@ -45,7 +49,7 @@
 
     try {
       let res = await fetch(
-        `${witnessUrl}/witness_instagram_post?pk=${
+        `${witnessUrl}/witness_instagram?pk=${
           $userData.account.publicKey
         }&handle=${
           instagramHandle.trim().replace('@', '')

@@ -107,7 +107,8 @@ module.exports = {
 		}),
 		new webpack.EnvironmentPlugin({
 			IG_APP_ID: "210009324358917",
-			WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
+			// WITNESS_URL: "https://tzprofiles_witness.rebase-verifier.workers.dev",
+			WITNESS_URL: "https://1051-2601-281-8100-edb0-57e-79ff-c355-27de.ngrok.io",
 			KEPLER_URL: "https://kepler.tzprofiles.com",
 			EXPLAINER_URL: "https://explainer.tzprofiles.com"
 		})
