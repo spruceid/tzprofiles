@@ -1,5 +1,6 @@
 export { default as GitHubIcon } from '../icons/GithubIcon.svelte';
 export { default as TwitterIcon } from './TwitterIcon.svelte';
+export { default as InstagramIcon } from './InstagramIcon.svelte';
 export { default as EthereumIcon } from './EthereumIcon.svelte';
 export { default as BackArrowIcon } from './BackArrowIcon.svelte';
 export { default as Cat } from './Cat.svelte';

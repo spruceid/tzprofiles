@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { useParams } from 'svelte-navigator';
   import {
+    findAddressFromDomain,
     searchClaims,
     searchAddress,
     defaultSearchOpts,
@@ -18,16 +19,29 @@
 
   $: fetching = false;
 
-  onMount(() => {
-    // TODO: Generalize over claim types?
-    if (!$searchClaims?.basic.content || !$searchClaims?.twitter.content) {
+  onMount(async () => {
+    if (Object.values($searchClaims).filter((x) => !!x.content).length === 0) {
       network.set(
         ($params.network as NetworkType) || ('mainnet' as NetworkType)
       );
       fetching = true;
-      search($params.address, defaultSearchOpts).finally(() => {
+
+      let tempAddress = $searchAddress.trim();
+
+      try {
+        if (tempAddress.endsWith('.tez')) {
+          tempAddress = await findAddressFromDomain(tempAddress);
+        }
+
+        await search(tempAddress, defaultSearchOpts);
+      } catch (err) {
+        alert.set({
+          message: err?.message || `Failed in search ${JSON.stringify(err)}`,
+          variant: 'error',
+        });
+      } finally {
         fetching = false;
-      });
+      }
     }
   });
 </script>

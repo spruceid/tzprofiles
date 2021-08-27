@@ -15,6 +15,7 @@
   const otherClaims: Array<Claim> = Object.values(claimsMap).filter(
     (x) => x.type !== 'basic' && x.content
   );
+
   const params = useParams();
 
   let isCredentialSourceDropdownOpen = false;

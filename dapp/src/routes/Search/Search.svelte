@@ -9,9 +9,8 @@
   } from 'components';
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
-  import { defaultSearchOpts, search, network, alert } from 'src/store';
+  import { defaultSearchOpts, search, network, alert, findAddressFromDomain } from 'src/store';
   import type NetworkType from 'enumsNetworkType';
-  import { findAddressFromDomain } from './searchHelper';
   import './search.scss';
 
   const navigate = useNavigate();

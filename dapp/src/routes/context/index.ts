@@ -1,11 +1,14 @@
-export { default as Handle } from './TwitterVerificationPublicTweet/handle.svelte';
-export { default as Timestamp } from './TwitterVerificationPublicTweet/timestamp.svelte';
+export { default as Handle } from './handle.svelte';
+export { default as Timestamp } from './timestamp.svelte';
+export { default as PostUrl } from './InstagramVerificationPublicPost/postUrl.svelte';
 export { default as TweetId } from './TwitterVerificationPublicTweet/tweetId.svelte';
 export { default as BasicProfileContext } from './BasicProfile.svelte';
 export { default as EthereumControl } from './EthereumControl.svelte';
 export { default as EthereumAddressControl } from './EthereumAddressControl.svelte';
 export { default as GitHubVerification } from './GitHubVerification.svelte';
 export { default as GitHubVerificationMessage } from './GitHubVerificationMessage.svelte';
+export { default as InstagramVerification } from './InstagramVerification.svelte';
+export { default as InstagramVerificationPublicPost } from './InstagramVerificationPublicPost.svelte';
 export { default as TwitterVerification } from './TwitterVerification.svelte';
 export { default as TwitterVerificationPublicTweet } from './TwitterVerificationPublicTweet.svelte';
 export { default as Address } from './EthereumAddressControl/address.svelte';
