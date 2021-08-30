@@ -94,7 +94,7 @@
               });
             }}
             class="ml-4 lg:ml-0"
-            disabled={twitterHandle.length < 4}
+            disabled={twitterHandle.length < 1}
             small
           />
         {/if}
