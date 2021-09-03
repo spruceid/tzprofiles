@@ -75,32 +75,46 @@ pub fn extract_signature(post: String) -> Result<(String, String)> {
 }
 
 #[wasm_bindgen]
-pub async fn handle_instagram_login(
+pub async fn handle_tzp_instagram_login(
     client_id: String,
     client_secret: String,
     redirect_uri: String,
     code: String,
 ) -> Promise {
     future_to_promise(async move {
-        let auth = instagram::Auth {
-            client_id,
-            client_secret,
-            redirect_uri,
-            code,
-        };
+        let kv = jserr!(
+            instagram::handle_login_flow(
+                client_id,
+                client_secret,
+                redirect_uri,
+                code,
+                instagram::LoginFlow::TZP,
+            )
+            .await
+        );
+        return Ok(jserr!(serde_json::to_string(&kv)).into());
+    })
+}
 
-        let access_token: String = jserr!(instagram::trade_code_for_token(auth).await);
-        let user = jserr!(instagram::retrieve_user(&access_token).await);
-        let (sig, permalink) = jserr!(instagram::retrieve_post(&user, &access_token).await);
-
-        Ok(jserr!(serde_json::to_string(&instagram::KVWrapper {
-            key: user.username,
-            val: instagram::KVInner {
-                sig: sig,
-                link: permalink,
-            },
-        }))
-        .into())
+#[wasm_bindgen]
+pub async fn handle_demo_instagram_login(
+    client_id: String,
+    client_secret: String,
+    redirect_uri: String,
+    code: String,
+) -> Promise {
+    future_to_promise(async move {
+        let kv = jserr!(
+            instagram::handle_login_flow(
+                client_id,
+                client_secret,
+                redirect_uri,
+                code,
+                instagram::LoginFlow::DEMO,
+            )
+            .await
+        );
+        return Ok(jserr!(serde_json::to_string(&kv)).into());
     })
 }
 
@@ -111,18 +125,17 @@ pub async fn witness_instagram_post(
     ig_handle: String,
     ig_link: String,
     sig: String,
-    sig_target: String,
-    sig_type: String,
 ) -> Promise {
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+        let pkh = jserr!(hash_public_key(&pk));
 
-        let mut vc = if sig_type == "tezos" {
-            jserr!(instagram::build_tzp_instagram_vc(&pk, &ig_handle))
-        } else {
-            return jserr!(Err(anyhow!(format!("Unknown signature type {}", sig_type))));
-        };
+        let mut vc = jserr!(instagram::build_tzp_instagram_vc(&pk, &ig_handle));
+        let sig_target = attest(SubjectType::Instagram(Subject {
+            id: ig_handle.clone(),
+            key: pkh,
+        }));
 
         let mut props = HashMap::new();
         props.insert(
@@ -199,8 +212,7 @@ pub async fn witness_tweet(
             key: pkh.clone(),
         }));
 
-        if sig_target != correct_attestation && sig_target != v0_attestation
-        {
+        if sig_target != correct_attestation && sig_target != v0_attestation {
             jserr!(Err(anyhow!("Could not match attestation")))
         };
 
