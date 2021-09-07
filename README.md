@@ -22,7 +22,7 @@ Refer to [dapp](dapp).
 ## Smart Contract and SDK
 Refer to [contract](contract).
 
-## Tweet Witness (witness.tzprofiles.com)
+## Witness (witness.tzprofiles.com)
 Refer to [worker](worker).
 
 ## Indexer/API (indexer.tzprofiles.com and api.tzprofiles.com)
