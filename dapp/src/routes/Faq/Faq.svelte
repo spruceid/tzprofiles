@@ -45,8 +45,8 @@
       class="mb-2 font-bold"
     />
     <div class="mb-8">
-      Please direct any questions or inquiries by joining our Telegram group
-      <a href="http://t.me/tezosprofiles" target="_blank">here</a>
+      Please direct any questions or inquiries by joining our Discord
+      <a href="https://discord.gg/WjvuYqvm5Y" target="_blank">here</a>.
     </div>
   </div>
 </BasePage>
