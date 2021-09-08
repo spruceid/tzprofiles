@@ -9,7 +9,7 @@ import {
   GlobeIcon,
   GitHubIcon,
 } from 'components';
-import * as tzp from 'tzprofiles';
+import * as tzp from '@spruceid/tzprofiles';
 import { makeAttestation, Subject } from './publicAttestation';
 import type {variant as Attestation} from './publicAttestation'
 

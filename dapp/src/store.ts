@@ -6,7 +6,7 @@ import { Tzip16Module } from '@taquito/tzip16';
 import { encodeKey } from '@taquito/utils';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from 'tzprofiles';
+import * as contractLib from '@spruceid/tzprofiles';
 import * as helpers from './helpers/index';
 
 import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
