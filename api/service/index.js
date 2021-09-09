@@ -6,7 +6,7 @@ global.fetch = fetch;
 
 const cors = require('cors');
 const express = require('express');
-const tzprofiles = require('tzprofiles');
+const tzprofiles = require('@spruceid/tzprofiles');
 const kepler = require("kepler-sdk");
 const didkit = require('didkit-wasm-node');
 const crypto = require('crypto');

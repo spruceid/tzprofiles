@@ -1,25 +1,29 @@
 {
-  "name": "tzprofiles",
-  "version": "1.6.1",
-  "description": "",
+  "name": "@spruceid/tzprofiles",
+  "version": "1.0.0",
+  "description": "Library to interact with the Tezos Profiles smart contract and storage",
   "main": "dist/tzprofiles.js",
   "types": "dist/tzprofiles.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "directories": {
+    "lib": "lib"
   },
-  "author": "",
-  "license": "Apache-2.0",
   "dependencies": {
     "@taquito/beacon-wallet": "^10.0.0",
     "@taquito/rpc": "^10.0.0",
     "@taquito/signer": "^10.0.0",
     "@taquito/taquito": "^10.0.0",
     "@taquito/tzip16": "^10.0.0",
-    "axios": "^0.21.1",
+    "axios": ">=0.21.2",
     "didkit-wasm-node": "^0.1.4",
     "express": "^4.17.1",
     "kepler-sdk": "^0.9.0",
     "process": "^0.11.10",
     "yargs": "^16.2.0"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Spruce Systems Inc.",
+  "license": "Apache-2.0"
 }
