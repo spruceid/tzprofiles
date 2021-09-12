@@ -34,6 +34,7 @@ pub fn find_signature_to_resolve(dns_result: DnsResponse) -> Result<String> {
 }
 
 pub fn extract_dns_signature(record: String) -> Result<String> {
+    let record = record.replace("\"\"", "");
     let split = record.split("=");
     let str_list = split.collect::<Vec<&str>>();
 
