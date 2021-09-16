@@ -27,6 +27,7 @@ console_error_panic_hook = { version = "0.1" }
 wee_alloc = { version = "0.4" }
 
 ssi = { path = "../../ssi", default-features = false, features = ["ed25519-dalek", "sha", "secp256k1", "secp256r1"] }
+did-web = { path = "../../ssi/did-web" }
 blake2b_simd = "0.5"
 bs58 = { version = "0.4", features = ["check"] }
 

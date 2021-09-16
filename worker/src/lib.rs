@@ -15,6 +15,7 @@ use attestation::{attest, Subject, SubjectType};
 
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
+use did_web::DIDWeb;
 use js_sys::Promise;
 use ssi::{
     blakesig::hash_public_key,
@@ -166,7 +167,8 @@ pub async fn witness_instagram_post(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -248,7 +250,8 @@ pub async fn witness_tweet(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -342,7 +345,8 @@ pub async fn witness_discord(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -410,7 +414,8 @@ pub async fn dns_lookup(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -532,7 +537,8 @@ pub async fn gist_lookup(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
