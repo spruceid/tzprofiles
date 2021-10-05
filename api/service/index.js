@@ -15,6 +15,10 @@ const port = 8080;
 const app = express();
 app.use(cors());
 
+app.get('/_healthz', async function (_, res, _) {
+    res.send(true)
+})
+
 app.get('/:address', async function (req, res, next) {
     try {
         const content = await retrieve(req.params.address, "mainnet", req.query);

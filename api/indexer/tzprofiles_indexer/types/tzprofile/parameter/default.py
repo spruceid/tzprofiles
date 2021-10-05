@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Set, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ListItem(BaseModel):
@@ -15,5 +15,5 @@ class ListItem(BaseModel):
 
 
 class DefaultParameter(BaseModel):
-    list: List[ListItem]
+    list: Union[List[ListItem], Set[ListItem]] = Field([], alias="set")
     bool: bool
