@@ -8,7 +8,7 @@
     search,
     network,
   } from 'src/store';
-  import type NetworkType from 'enumsNetworkType';
+  import type NetworkType from 'enumsSupportedNetwork';
   import { BasePage, LoadingSpinner, PublicProfileView } from 'components';
 
   const params = useParams();

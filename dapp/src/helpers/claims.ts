@@ -8,10 +8,11 @@ import {
   DiscordIcon,
   GlobeIcon,
   GitHubIcon,
-} from 'components';
-import * as tzp from '@spruceid/tzprofiles';
+} from 'components/icons';
 import { makeAttestation, Subject } from './publicAttestation';
 import type {variant as Attestation} from './publicAttestation'
+
+import type { Entry } from '@spruceid/tzprofiles/dist/rebase/tzprofiles';
 
 // TODO: Move to store?
 export const exhaustiveCheck = (arg: never) => {
@@ -230,28 +231,34 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
     case 'discord':
       return {
         handle: ''
-      }
+      };
     case 'dns': 
       return {
         address: ''
-      }
+      };
     case 'ethereum':
       return {
         address: '',
         sameAs: '',
       };
-
     case 'twitter':
       return {
         handle: '',
         tweetUrl: '',
       };
-    
     case 'github': 
       return {
         handle: '',
         gistId: ''
-      }
+      };
+    case 'discord': 
+      return {
+        handle: '',
+      };
+    case 'dns':
+      return {
+        address: ''
+      };
   }
 
   exhaustiveCheck(ct);
@@ -262,7 +269,8 @@ export interface Claim {
   // TODO: Replace object with a sum type?
   content: object | false;
 
-  contractType: tzp.ClaimType;
+  // TODO: Expand to include more
+  contentType: 'VerifiableCredential';
 
   // Text and images used to render the claim
   display: ClaimUIAssets;
@@ -295,15 +303,14 @@ export const addDefaults = (cm: ClaimMap): ClaimMap => {
       cm[ct] = newClaim(ct);
     }
   }
-
   return cm;
 };
 
-// TODO: Make contractType a parameter?
+// TODO: Make contentType a parameter?
 export const newClaim = (ct: ClaimType): Claim => {
   return {
     content: false,
-    contractType: 'VerifiableCredential',
+    contentType: 'VerifiableCredential',
     display: newDisplay(ct),
     draft: newDraft(ct),
     preparedContent: false,
@@ -384,7 +391,6 @@ export const checkIsWebsiteLive = async (url: string): Promise<boolean> => {
     await fetch(`https://${url}`);
     return true;
   } catch (err) {
-    console.log(err);
     return false;
   }
 };
@@ -426,23 +432,27 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
     }
     // TODO: Add DNS/Discord/Github
   }
+
+  // TODO: Replace with exhaustiveCheck if possible, otherwise
+  // throw errs on non-usuable types, doing this to avoid errs
+  return '';
 };
 
 // Create claim from a ClaimType and the result of tzprofilesClient's calls
-export const claimFromTriple = (
+export const claimFromEntry = (
   ct: ClaimType,
-  triple: tzp.ValidContent<string, tzp.ClaimType, string>
+  entry: Entry
 ): Claim => {
-  let content = JSON.parse(triple[1]);
+  const {content, ref} = entry;
   return {
     content,
-    contractType: triple[2],
+    contentType: 'VerifiableCredential',
     display: newDisplay(ct),
     draft: contentToDraft(ct, content),
     preparedContent: false,
     onChain: true,
     type: ct,
-    irl: triple[0],
+    irl: ref,
   };
 };
 

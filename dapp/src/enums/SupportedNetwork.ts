@@ -1,8 +1,8 @@
-enum NetworkType {
+enum SupportedNetworks {
   MAINNET = 'mainnet',
   FLORENCENET = 'florencenet',
   GRANADANET = 'granadanet',
-  CUSTOM = 'custom',
+  CUSTOM = 'custom'
 }
 
-export default NetworkType;
+export default SupportedNetworks;

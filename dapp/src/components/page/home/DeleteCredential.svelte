@@ -1,7 +1,8 @@
 <script lang="ts">
   import { LoadingSpinner } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  import { Claim, newClaim } from 'src/helpers/claims';
+  import type { Claim } from 'src/helpers/claims';
+  import { newClaim } from 'src/helpers/claims';
   import { selectDisplayStatus } from './uploadHelpers';
   import { claimsStream, alert, removeClaims } from 'src/store';
 
@@ -57,7 +58,6 @@
           isDeleting = true;
           await deleteSingleCredential(claim);
         } catch (error) {
-          console.log(error);
           alert.set({
             message: error,
             variant: 'error',

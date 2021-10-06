@@ -10,7 +10,7 @@
     InfoIcon,
     VerificationDescription,
   } from 'components';
-  import { claimsStream, userData, wallet, networkStr } from 'src/store';
+  import { claimsStream, userData, wallet } from 'src/store';
   import type { ClaimMap } from 'src/helpers';
   import { contentToDraft } from 'src/helpers';
   import { generateSignature, signBasicProfile } from 'src/basic_profile';

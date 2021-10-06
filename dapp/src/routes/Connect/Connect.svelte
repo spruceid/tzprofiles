@@ -1,18 +1,20 @@
 <script type="ts">
+  import {NetworkType} from '@airgap/beacon-sdk';
   import Claims from '../Claims.svelte';
   import { PrimaryButton, Select, Option } from 'components';
   import { initWallet, network, userData, wallet } from 'src/store';
-  import NetworkType from 'enums/NetworkType';
+  import SupportedNetwork from '../../enums/SupportedNetwork';
   import { onMount } from 'svelte';
   import { useNavigate } from 'svelte-navigator';
   import './connect.scss';
+
 
   const navigate = useNavigate();
 
   $: errorMessage = '';
   $: statusMessage = '';
   $: showWalletButton = true;
-  let selectedNetwork: string = '';
+  let selectedNetwork: SupportedNetwork | false = false;
 
   const resetWallet = () => {
     statusMessage = '';
@@ -21,13 +23,13 @@
   };
 
   const setSelectedNetwork = () => {
-    if (Object.values(NetworkType).includes(selectedNetwork as NetworkType)) {
-      network.set(selectedNetwork as NetworkType);
+    if (selectedNetwork && Object.values(SupportedNetwork).includes(selectedNetwork)) {
+      network.set(NetworkType[selectedNetwork.toUpperCase()]);
     }
   };
 
   onMount(() => {
-    selectedNetwork = $network;
+    selectedNetwork = SupportedNetwork[$network.toUpperCase()];
     if (!$userData) {
       navigate('/');
     }

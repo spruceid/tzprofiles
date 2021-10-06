@@ -1,17 +1,14 @@
 import { BeaconWallet } from '@taquito/beacon-wallet';
-import type { Writable } from 'svelte/store';
+import { BeaconEvent, NetworkType } from '@airgap/beacon-sdk';
+import { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { TezosToolkit } from '@taquito/taquito';
-import { Tzip16Module } from '@taquito/tzip16';
 import { encodeKey } from '@taquito/utils';
-import NetworkType from 'enums/NetworkType';
-import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from '@spruceid/tzprofiles';
-import * as helpers from './helpers/index';
-
-import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
 import { verifyCredential } from 'didkit-wasm';
-import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
+import { addDefaults, claimFromEntry, claimTypeFromVC } from './helpers/index';
+import type { ClaimMap, Claim } from './helpers'
+import { Entry, makeControlClient, makeViewClient, viewerOpts } from '@spruceid/tzprofiles/dist/lib';
+import type { ControlClient, ViewClient } from '@spruceid/tzprofiles/dist/lib';
+import type { Content, Hash, Ref } from '@spruceid/tzprofiles/dist/rebase/storage';
 
 /*
  * Global Variables
@@ -19,7 +16,7 @@ import { addDefaults, claimFromTriple, claimTypeFromVC } from './helpers/index';
 
 // Global Constants
 // The kepler server hostname
-export const keplerInstance = process.env.KEPLER_URL;
+export const keplerDomain = process.env.KEPLER_URL;
 // The witness worker hostname
 export const witnessUrl = process.env.WITNESS_URL;
 // The explainer server hostname
@@ -35,32 +32,30 @@ export const contractAddress: Writable<string> = writable<string>(null);
 // The address entered by an end user in the search bar
 export const searchAddress: Writable<string> = writable<string>(null);
 
-// The location of the tezos validator node to use for blockchain interactions
-export const nodeUrl: Writable<string> = writable<string>(null);
-
 // Is the contract being loaded?
 export const loadingContracts: Writable<boolean> = writable(true);
 
-// The end user's wallet
-export const wallet: Writable<BeaconWallet> = writable<BeaconWallet>(null);
-// TODO: MOVE LOCALS
-let localWallet: BeaconWallet;
-wallet.subscribe((x) => {
-  localWallet = x;
+export const rebaseControlClient: Writable<ControlClient> = writable(null);
+
+let localControlClient: ControlClient;
+rebaseControlClient.subscribe((x) => {
+  localControlClient = x;
 });
 
-// TODO: Unify these two?
-// The name of the Tezos blockchain network used
-export const networkStr: Writable<string> = writable<string>(null);
+// The end user's wallet
+export const wallet: Writable<BeaconWallet> = writable<BeaconWallet>(null);
+
 // Enum representation of the Tezos blockchain used
 export const network: Writable<NetworkType> = writable<NetworkType>(
   NetworkType.MAINNET
 );
 
-// URL Prefix of the block explorer to be used.
-export const tzktBase: Writable<string> = writable<string>(
-  'https://api.mainnet.tzkt.io'
-);
+// TODO: Import Tezos network instead of just matching it.
+let localNetwork: NetworkType = NetworkType.MAINNET;
+
+network.subscribe((next) => {
+  localNetwork = next;
+});
 
 // The UI element for poping toast-like alerts
 export const alert: Writable<{
@@ -72,123 +67,31 @@ export const alert: Writable<{
 }>(null);
 
 /*
- * Kepler Interactions
- */
-
-export const addToKepler = async (
-  orbit: string,
-  ...obj: Array<any>
-): Promise<Array<string>> => {
-  try {
-    let addresses = await helpers.addToKepler(localKepler, orbit, await localWallet.getPKH(), ...obj);
-
-    alert.set({
-      message: 'Successfully uploaded to Kepler',
-      variant: 'success',
-    });
-
-    return addresses;
-  } catch (e) {
-    alert.set({
-      message: e.message || JSON.stringify(e),
-      variant: 'error',
-    });
-
-    throw e;
-  }
-};
-
-export const fetchOrbitId = async () => {
-  let pkh = await localWallet.getPKH();
-  let id = await getOrbitId(pkh, { domain: process.env.KEPLER_URL, index: 0 });
-  return id;
-};
-
-export const saveToKepler = async (
-  ...obj: Array<any>
-): Promise<Array<string>> => {
-  try {
-    let addresses = await helpers.saveToKepler(
-      localKepler,
-      await localWallet.getPKH(),
-      ...obj
-    );
-
-    alert.set({
-      message: 'Successfully uploaded to Kepler',
-      variant: 'success',
-    });
-
-    return addresses;
-  } catch (e) {
-    alert.set({
-      message: e.message || JSON.stringify(e),
-      variant: 'error',
-    });
-
-    throw e;
-  }
-};
-
-/*
  * Claims Interactions
  */
 
-export let claimsStream: Writable<helpers.ClaimMap> =
-  writable<helpers.ClaimMap>(addDefaults({}));
+export let claimsStream: Writable<ClaimMap> =
+  writable<ClaimMap>(addDefaults({}));
+let localClaimsStream: ClaimMap;
 
-export const contractClient: Writable<contractLib.TZProfilesClient> =
-  writable<contractLib.TZProfilesClient>(null);
-
-let localClaimsStream: helpers.ClaimMap;
-let localClient: contractLib.TZProfilesClient;
-let localContractAddress: string;
-let localNetworkStr: string;
-
-export let localKepler: Kepler;
 export let viewerInstance: string = 'http://127.0.0.1:9090';
 
 claimsStream.subscribe((x) => {
   localClaimsStream = x;
 });
 
-contractAddress.subscribe((x) => {
-  localContractAddress = x;
-});
-
-contractClient.subscribe((x) => {
-  localClient = x;
-});
-
-networkStr.subscribe((x) => {
-  localNetworkStr = x;
-});
-
-const hashFunc = async (claimString: string): Promise<string> => {
-  let encodedString = new TextEncoder().encode(claimString);
-  let buf = await crypto.subtle.digest('SHA-256', encodedString);
-  return [...new Uint8Array(buf)]
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-};
 
 export const originate = async (): Promise<void> => {
-  if (!localClient) {
-    throw new Error('No wallet detected');
+  if (!localControlClient) {
+    throw new Error('No Rebase Control Client detected');
   }
 
-  let claimsKeys = Object.keys(localClaimsStream);
-
-  let claimsList: Array<[contractLib.ClaimType, contractLib.ClaimReference]> =
-    [];
-
-  for (let i = 0, x = claimsKeys.length; i < x; i++) {
-    let claimKey = claimsKeys[i];
-    let { irl } = localClaimsStream[claimKey];
-    if (irl) {
-      claimsList.push(['VerifiableCredential', irl]);
-    }
-  }
+  let claimsList: Array<Content> = Object.values(localClaimsStream)
+    .map((c) => {
+      return c.preparedContent
+    })
+    .filter((x) => x && typeof x === 'object')
+    .map((x) => x as Content);
 
   if (claimsList.length < 1) {
     alert.set({
@@ -198,70 +101,52 @@ export const originate = async (): Promise<void> => {
     throw new Error('No claim urls found');
   }
 
-  let contractAddr = await localClient.originate(claimsList);
-  contractAddress.set(contractAddr);
+  // TODO: Restore the generation of the Contract Address.
+  // TODO: Handle >1 Contract Addresses?
+  await localControlClient.originateContent(claimsList);
 };
 
 export const addClaims = async (
-  claimsList: Array<helpers.Claim>
-): Promise<string> => {
-  if (!localClient) {
-    alert.set({
-      message: 'No wallet detected',
-      variant: 'error',
-    });
-    throw new Error('No wallet detected');
+  claimsList: Array<Claim>
+): Promise<void> => {
+  if (!localControlClient) {
+    throw new Error('No rebase client detected');
   }
 
-  if (!localContractAddress) {
-    alert.set({
-      message: 'No contractAddress detected',
-      variant: 'error',
-    });
-    throw new Error('No contractAddress detected');
-  }
-
-  let claimsArgsList: Array<
-    [contractLib.ClaimType, contractLib.ClaimReference]
-  > = claimsList.map((claim) => {
-    return ['VerifiableCredential', claim.irl || ''];
+  let prepContentList = claimsList.map((x) => {
+    return x.preparedContent
   });
 
-  return await localClient.addClaims(localContractAddress, claimsArgsList);
+  let contentList = prepContentList
+  .filter((x) => !!x && typeof x === 'object')
+  .map((x) => x as Content)
+
+  await localControlClient.create(contentList);
+  return
 };
 
 export const removeClaims = async (
-  claimsList: Array<helpers.Claim>
-): Promise<string> => {
-  if (!localClient) {
-    alert.set({
-      message: 'No smart contract client detected',
-      variant: 'error',
-    });
-    throw new Error('No smart contract client detected');
+  claimsList: Array<Claim>
+): Promise<void> => {
+  if (!localControlClient) {
+    throw new Error('No rebase client detected');
   }
 
-  if (!localContractAddress) {
-    alert.set({
-      message: 'No contractAddress detected',
-      variant: 'error',
-    });
-    throw new Error('No contractAddress detected');
-  }
-
-  let claimsArgsList: Array<
-    [contractLib.ClaimType, contractLib.ClaimReference]
-  > = claimsList.map((claim) => {
-    return ['VerifiableCredential', claim.irl || ''];
+  let filtered = claimsList.filter((x) => {
+    return x.content 
+    && typeof x.content === 'object' 
+    && x.irl 
+    && typeof x.irl === 'string'
   });
 
-  return await localClient.removeClaims(localContractAddress, claimsArgsList);
-};
+  let storage = await Promise.all(
+    filtered.map(async (x) => {
+      return [await localControlClient.hasher(x.content as Content), x.irl]
+    })
+  ) as Array<[Hash, Ref]>;
 
-let urlNode = '';
-let strNetwork = '';
-let networkStrTemp = '';
-let tzktBaseTemp = '';
+  await localControlClient.remove(storage);
+};
 
 wallet.subscribe((w) => {
   if (w) {
@@ -276,82 +161,48 @@ wallet.subscribe((w) => {
         }
         userData.set(data);
 
-        localKepler = new Kepler(
-          keplerInstance,
-          // NOTE: Ran into a typing err w/o any
-          // Consider correcting?
-          await authenticator(w.client as any, process.env.KEPLER_URL)
-        );
-
-        let signerOpts: contractLib.WalletSigner = {
-          type: 'wallet',
-          wallet: w,
+        let rbOpts = {
+          keplerDomain: keplerDomain,
+          network: localNetwork,
+          signer: w
         };
 
-        let clientOpts: contractLib.TZProfilesClientOpts = {
-          tzktBase: tzktBaseTemp,
-          keplerClient: localKepler,
-          hashContent: hashFunc,
-          nodeURL: urlNode,
-          signer: signerOpts,
-          validateType: async (
-            c: contractLib.ClaimContent,
-            t: contractLib.ClaimType
-          ): Promise<void> => {
-            // Validate VC
-            switch (t) {
-              case 'VerifiableCredential': {
-                let verifyResult = await verifyCredential(c, '{}');
-                let verifyJSON = JSON.parse(verifyResult);
-                if (verifyJSON.errors.length > 0) {
-                  throw new Error(
-                    `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
-                  );
-                }
-                break;
-              }
-              default:
-                throw new Error(`Unknown ClaimType: ${t}`);
-            }
-          },
-        };
-
-        let nextClient = new contractLib.TZProfilesClient(clientOpts);
-        contractClient.set(nextClient);
-
+        let rbc = await makeControlClient(rbOpts);
+        rebaseControlClient.set(rbc);
         loadingContracts.set(true);
+
         try {
-          let result = await nextClient.retrieve(await w.getPKH());
-          if (result) {
-            contractAddress.set(result.address);
+          let result = await rbc.readOwn();
+          if (result.length > 0) {
+            // TODO: Add a way to handle multiple contracts?
+            contractAddress.set(rbc.getAddr());
+
             let nextClaims = Object.assign({}, localClaimsStream);
+            // TODO: Make sure contracts are ordered oldest to newest to prefer newer contracts.
+            result.forEach((contentList) => {
+              contentList.forEach((entry) => {
+                if (entry.valid) {
+                  let claimType = claimTypeFromVC(entry.content);
+                  if (!claimType) {
+                    console.error(
+                      `Unknown claim type: ${
+                        entry.content?.type?.length &&
+                        entry.content.type[entry.content.type.length - 1]
+                      }`
+                    )
+                    return
+                  }
 
-            for (let i = 0, x = result.valid.length; i < x; i++) {
-              let [url, content, contentType] = result.valid[i];
-              // TODO: Handle other types?
-              if (contentType === 'VerifiableCredential') {
-                let parsed = JSON.parse(content);
-                let claimType = claimTypeFromVC(parsed);
-                if (!claimType) {
-                  throw new Error(
-                    `Unknown claim type: ${
-                      parsed?.type?.length &&
-                      parsed.type[parsed.type.length - 1]
-                    }`
-                  );
+                  // NOTE: This overrides older claims.
+                  nextClaims[claimType] = claimFromEntry(claimType, entry);
                 }
+                // TODO: Something with invalid entries?
+              })
+            })
 
-                nextClaims[claimType] = helpers.claimFromTriple(claimType, [
-                  url,
-                  content,
-                  contentType,
-                ]);
-              }
+            nextClaims = addDefaults(nextClaims);
 
-              nextClaims = addDefaults(nextClaims);
-
-              claimsStream.set(nextClaims);
-            }
+            claimsStream.set(nextClaims);
           } else {
             alert.set({
               message: 'No contract detected, starting new one',
@@ -373,44 +224,24 @@ wallet.subscribe((w) => {
   }
 });
 
-network.subscribe((network) => {
-  if (network === NetworkType.CUSTOM) {
-    networkStr.set('custom');
-    // TODO can't read from writeable, but then I don't understand why others work.
-    networkStrTemp = 'custom';
-    strNetwork = 'custom';
-
-    nodeUrl.set('http://localhost:8732');
-    urlNode = 'http://localhost:8732';
-
-    tzktBaseTemp = 'http://localhost:5000';
-    tzktBase.set(tzktBaseTemp);
-  } else {
-    networkStr.set(network);
-    // TODO can't read from writeable, but then I don't understand why others work.
-    networkStrTemp = network;
-    strNetwork = network;
-
-    urlNode = `https://${network}.smartpy.io/`;
-    nodeUrl.set(urlNode);
-
-    tzktBaseTemp = `https://api.${networkStrTemp}.tzkt.io`;
-    tzktBase.set(tzktBaseTemp);
-  }
-});
 
 export const initWallet: () => Promise<void> = async () => {
   const options = {
     name: 'Tezos Personal Profile',
     iconUrl: 'https://tezostaquito.io/img/favicon.png',
-    preferredNetwork: strNetwork as NetworkType,
+    preferredNetwork: localNetwork,
   };
 
+  let rpcUrl = localNetwork === NetworkType.CUSTOM ? 
+    'http://localhost:8732/' :
+    `https://${localNetwork}.smartpy.io/`;
+
+  // TODO: Make sure this is right
   const requestPermissionsInput = {
     network: {
-      type: strNetwork as NetworkType,
-      rpcUrl: urlNode,
-      name: `${localNetworkStr}`,
+      type:  localNetwork,
+      rpcUrl,
+      name: `${localNetwork}`,
     },
   };
 
@@ -419,16 +250,6 @@ export const initWallet: () => Promise<void> = async () => {
   try {
     wallet.set(newWallet);
     await newWallet.requestPermissions(requestPermissionsInput);
-
-    localKepler = new Kepler(
-      keplerInstance,
-      // NOTE: Ran into a typing err w/o any
-      // Consider correcting?
-      await authenticator(newWallet.client as any, process.env.KEPLER_URL)
-    );
-    const Tezos = new TezosToolkit(urlNode);
-    Tezos.addExtension(new Tzip16Module());
-    Tezos.setWalletProvider(newWallet);
   } catch (e) {
     wallet.set(null);
     alert.set({
@@ -441,8 +262,7 @@ export const initWallet: () => Promise<void> = async () => {
 };
 
 // Viewer related params:
-// TODO: Make the network var reasonable / consistent / documented.
-export let searchClaims: Writable<helpers.ClaimMap> = writable(addDefaults({}));
+export let searchClaims: Writable<ClaimMap> = writable(addDefaults({}));
 
 export interface searchRetryOpts {
   current: number;
@@ -458,37 +278,12 @@ export const defaultSearchOpts = {
 
 const searchRetry = async (
   addr: string,
-  contractClient: contractLib.TZProfilesClient,
+  viewClient: ViewClient,
   opts: searchRetryOpts
-): Promise<contractLib.ContentResult<any, any, any, any> | false> => {
+): Promise<Array<Array<Entry>>> => {
   try {
-    let found;
-    if (networkStrTemp === 'mainnet') {
-      let data = {
-        query: `query MyQuery { tzprofiles_by_pk(account: \"${addr}\") { invalid_claims valid_claims contract } }`,
-        variables: null,
-        operationName: 'MyQuery',
-      };
-      found = await fetch('https://indexer.tzprofiles.com/v1/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      found = await found.json();
-
-      found = found.data.tzprofiles_by_pk;
-      found = {
-        address: found.contract,
-        valid: found.valid_claims,
-        invalid: found.invalid_claims,
-      };
-    } else {
-      found = await contractClient.retrieve(addr);
-    }
-
-    return found;
+    let vOpts = viewerOpts(localNetwork, addr);
+    return await viewClient.read(vOpts);
   } catch (err) {
     if (opts.current >= opts.max) {
       console.warn(
@@ -501,11 +296,11 @@ const searchRetry = async (
     opts.current += opts.step;
 
     let f = (): Promise<
-      contractLib.ContentResult<any, any, any, any> | false
+      Array<Array<Entry>>
     > => {
       return new Promise((resolve, reject) => {
         let innerF = async () => {
-          let found = await searchRetry(addr, contractClient, opts);
+          let found = await searchRetry(addr, viewClient, opts);
           resolve(found);
         };
 
@@ -526,67 +321,43 @@ export const search = async (wallet: string, opts: searchRetryOpts) => {
 
       searchClaims.set(addDefaults({}));
 
-      let dummyAuthenticator = {
-        content: async (orbit: string, cids: string[], action: Action) => '',
-        createOrbit: async (cids: string[]) => '',
-      };
+      let contractAddr = '';
 
-      // Kepler Client with no wallet.
-      let searchKepler = new Kepler(keplerInstance, dummyAuthenticator);
-
-      let clientOpts: contractLib.TZProfilesClientOpts = {
-        tzktBase: tzktBaseTemp,
-        keplerClient: searchKepler,
-        hashContent: hashFunc,
-        nodeURL: urlNode,
-        signer: false,
-        validateType: async (
-          c: contractLib.ClaimContent,
-          t: contractLib.ClaimType
-        ): Promise<void> => {
-          // Validate VC
-          switch (t) {
-            case 'VerifiableCredential': {
-              let verifyResult = await verifyCredential(c, '{}');
-              let verifyJSON = JSON.parse(verifyResult);
-              if (verifyJSON.errors.length > 0)
-                throw new Error(
-                  `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
-                );
-              break;
-            }
-            default:
-              throw new Error(`Unknown ClaimType: ${t}`);
-          }
-        },
-      };
-
-      let contractClient = new contractLib.TZProfilesClient(clientOpts);
+      let viewClient = makeViewClient({
+        searchAddress: contractAddr,
+        keplerDomain,
+        network: localNetwork
+      });
 
       let found = await searchRetry(
         searchingAddress,
-        contractClient,
+        viewClient,
         Object.assign({}, opts)
       );
 
       if (found) {
         let nextSearchClaims = addDefaults({});
-        searchAddress.set(found.address);
-        // NOTE: We are not dealing with invalid claims in the UI
-        // TODO: Handle invalid claims
-        found.valid.forEach((triple) => {
-          let [_irl, contentStr, _contractType] = triple;
-          // TODO: Check if it's a vc via contractType?
-          let vc = JSON.parse(contentStr);
-          let ct = claimTypeFromVC(vc);
-          if (!ct) {
-            throw new Error(
-              `No claim type found in vc: ${JSON.stringify(vc?.type)}`
-            );
-          }
+        // TODO: Handle multiple address?
+        searchAddress.set(contractAddr);
+        found
+        .forEach((contentList) => {
+          contentList
+            // NOTE: We are not dealing with invalid claims in the UI
+            // TODO: Handle invalid claims
+            .filter((entry) => entry.valid)
+            .forEach((entry) => {
+              let ct = claimTypeFromVC(entry.content);
+              if (!ct) {
+                throw new Error(
+                  `No claim type found in vc: ${JSON.stringify(entry.content?.type)}`
+                );
+              }
 
-          nextSearchClaims[ct] = claimFromTriple(ct, triple);
-        });
+              // NOTE: Overrides old entries,
+              nextSearchClaims[ct] = claimFromEntry(ct, entry);
+            });
+        })
+        
 
         searchClaims.set(nextSearchClaims);
         return;
