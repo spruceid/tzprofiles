@@ -7,10 +7,15 @@ class TZProfile(Model):
     valid_claims = fields.JSONField()
     invalid_claims = fields.JSONField()
     errored = fields.BooleanField()
-    # twitter = fields.CharField(max_length=255)
-    # domain_name = fields.CharField(max_length=255)
-    # discord = fields.CharField(max_length=255)
-    # github = fields.CharField(max_length=255)
+    alias = fields.TextField(null=True)
+    description = fields.TextField(null=True)
+    logo = fields.TextField(null=True)
+    website = fields.TextField(null=True)
+    twitter = fields.CharField(max_length=256, null=True)
+    domain_name = fields.TextField(null=True)
+    discord = fields.CharField(max_length=256, null=True)
+    github = fields.CharField(max_length=256, null=True)
+    ethereum = fields.CharField(max_length=42, null=True)
 
     class Meta:
         table = "tzprofiles"

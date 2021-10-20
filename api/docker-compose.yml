@@ -1,39 +1,39 @@
 version: "3.8"
 
 services:
-  tzkt_db:
-    restart: always
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=tzkt
-      - POSTGRES_PASSWORD=qwerty
-      - POSTGRES_DB=tzkt_db
-    volumes:
-      - tzkt_db:/var/lib/postgresql/data
-      - /tmp/tzkt_db.backup:/tmp/tzkt_db.backup:z
-      - ./pg_restore.sh:/docker-entrypoint-initdb.d/pg_restore.sh:z
+  # tzkt_db:
+  #   restart: always
+  #   image: postgres:13
+  #   environment:
+  #     - POSTGRES_USER=tzkt
+  #     - POSTGRES_PASSWORD=qwerty
+  #     - POSTGRES_DB=tzkt_db
+  #   volumes:
+  #     - tzkt_db:/var/lib/postgresql/data
+  #     - /tmp/tzkt_db.backup:/tmp/tzkt_db.backup:z
+  #     - ./pg_restore.sh:/docker-entrypoint-initdb.d/pg_restore.sh:z
 
-  tzkt_api:
-    restart: always
-    image: bakingbad/tzkt-api:1.6.1
-    environment:
-      - TZKT_API_KESTREL__ENDPOINTS__HTTP__URL=http://0.0.0.0:5000
-      - TZKT_API_WEBSOCKET__MAXCONNECTIONS=5000
-      - TZKT_API_WEBSOCKET__MAXOPERATIONSUBSCRIPTIONS=5000
-      - TZKT_API_CONNECTIONSTRINGS__DEFAULTCONNECTION=host=tzkt_db;port=5432;database=tzkt_db;username=tzkt;password=qwerty;
-    ports:
-      - 5000:5000
-    depends_on:
-      - tzkt_db
-      - tzkt_sync
+  # tzkt_api:
+  #   restart: always
+  #   image: bakingbad/tzkt-api:1.6.1
+  #   environment:
+  #     - TZKT_API_KESTREL__ENDPOINTS__HTTP__URL=http://0.0.0.0:5000
+  #     - TZKT_API_WEBSOCKET__MAXCONNECTIONS=5000
+  #     - TZKT_API_WEBSOCKET__MAXOPERATIONSUBSCRIPTIONS=5000
+  #     - TZKT_API_CONNECTIONSTRINGS__DEFAULTCONNECTION=host=tzkt_db;port=5432;database=tzkt_db;username=tzkt;password=qwerty;
+  #   ports:
+  #     - 5000:5000
+  #   depends_on:
+  #     - tzkt_db
+  #     - tzkt_sync
 
-  tzkt_sync:
-    restart: always
-    image: bakingbad/tzkt-sync:1.6.1
-    environment:
-      - TZKT_SYNC_CONNECTIONSTRINGS__DEFAULTCONNECTION=host=tzkt_db;port=5432;database=tzkt_db;username=tzkt;password=qwerty;
-    depends_on:
-      - tzkt_db
+  # tzkt_sync:
+  #   restart: always
+  #   image: bakingbad/tzkt-sync:1.6.1
+  #   environment:
+  #     - TZKT_SYNC_CONNECTIONSTRINGS__DEFAULTCONNECTION=host=tzkt_db;port=5432;database=tzkt_db;username=tzkt;password=qwerty;
+  #   depends_on:
+  #     - tzkt_db
 
   indexer:
     image: ghcr.io/spruceid/tzp_indexer:latest
@@ -84,14 +84,14 @@ services:
       - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
       - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
 
-  api:
-    image: ghcr.io/spruceid/tzp_api:latest
-    build: ./service
-    ports:
-      - 127.0.0.1:15000:8080
-    restart: always
-    # environment:
-    #   - DEBUG=express:*
+  # api:
+  #   image: ghcr.io/spruceid/tzp_api:latest
+  #   build: ./service
+  #   ports:
+  #     - 127.0.0.1:15000:8080
+  #   restart: always
+  #   # environment:
+  #   #   - DEBUG=express:*
 
 volumes:
   db:

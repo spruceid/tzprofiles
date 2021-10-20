@@ -4,7 +4,7 @@ from dipdup.context import HandlerContext
 import tzprofiles_indexer.models as models
 
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
-from tzprofiles_indexer.handlers import resolve_tzp
+from tzprofiles_indexer.handlers import resolve_profile
 
 
 async def on_origination(
@@ -21,13 +21,5 @@ async def on_origination(
         },
     )
     if created:
-        try:
-            claims = await resolve_tzp(
-                tzprofile_origination.data.originated_contract_address
-            )
-            profile.valid_claims = claims["valid"]
-            profile.invalid_claims = claims["invalid"]
-        except Exception as e:
-            print(e)
-            profile.errored = True
+        await resolve_profile(tzprofile_origination.storage.claims, profile)
         await profile.save()

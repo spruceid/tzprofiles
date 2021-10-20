@@ -7,8 +7,12 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-dipdup = "^2.0.9"
+# dipdup = "^3.1.0"
+# dipdup = { git = "https://github.com/spruceid/dipdup-py.git", branch = "master" }
+dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "feat/subs-manager-revived"}
 aiohttp = "^3.7.4"
+tenacity = "^8.0.1"
+didkit = "0.0.2"
 
 [tool.poetry.dev-dependencies]
 
