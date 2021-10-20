@@ -292,9 +292,9 @@ async function handler_instagram_login(request) {
     await wasm_bindgen(wasm);
 
     let kvEntry = await handle_instagram_tzp_login(
-      IG_APP_ID, 
-      IG_APP_SECRET, 
-      IG_REDIRECT_URI, 
+      IG_APP_ID,
+      IG_APP_SECRET,
+      IG_REDIRECT_URI,
       code
     );
 
@@ -432,9 +432,9 @@ async function handler_instagram_demo_login(request) {
     await wasm_bindgen(wasm);
 
     let kvEntry = await handle_demo_instagram_login(
-      IG_APP_ID, 
-      IG_APP_SECRET, 
-      IG_DEMO_REDIRECT_URI, 
+      IG_APP_ID,
+      IG_APP_SECRET,
+      IG_DEMO_REDIRECT_URI,
       code
     );
     let kvObj = JSON.parse(kvEntry);
@@ -501,10 +501,11 @@ async function handleRequest(request) {
   r.get("/demo_instagram_login", (request) => handler_instagram_demo_login(request));
   r.get("/demo_instagram_witness", (request) => handler_instagram_demo_witness(request));
   r.get("/witness_tweet", (request) => handler_witness_tweet(request));
-  r.get("/witness_instagram", (request) => handler_witness_instagram_post(request));
-  r.get("/instagram_login", (request) => handler_instagram_login(request));
-  r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
-  r.get("/instagram-deauth", (request) => handler_data_deletion(request));
+  // TODO uncomment when the time has come
+  // r.get("/witness_instagram", (request) => handler_witness_instagram_post(request));
+  // r.get("/instagram_login", (request) => handler_instagram_login(request));
+  // r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
+  // r.get("/instagram-deauth", (request) => handler_data_deletion(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
   r.get("/witness_dns", (request) => handler_dns_lookup(request));
   r.get("/witness_github", (request) => handle_github_lookup(request));
