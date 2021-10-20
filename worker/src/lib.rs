@@ -17,6 +17,7 @@ use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
 use did_web::DIDWeb;
 use js_sys::Promise;
+use regex::Regex;
 use ssi::{
     blakesig::hash_public_key,
     jwk::JWK,
@@ -275,6 +276,15 @@ pub async fn witness_discord(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+
+        let re = Regex::new(r"^[0-9]+$").unwrap();
+        if !re.is_match(&channel_id) {
+            jserr!(Err(anyhow!("Invalid channel ID.")));
+        }
+        if !re.is_match(&message_id) {
+            jserr!(Err(anyhow!("Invalid message ID.")));
+        }
+
         let discord_res = jserr!(
             discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
                 .await
@@ -369,6 +379,11 @@ pub async fn dns_lookup(
         let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
+        let re = Regex::new(r"^(([a-zA-Z]([a-zA-Z\d-]*[a-zA-Z\d])*)\.)+[a-zA-Z]{2,}$").unwrap();
+        if !re.is_match(&domain) {
+            jserr!(Err(anyhow!("Invalid domain name.")));
+        }
+
         let dns_result = jserr!(dns::retrieve_txt_records(domain.clone()).await);
 
         let mut vc = jserr!(dns::build_dns_vc(&pk, &domain));
@@ -438,6 +453,11 @@ pub async fn gist_lookup(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
         let pkh = jserr!(hash_public_key(&pk));
+
+        let re = Regex::new(r"^[a-zA-Z0-9]{32}$").unwrap();
+        if !re.is_match(&gist_id) {
+            jserr!(Err(anyhow!("Gist ID invalid.")));
+        }
 
         let gist_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
         let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
