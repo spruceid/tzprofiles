@@ -31,6 +31,6 @@ export const verifyDnsInfo = async (
 };
 
 export const isValidUrl = (str: string): boolean => {
-  var pattern = new RegExp('^(([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}$');
+  var pattern = new RegExp('^(([a-zA-Z]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}$');
   return !!pattern.test(str);
 };
