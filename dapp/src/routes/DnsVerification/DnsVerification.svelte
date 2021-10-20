@@ -15,7 +15,7 @@
     getUnsignedAttestation,
     getSignedAttestation,
   } from 'src/helpers';
-  import { newDisplay, checkIsWebsiteLive } from 'src/helpers/claims';
+  import { newDisplay } from 'src/helpers/claims';
   import type { ClaimMap } from 'src/helpers';
 
   let navigate = useNavigate();
@@ -85,7 +85,6 @@
                 try {
                   domainUrl = domainUrl.trim();
 
-                  checkIsWebsiteLive(domainUrl);
                   let isValid = isValidUrl(domainUrl);
 
                   if (!isValid) {

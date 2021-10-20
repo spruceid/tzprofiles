@@ -11,7 +11,7 @@ import {
 } from 'components';
 import * as tzp from '@spruceid/tzprofiles';
 import { makeAttestation, Subject } from './publicAttestation';
-import type {variant as Attestation} from './publicAttestation'
+import type { variant as Attestation } from './publicAttestation'
 
 // TODO: Move to store?
 export const exhaustiveCheck = (arg: never) => {
@@ -20,10 +20,10 @@ export const exhaustiveCheck = (arg: never) => {
 };
 
 // The types of claims supported by the UI.
-export type ClaimType = 'basic' 
-  | 'twitter' 
-  | 'ethereum' 
-  | 'discord' 
+export type ClaimType = 'basic'
+  | 'twitter'
+  | 'ethereum'
+  | 'discord'
   | 'dns'
   | 'github';
 
@@ -201,7 +201,7 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         title: 'DNS Verification',
         type: 'Domain Ownership',
       };
-    case 'github': 
+    case 'github':
       return {
         description: 'This process is used to link your GitHub account to your Tezos account by entering your GitHub handle, signing a message using your private key, and finally posting a public Gist containing that signature.',
         display: 'GitHub Account Verification',
@@ -231,7 +231,7 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
       return {
         handle: ''
       }
-    case 'dns': 
+    case 'dns':
       return {
         address: ''
       }
@@ -246,8 +246,8 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
         handle: '',
         tweetUrl: '',
       };
-    
-    case 'github': 
+
+    case 'github':
       return {
         handle: '',
         gistId: ''
@@ -367,26 +367,16 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
     case 'github': {
       const { credentialSubject, evidence } = content;
       const { sameAs } = credentialSubject;
-      const {gistId} = evidence;
+      const { gistId } = evidence;
 
       return {
-          handle: sameAs.split("/")[sameAs.split("/").length - 1],
-          gistId,
+        handle: sameAs.split("/")[sameAs.split("/").length - 1],
+        gistId,
       }
     }
   }
 
   exhaustiveCheck(ct);
-};
-
-export const checkIsWebsiteLive = async (url: string): Promise<boolean> => {
-  try {
-    await fetch(`https://${url}`);
-    return true;
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
 };
 
 export const formatWebsite = (url: string): string => {
