@@ -2,6 +2,8 @@
   import { useParams } from 'svelte-navigator';
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
+  import { makeDownloadable } from 'src/components/page/home/uploadHelpers';
+  import MoreModal from 'src/components/page/home/MoreModal/MoreModal.svelte';
   import { formatWebsite } from 'src/helpers/claims';
   import { publicProfileViewTooltip } from './publicProfileViewHelper';
   import './publicProfileView.scss';
@@ -79,6 +81,15 @@
       <div class="flex w-full justify-between	my-2">
         <div>{claim.display.display}</div>
         <div>{claim.display.proof}</div>
+        <div>Issued by {claim.content.issuer.replace('did:pkh:eth:', '').replace('did:pkh:tz:', '').replace('did:web:', '')}</div>
+        <!-- TODO don't know how to add use DownloadIcon -->
+        <MoreModal
+          href={makeDownloadable(
+            claim.content || claim.preparedContent
+          )}
+          downloadFileName={`${claim.display.display}.json`}
+          {claim}
+        />
       </div>
     {/each}
   {/if}
