@@ -61,13 +61,16 @@
 <div
   class="pl-4 pr-8 py-3 rounded fixed top-6 left-0 right-0 w-72 mx-auto
   lg:w-fit-content lg:max-w-2/3 lg:min-w-72
-  transition-all ease-in-out duration-500
+  transition-all ease-in-out duration-500 
   {style} "
   role="alert"
   class:opacity-0={!fade}
   class:hidden={!$alert?.message}
 >
-  <span class="block sm:inline pr-4">{$alert?.message}</span>
+  <span
+    class="block sm:inline pr-4 overflow-ellipsis overflow-hidden whitespace-nowrap"
+    >{$alert?.message}</span
+  >
   <span class="absolute top-0 bottom-0 right-0 px-4 py-3" on:click={reset}>
     <CloseIcon class="fill-current h-6 w-6 {iconColor}" />
   </span>

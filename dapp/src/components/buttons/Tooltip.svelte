@@ -1,34 +1,76 @@
 <style>
-  .bottom-full {
+  [data-tooltip] {
+    position: relative;
+    z-index: 2;
+    display: block;
+  }
+
+  [data-tooltip]:before,
+  [data-tooltip]:after {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease-out;
+    transform: translate(-50%, 5px);
+  }
+
+  [data-tooltip]:before {
+    position: absolute;
     bottom: 100%;
+    left: 50%;
+    margin-bottom: 5px;
+    padding: 7px;
+    width: 100%;
+    min-width: 130px;
+    max-width: 400px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background-color: #000;
+    background-color: hsla(0, 0%, 20%, 0.9);
+    color: #fff;
+    content: attr(data-tooltip);
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.2;
+    transition: 0.2s ease-out;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  [data-tooltip]:after {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 0;
+    border-top: 5px solid #000;
+    border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    content: ' ';
+    font-size: 0;
+    line-height: 0;
+  }
+
+  [data-tooltip]:hover:before,
+  [data-tooltip]:hover:after {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  [data-tooltip='false']:hover:before,
+  [data-tooltip='false']:hover:after {
+    visibility: hidden;
+    opacity: 0;
   }
 </style>
 
 <script lang="ts">
   export let tooltip: string = '';
-  export let backgroundColor: string = 'bg-black';
-  export let textColor: string = 'text-white';
-  let clazz: string = '';
   export { clazz as class };
+  let clazz: string = '';
 </script>
 
-<div class="has-tooltip relative mx-2 {clazz}">
-  <div
-    class="{backgroundColor} {textColor} text-xs rounded py-1 px-4 bottom-full left-0 tooltip whitespace-nowrap"
-  >
-    {tooltip}
-    <svg
-      class="absolute {backgroundColor.replace(
-        'bg',
-        'text'
-      )} h-2 left-0 ml-3 top-full"
-      x="0px"
-      y="0px"
-      viewBox="0 0 255 255"
-      xml:space="preserve"
-    >
-      <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
-    </svg>
-  </div>
+<div class={clazz} data-tooltip={tooltip}>
   <slot />
 </div>

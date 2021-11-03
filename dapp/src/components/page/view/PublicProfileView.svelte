@@ -85,7 +85,7 @@
   </div>
   {#if isCredentialSourceDropdownOpen}
     {#each Object.values(claimsMap).filter((x) => !!x.content) as claim}
-      <div class="flex w-full justify-between items-center mb-1 pr-1">
+      <div class="flex w-full justify-between items-center mb-1 pr-3">
         <small class="text-gray-370">{claim.display.proof}</small>
 
         <Tooltip
@@ -93,10 +93,16 @@
             .replace('did:pkh:eth:', '')
             .replace('did:pkh:tz:', '')
             .replace('did:web:', '')}"
-          backgroundColor="bg-gray-370"
-          textColor="text-white"
         >
-          <CheckIcon class="w-4 h-full" color="green" />
+          <CopyButton
+            text={claim.content.issuer
+              .replace('did:pkh:eth:', '')
+              .replace('did:pkh:tz:', '')
+              .replace('did:web:', '')}
+            color="green"
+            class="w-4 h-4"
+            icon={CheckIcon}
+          />
         </Tooltip>
       </div>
 
