@@ -1,12 +1,19 @@
 <script lang="ts">
-  import { useParams } from 'svelte-navigator';
-  import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
-  import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
+  import {
+    CheckIcon,
+    ClaimIcon,
+    CopyButton,
+    DownloadIcon,
+    IconLink,
+    ProfileImagePlaceholder,
+    Tooltip,
+  } from 'components';
   import { makeDownloadable } from 'src/components/page/home/uploadHelpers';
-  import MoreModal from 'src/components/page/home/MoreModal/MoreModal.svelte';
+  import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
   import { formatWebsite } from 'src/helpers/claims';
-  import { publicProfileViewTooltip } from './publicProfileViewHelper';
+  import { useParams } from 'svelte-navigator';
   import './publicProfileView.scss';
+  import { publicProfileViewTooltip } from './publicProfileViewHelper';
 
   export let claimsMap: ClaimMap;
 
@@ -78,17 +85,28 @@
   </div>
   {#if isCredentialSourceDropdownOpen}
     {#each Object.values(claimsMap).filter((x) => !!x.content) as claim}
-      <div class="flex w-full justify-between	my-2">
+      <div class="flex w-full justify-between items-center mb-1 pr-1">
+        <small class="text-gray-370">{claim.display.proof}</small>
+
+        <Tooltip
+          tooltip="Issued by {claim.content.issuer
+            .replace('did:pkh:eth:', '')
+            .replace('did:pkh:tz:', '')
+            .replace('did:web:', '')}"
+          backgroundColor="bg-gray-370"
+          textColor="text-white"
+        >
+          <CheckIcon class="w-4 h-full" color="green" />
+        </Tooltip>
+      </div>
+
+      <div class="flex w-full justify-between	mb-2">
         <div>{claim.display.display}</div>
-        <div>{claim.display.proof}</div>
-        <div>Issued by {claim.content.issuer.replace('did:pkh:eth:', '').replace('did:pkh:tz:', '').replace('did:web:', '')}</div>
-        <!-- TODO don't know how to add use DownloadIcon -->
-        <MoreModal
-          href={makeDownloadable(
-            claim.content || claim.preparedContent
-          )}
-          downloadFileName={`${claim.display.display}.json`}
-          {claim}
+        <IconLink
+          class="block mr-3 w-4 h-4"
+          icon={DownloadIcon}
+          href={makeDownloadable(claim.content || claim.preparedContent)}
+          download={`${claim.display.display}.json`}
         />
       </div>
     {/each}
