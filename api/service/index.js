@@ -74,7 +74,7 @@ async function retrieve(address, network, query) {
     const tzktEndpoint = `https://api.${network_string(network)}.tzkt.io`;
     let pkh = '';
     if (address.toLowerCase().startsWith("kt1")) {
-        pkh = fetch(`${tzktEndpoint}/v1/contracts/${address}`).creator.address
+        pkh = await fetch(`${tzktEndpoint}/v1/contracts/${address}`).then(res => res.json()).then(json => json.creator.address)
     } else {
         pkh = address
     }
@@ -89,7 +89,7 @@ async function retrieve(address, network, query) {
         tzktBase: tzktEndpoint,
         keplerClient: localKepler,
         hashContent: hashFunc,
-        nodeURL: `https://${network}.smartpy.io`,
+        nodeURL: `https://${network}.api.tez.ie`,
         signer: false,
         validateType: async (c, t) => {
             // Validate VC
