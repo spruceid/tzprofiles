@@ -1,4 +1,4 @@
-FROM node:15-alpine
+FROM node:16-alpine
 WORKDIR /tzprofiles
 COPY ./package.json ./package.json
 COPY ./package-lock.json ./package-lock.json

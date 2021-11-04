@@ -1,9 +1,10 @@
 <script lang="ts">
   import { LoadingSpinner } from 'components';
   import { PrimaryButton } from 'components/buttons';
-  import { Claim, newClaim } from 'src/helpers/claims';
+  import type { Claim } from 'src/helpers/claims';
+  import { newClaim } from 'src/helpers/claims';
+  import { alert, claimsStream, removeClaims } from 'src/store';
   import { selectDisplayStatus } from './uploadHelpers';
-  import { claimsStream, alert, removeClaims } from 'src/store';
 
   export let claim: Claim;
   export let onClose: () => void;
