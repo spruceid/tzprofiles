@@ -1,10 +1,19 @@
 <script lang="ts">
-  import { useParams } from 'svelte-navigator';
-  import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
+  import {
+    CheckIcon,
+    ClaimIcon,
+    CopyButton,
+    DownloadIcon,
+    IconLink,
+    ProfileImagePlaceholder,
+    Tooltip,
+  } from 'components';
+  import { makeDownloadable } from 'src/components/page/home/uploadHelpers';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
   import { formatWebsite } from 'src/helpers/claims';
-  import { publicProfileViewTooltip } from './publicProfileViewHelper';
+  import { useParams } from 'svelte-navigator';
   import './publicProfileView.scss';
+  import { publicProfileViewTooltip } from './publicProfileViewHelper';
 
   export let claimsMap: ClaimMap;
 
@@ -76,9 +85,35 @@
   </div>
   {#if isCredentialSourceDropdownOpen}
     {#each Object.values(claimsMap).filter((x) => !!x.content) as claim}
-      <div class="flex w-full justify-between	my-2">
+      <div class="flex w-full justify-between items-center mb-1 pr-3">
+        <small class="text-gray-370">{claim.display.proof}</small>
+
+        <Tooltip
+          tooltip="Issued by {claim.content.issuer
+            .replace('did:pkh:eth:', '')
+            .replace('did:pkh:tz:', '')
+            .replace('did:web:', '')}"
+        >
+          <CopyButton
+            text={claim.content.issuer
+              .replace('did:pkh:eth:', '')
+              .replace('did:pkh:tz:', '')
+              .replace('did:web:', '')}
+            color="green"
+            class="w-4 h-4"
+            icon={CheckIcon}
+          />
+        </Tooltip>
+      </div>
+
+      <div class="flex w-full justify-between	mb-2">
         <div>{claim.display.display}</div>
-        <div>{claim.display.proof}</div>
+        <IconLink
+          class="block mr-3 w-4 h-4"
+          icon={DownloadIcon}
+          href={makeDownloadable(claim.content || claim.preparedContent)}
+          download={`${claim.display.display}.json`}
+        />
       </div>
     {/each}
   {/if}

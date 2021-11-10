@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Nav, Footer, Alert } from 'components';
+  import { Alert, Nav } from 'components';
   let clazz: string;
-  export let backHome: boolean = false;
   export { clazz as class };
 </script>
 

@@ -7,10 +7,11 @@ import {
   EthereumIcon,
   DiscordIcon,
   GlobeIcon,
+  GitHubIcon,
 } from 'components';
-import * as tzp from 'tzprofiles';
-import { tzprofileChecker } from './publicAttestation';
-import type {variant as Attestation} from './publicAttestation'
+import * as tzp from '@spruceid/tzprofiles';
+import { makeAttestation, Subject } from './publicAttestation';
+import type { variant as Attestation } from './publicAttestation'
 
 // TODO: Move to store?
 export const exhaustiveCheck = (arg: never) => {
@@ -19,7 +20,12 @@ export const exhaustiveCheck = (arg: never) => {
 };
 
 // The types of claims supported by the UI.
-export type ClaimType = 'basic' | 'twitter' | 'ethereum' | 'discord' | 'dns';
+export type ClaimType = 'basic'
+  | 'twitter'
+  | 'ethereum'
+  | 'discord'
+  | 'dns'
+  | 'github';
 
 // NOTE: Ethereum backwards compatibility
 export type ClaimVCType =
@@ -28,7 +34,8 @@ export type ClaimVCType =
   | 'EthereumControl'
   | 'EthereumAddressControl'
   | 'DiscordVerification'
-  | 'DnsVerification';
+  | 'DnsVerification'
+  | 'GitHubVerification';
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -52,6 +59,8 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
         return 'discord';
       case 'DnsVerification':
         return 'dns';
+      case 'GitHubVerification':
+        return 'github';
       default:
     }
   }
@@ -60,12 +69,14 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
 };
 
 // All of the claim types to allow searching for exisitence in a collection.
+// NOTE: This actually determines the order on the screen?
 const claimTypes: Array<ClaimType> = [
   'basic',
   'twitter',
   'ethereum',
   'discord',
   'dns',
+  'github',
 ];
 
 export interface BasicDraft {
@@ -93,12 +104,18 @@ export interface DnsDraft {
   address: string;
 }
 
+export interface GitHubDraft {
+  handle: string;
+  gistId: string;
+}
+
 export type ClaimDraft =
   | BasicDraft
   | TwitterDraft
   | EthereumDraft
   | DiscordDraft
-  | DnsDraft;
+  | DnsDraft
+  | GitHubDraft;
 
 /*
  * UI Text & Assets
@@ -184,6 +201,17 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         title: 'DNS Verification',
         type: 'Domain Ownership',
       };
+    case 'github':
+      return {
+        description: 'This process is used to link your GitHub account to your Tezos account by entering your GitHub handle, signing a message using your private key, and finally posting a public Gist containing that signature.',
+        display: 'GitHub Account Verification',
+        icon: GitHubIcon,
+        route: '/github',
+        routeDescription: 'GitHub Account Verification',
+        proof: 'Gist',
+        title: 'GitHub Verification',
+        type: 'Social Media'
+      }
   }
 
   exhaustiveCheck(ct);
@@ -199,6 +227,14 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
         logo: '',
         website: '',
       };
+    case 'discord':
+      return {
+        handle: ''
+      }
+    case 'dns':
+      return {
+        address: ''
+      }
     case 'ethereum':
       return {
         address: '',
@@ -210,9 +246,15 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
         handle: '',
         tweetUrl: '',
       };
+
+    case 'github':
+      return {
+        handle: '',
+        gistId: ''
+      }
   }
 
-  // exhaustiveCheck(ct);
+  exhaustiveCheck(ct);
 };
 
 export interface Claim {
@@ -320,18 +362,21 @@ export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
       return {
         address: sameAsString.substring(4, sameAsString.length),
       };
+
+    }
+    case 'github': {
+      const { credentialSubject, evidence } = content;
+      const { sameAs } = credentialSubject;
+      const { gistId } = evidence;
+
+      return {
+        handle: sameAs.split("/")[sameAs.split("/").length - 1],
+        gistId,
+      }
     }
   }
-};
 
-export const checkIsWebsiteLive = async (url: string): Promise<boolean> => {
-  try {
-    await fetch(`https://${url}`);
-    return true;
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
+  exhaustiveCheck(ct);
 };
 
 export const formatWebsite = (url: string): string => {
@@ -365,6 +410,11 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
       draft = draft as TwitterDraft;
       return `https://www.twitter.com/${draft.handle}`;
     }
+    case 'github': {
+      draft = draft as GitHubDraft;
+      return `https://github.com/${draft.handle}`;
+    }
+    // TODO: Add DNS/Discord/Github
   }
 };
 
@@ -399,25 +449,25 @@ export const isUnsavedDraft = (c: Claim): boolean => {
  * Social Media Functions
  */
 
-export const getUnsignedAttestation = (attest: Attestation): string => {
-  return tzprofileChecker(attest)
+export const getUnsignedAttestation = (subject: Subject<Attestation>): string => {
+  return makeAttestation(subject)
 };
 
 export const getPreparedUnsignedAttestation = (
-  attest: Attestation
+  subject: Subject<Attestation>
 ): string => {
-  return `Tezos Signed Message: ${getUnsignedAttestation(attest)}`;
+  return `Tezos Signed Message: ${getUnsignedAttestation(subject)}`;
 };
 
 export const getSignedAttestation = async (
-  attest: Attestation,
+  subject: Subject<Attestation>,
   // NOTE: We only need this for the adder, can we get it from the wallet?
   userData: any,
   wallet: BeaconWallet
 ): Promise<string> => {
-  const msg = `${getPreparedUnsignedAttestation(attest)}`;
+  const msg = `${getPreparedUnsignedAttestation(subject)}`;
   const sig = await signClaim(userData, msg, wallet);
-  switch (attest.type) {
+  switch (subject.type) {
     case "dns":
       return `tzprofiles-verification=${sig}`;
     default:
@@ -426,7 +476,7 @@ export const getSignedAttestation = async (
 };
 
 export const getFullAttestation = async (
-  attest: Attestation,
+  subject: Subject<Attestation>,
   // TODO: Type better
   // NOTE: We only need this for the adder, can we get it from the wallet?
   userData: any,
@@ -434,12 +484,16 @@ export const getFullAttestation = async (
 ): Promise<string> => {
   // special case DNS.
   // It's this or do a different check on the verifcation side.
-  switch (attest.type) {
+  switch (subject.type) {
     case "dns":
-      return `${getUnsignedAttestation(attest)}=${await getSignedAttestation(attest, userData, wallet)}`;
-    default:
-      return `${getUnsignedAttestation(attest)}${await getSignedAttestation(attest, userData, wallet)}`;
+      return `${getUnsignedAttestation(subject)}=${await getSignedAttestation(subject, userData, wallet)}`;
+    case "discord":
+    case "github":
+    case "twitter":
+      return `${getUnsignedAttestation(subject)}${await getSignedAttestation(subject, userData, wallet)}`;
   }
+
+  exhaustiveCheck(subject.type);
 };
 
 /*

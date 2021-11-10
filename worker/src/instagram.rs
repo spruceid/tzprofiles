@@ -92,8 +92,50 @@ pub async fn retrieve_user(access_token: &str) -> Result<User> {
 
     Ok(res)
 }
+pub enum LoginFlow {
+    DEMO,
+    TZP,
+}
 
-pub async fn retrieve_post(user: &User, access_token: &str) -> Result<(String, String)> {
+pub async fn handle_login_flow(
+    client_id: String,
+    client_secret: String,
+    redirect_uri: String,
+    code: String,
+    flow: LoginFlow,
+) -> Result<KVWrapper> {
+        let auth = Auth {
+            client_id,
+            client_secret,
+            redirect_uri,
+            code,
+        };
+
+        let access_token: String = trade_code_for_token(auth).await?;
+        let user = retrieve_user(&access_token).await?;
+        let (sig, permalink) = match flow {
+         DEMO => retrieve_demo_post(&user, &access_token).await?,
+         TZP => retrieve_tzp_post(&user, &access_token).await?
+        };
+
+        Ok(KVWrapper {
+            key: user.username,
+            val: KVInner {
+                sig: sig,
+                link: permalink,
+            },
+        })
+}
+
+pub async fn retrieve_tzp_post(user: &User, access_token: &str) -> Result<(String, String)> {
+    retrieve_post(user, access_token, "__sig:").await
+}
+
+pub async fn retrieve_demo_post(user: &User, access_token: &str) -> Result<(String, String)> {
+    retrieve_post(user, access_token, "uuid:").await
+}
+
+pub async fn retrieve_post(user: &User, access_token: &str, target: &str) -> Result<(String, String)> {
     let url = format!(
         "https://graph.instagram.com/v11.0/{}/media?access_token={}",
         &user.id, access_token
@@ -113,8 +155,8 @@ pub async fn retrieve_post(user: &User, access_token: &str) -> Result<(String, S
         let post: CaptionWrapper = client.get(Url::parse(&url)?).send().await?.json().await?;
 
         for line in post.caption.split('\n').collect::<Vec<&str>>() {
-            if line.starts_with("__sig:") {
-                return Ok((line[6..].to_string(), post.permalink));
+            if line.starts_with(target) {
+                return Ok((line[target.len()..].to_string(), post.permalink));
             }
         }
     }

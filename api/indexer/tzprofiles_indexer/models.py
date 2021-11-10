@@ -6,6 +6,11 @@ class TZProfile(Model):
     contract = fields.CharField(36)
     valid_claims = fields.JSONField(null=True)
     invalid_claims = fields.JSONField(null=True)
+    errored = fields.BooleanField()
+    # twitter = fields.CharField(max_length=255)
+    # domain_name = fields.CharField(max_length=255)
+    # discord = fields.CharField(max_length=255)
+    # github = fields.CharField(max_length=255)
 
     class Meta:
         table = "tzprofiles"

@@ -4,6 +4,7 @@
   import Twitter from './Twitter.svelte';
   import Discord from './Discord.svelte';
   import Dns from './Dns.svelte';
+  import GitHub from './GitHub.svelte';
   import type { Claim } from 'src/helpers';
 
   export let claim: Claim;
@@ -19,6 +20,8 @@
   <Discord {claim} />
 {:else if claim?.type === 'dns'}
   <Dns {claim} />
+{:else if claim?.type === 'github'}
+  <GitHub {claim} />
 {:else}
   <div>Unknown claim type: {claim?.type}</div>
 {/if}

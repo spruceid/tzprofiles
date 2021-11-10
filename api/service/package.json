@@ -3,17 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@spruceid/tzprofiles": "^1.0.0",
     "cors": "^2.8.5",
-    "didkit-wasm-node": "^0.1.4",
+    "didkit-wasm-node": "^0.1.6",
     "express": "^4.17.1",
     "kepler-sdk": "^0.9.0",
-    "node-fetch": "^2.6.1",
-    "tzprofiles": "^1.6.0"
+    "node-fetch": "^3.0.0"
   }
 }

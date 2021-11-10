@@ -1,10 +1,9 @@
 from typing import cast
-from tzprofiles_indexer.handlers.on_configure import TZPDatasource
-from dipdup.models import Origination
+
 from dipdup.context import HandlerContext
+from dipdup.models import Origination
 
 import tzprofiles_indexer.models as models
-
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
 
 

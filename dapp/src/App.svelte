@@ -78,11 +78,16 @@
 </style>
 
 <script lang="ts">
-  import { Router, Route } from 'svelte-navigator';
+import { Router, Route } from 'svelte-navigator';
   import {
     Address,
     Connect,
     Ethereum,
+    GistId,
+    GistVersion,
+    GitHub,
+    GitHubVerification,
+    GitHubVerificationMessage,
     Faq,
     Twitter,
     BasicProfile,
@@ -150,6 +155,9 @@
   <Route path="ethereum">
     <Ethereum />
   </Route>
+  <Route path="github">
+    <GitHub />
+  </Route>
   <Route path="terms-of-service">
     <TermsOfService />
   </Route>
@@ -171,6 +179,12 @@
   <Route path="BasicProfile">
     <BasicProfileContext />
   </Route>
+  <Route path="GitHubVerification">
+    <GitHubVerification />
+  </Route>
+  <Route path="GitHubVerificationMessage">
+    <GitHubVerificationMessage />
+  </Route>
   <Route path="TwitterVerification">
     <TwitterVerification />
   </Route>
@@ -185,6 +199,12 @@
   </Route>
   <Route path="tweetId">
     <TweetId />
+  </Route>
+  <Route path="gistId">
+    <GistId />
+  </Route>
+  <Route path="gistVersion">
+    <GistVersion />
   </Route>
   <Route path="EthereumAddressControl">
     <EthereumAddressControl />

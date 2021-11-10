@@ -79,8 +79,8 @@
                   twitterClaim = await getPreparedUnsignedAttestation(
                     {
                       type: 'twitter',
-                      pubkey: $userData.account.address,
-                      handle: twitterHandle,
+                      id: twitterHandle,
+                      key: $userData.account.address,
                     }
                   );
                 } catch (err) {
@@ -94,7 +94,7 @@
               });
             }}
             class="ml-4 lg:ml-0"
-            disabled={twitterHandle.length < 4}
+            disabled={twitterHandle.length < 1}
             small
           />
         {/if}
@@ -119,8 +119,8 @@
                 tweetMessage = await getFullAttestation(
                   {
                     type: 'twitter',
-                    pubkey: $userData.account.address,
-                    handle: twitterHandle,
+                    id: twitterHandle,
+                    key: $userData.account.address,
                   },
                   $userData,
                   $wallet
@@ -180,7 +180,7 @@
           text="Verify Tweet"
           class="lg:w-48"
           onClick={() => {
-            next(async () => verifyTweet($userData, twitterHandle, tweetURL, await $wallet.getPKH())).then(
+            next(async () => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {
                 let nextClaimMap = readClaimMap;
                 nextClaimMap.twitter.preparedContent = JSON.parse(vc);

@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { alert } from 'src/store';
   import { ClipboardIcon } from 'components';
+  import { alert } from 'src/store';
+  import { onMount, SvelteComponent } from 'svelte';
 
+  export let icon: typeof SvelteComponent = null;
   export let text: string | Promise<any> | (() => Promise<any>) = '';
   export let color: string = '#d1d1d1';
   export let displayIcon: boolean = true;
@@ -25,7 +26,7 @@
       );
       alert.set({
         variant: 'success',
-        message: `Copied: ${copiedText.substring(0, 50)} ...`,
+        message: `Copied: ${copiedText.substring(0, 50)}`,
       });
     };
   });
@@ -40,7 +41,11 @@
 >
   {#if displayIcon}
     <div class="flex">
-      <ClipboardIcon class={clazz} {color} />
+      {#if !icon}
+        <ClipboardIcon class={clazz} {color} />
+      {:else}
+        <svelte:component this={icon} {color} />
+      {/if}
       <slot />
     </div>
   {:else}

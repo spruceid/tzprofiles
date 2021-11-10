@@ -6,7 +6,7 @@ import { Tzip16Module } from '@taquito/tzip16';
 import { encodeKey } from '@taquito/utils';
 import NetworkType from 'enums/NetworkType';
 import BeaconEvent from 'enums/BeaconEvent';
-import * as contractLib from 'tzprofiles';
+import * as contractLib from '@spruceid/tzprofiles';
 import * as helpers from './helpers/index';
 
 import { Kepler, authenticator, Action, getOrbitId } from 'kepler-sdk';
@@ -308,6 +308,25 @@ wallet.subscribe((w) => {
                     `Verifying ${c}: ${verifyJSON.errors.join(', ')}`
                   );
                 }
+                let vc = JSON.parse(c);
+                let type_ = claimTypeFromVC(vc);
+                switch (type_) {
+                  case 'basic':
+                  case 'twitter':
+                  case 'discord':
+                  case 'dns':
+                  case 'github':
+                    if (vc.credentialSubject.id != `did:pkh:tz:${pkh}`) {
+                      throw new Error(`Credential subject not the profile's owner.`)
+                    }
+                    break;
+                  case 'ethereum':
+                    if (vc.credentialSubject.sameAs != pkh) {
+                      throw new Error(`Credential subject not the profile's owner.`)
+                    }
+                    break;
+                  default:
+                }
                 break;
               }
               default:
@@ -334,9 +353,8 @@ wallet.subscribe((w) => {
                 let claimType = claimTypeFromVC(parsed);
                 if (!claimType) {
                   throw new Error(
-                    `Unknown claim type: ${
-                      parsed?.type?.length &&
-                      parsed.type[parsed.type.length - 1]
+                    `Unknown claim type: ${parsed?.type?.length &&
+                    parsed.type[parsed.type.length - 1]
                     }`
                   );
                 }

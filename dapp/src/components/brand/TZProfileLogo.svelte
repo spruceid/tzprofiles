@@ -1,6 +1,5 @@
 <script lang="ts">
   let clazz: string = '';
-  export let color: string = 'white';
   export { clazz as class };
 </script>
 
@@ -9,6 +8,7 @@
   height="55"
   viewBox="0 0 56 55"
   fill="none"
+  class={clazz}
   xmlns="http://www.w3.org/2000/svg"
 >
   <path

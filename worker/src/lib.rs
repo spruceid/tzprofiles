@@ -11,11 +11,13 @@ mod instagram;
 mod twitter;
 mod utils;
 
-use attestation::Attestation;
+use attestation::{attest, Subject, SubjectType};
 
 use anyhow::{anyhow, Result};
 use chrono::{SecondsFormat, Utc};
+use did_web::DIDWeb;
 use js_sys::Promise;
+use regex::Regex;
 use ssi::{
     blakesig::hash_public_key,
     jwk::JWK,
@@ -75,32 +77,46 @@ pub fn extract_signature(post: String) -> Result<(String, String)> {
 }
 
 #[wasm_bindgen]
-pub async fn handle_instagram_login(
+pub async fn handle_tzp_instagram_login(
     client_id: String,
     client_secret: String,
     redirect_uri: String,
     code: String,
 ) -> Promise {
     future_to_promise(async move {
-        let auth = instagram::Auth {
-            client_id,
-            client_secret,
-            redirect_uri,
-            code,
-        };
+        let kv = jserr!(
+            instagram::handle_login_flow(
+                client_id,
+                client_secret,
+                redirect_uri,
+                code,
+                instagram::LoginFlow::TZP,
+            )
+            .await
+        );
+        return Ok(jserr!(serde_json::to_string(&kv)).into());
+    })
+}
 
-        let access_token: String = jserr!(instagram::trade_code_for_token(auth).await);
-        let user = jserr!(instagram::retrieve_user(&access_token).await);
-        let (sig, permalink) = jserr!(instagram::retrieve_post(&user, &access_token).await);
-
-        Ok(jserr!(serde_json::to_string(&instagram::KVWrapper {
-            key: user.username,
-            val: instagram::KVInner {
-                sig: sig,
-                link: permalink,
-            },
-        }))
-        .into())
+#[wasm_bindgen]
+pub async fn handle_demo_instagram_login(
+    client_id: String,
+    client_secret: String,
+    redirect_uri: String,
+    code: String,
+) -> Promise {
+    future_to_promise(async move {
+        let kv = jserr!(
+            instagram::handle_login_flow(
+                client_id,
+                client_secret,
+                redirect_uri,
+                code,
+                instagram::LoginFlow::DEMO,
+            )
+            .await
+        );
+        return Ok(jserr!(serde_json::to_string(&kv)).into());
     })
 }
 
@@ -111,18 +127,17 @@ pub async fn witness_instagram_post(
     ig_handle: String,
     ig_link: String,
     sig: String,
-    sig_target: String,
-    sig_type: String,
 ) -> Promise {
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+        let pkh = jserr!(hash_public_key(&pk));
 
-        let mut vc = if sig_type == "tezos" {
-            jserr!(instagram::build_tzp_instagram_vc(&pk, &ig_handle))
-        } else {
-            return jserr!(Err(anyhow!(format!("Unknown signature type {}", sig_type))));
-        };
+        let mut vc = jserr!(instagram::build_tzp_instagram_vc(&pk, &ig_handle));
+        let sig_target = attest(SubjectType::Instagram(Subject {
+            id: ig_handle.clone(),
+            key: pkh,
+        }));
 
         let mut props = HashMap::new();
         props.insert(
@@ -153,7 +168,8 @@ pub async fn witness_instagram_post(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -161,16 +177,6 @@ pub async fn witness_instagram_post(
 
         Ok(jserr!(serde_json::to_string(&vc)).into())
     })
-}
-
-fn trim_newlines(s: &mut String) {
-    if s.ends_with('\n') {
-        s.pop();
-        if s.ends_with('\r') {
-            s.pop();
-        }
-        return trim_newlines(s);
-    }
 }
 
 #[wasm_bindgen]
@@ -199,19 +205,18 @@ pub async fn witness_tweet(
 
         let (sig_target, sig) = jserr!(extract_signature(twitter_res.data[0].text.clone()));
 
-        let correct_attestation = attestation::Twitter {
-            handle: twitter_handle.clone(),
-            pubkey: pkh.clone(),
-        }.attest();
+        let correct_attestation = attest(SubjectType::Twitter(Subject {
+            id: twitter_handle.clone(),
+            key: pkh.clone(),
+        }));
 
-        let v0_attestation = attestation::TwitterV0 {
-            handle: twitter_handle.clone(),
-            pubkey: pkh.clone(),
-        }.attest();
+        let v0_attestation = attest(SubjectType::TwitterV0(Subject {
+            id: twitter_handle.clone(),
+            key: pkh.clone(),
+        }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation.clone()) || trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut v0_attestation.clone()) {
-            // jserr!(Err(anyhow!(format!("tweet did not match attestation requirement {} v {}", sig_target, correct_attestation))))
-            jserr!(Err(anyhow!(format!("{}{}", sig_target, correct_attestation))))
+        if sig_target != correct_attestation && sig_target != v0_attestation {
+            jserr!(Err(anyhow!("Could not match attestation")))
         };
 
         let mut props = HashMap::new();
@@ -240,15 +245,14 @@ pub async fn witness_tweet(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
-        info!("{:?}", vc);
-
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -272,6 +276,15 @@ pub async fn witness_discord(
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+
+        let re = Regex::new(r"^[0-9]+$").unwrap();
+        if !re.is_match(&channel_id) {
+            jserr!(Err(anyhow!("Invalid channel ID.")));
+        }
+        if !re.is_match(&message_id) {
+            jserr!(Err(anyhow!("Invalid message ID.")));
+        }
+
         let discord_res = jserr!(
             discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
                 .await
@@ -292,12 +305,12 @@ pub async fn witness_discord(
         }
 
         let (sig_target, sig) = jserr!(extract_signature(discord_res.content));
-        let mut correct_attestation = attestation::Discord {
-            handle: discord_handle.clone(),
-            pubkey: pkh.clone(),
-        }.attest();
+        let correct_attestation = attest(SubjectType::Discord(Subject {
+            id: discord_handle.clone(),
+            key: pkh.clone(),
+        }));
 
-        if trim_newlines(&mut sig_target.clone()) != trim_newlines(&mut correct_attestation) {
+        if sig_target != correct_attestation {
             jserr!(Err(anyhow!("Post did not match attestation requirement")))
         };
 
@@ -342,7 +355,8 @@ pub async fn witness_discord(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -365,16 +379,21 @@ pub async fn dns_lookup(
         let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
+        let re = Regex::new(r"^(([a-zA-Z]([a-zA-Z\d-]*[a-zA-Z\d])*)\.)+[a-zA-Z]{2,}$").unwrap();
+        if !re.is_match(&domain) {
+            jserr!(Err(anyhow!("Invalid domain name.")));
+        }
+
         let dns_result = jserr!(dns::retrieve_txt_records(domain.clone()).await);
 
         let mut vc = jserr!(dns::build_dns_vc(&pk, &domain));
 
         let signature_to_resolve = jserr!(dns::find_signature_to_resolve(dns_result));
 
-        let comp_target = attestation::Dns {
-            domain: domain,
-            pubkey: pkh,
-        }.attest();
+        let comp_target = attest(SubjectType::Dns(Subject {
+            id: domain,
+            key: pkh,
+        }));
 
         let sig = jserr!(dns::extract_dns_signature(signature_to_resolve));
         jserr!(verify_signature(&comp_target, &pk, &sig));
@@ -410,7 +429,8 @@ pub async fn dns_lookup(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );
@@ -432,25 +452,70 @@ pub async fn gist_lookup(
     future_to_promise(async move {
         let pk: JWK = jserr!(jwk_from_tezos_key(&public_key_tezos));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
+        let pkh = jserr!(hash_public_key(&pk));
+
+        let re = Regex::new(r"^[a-zA-Z0-9]{32}$").unwrap();
+        if !re.is_match(&gist_id) {
+            jserr!(Err(anyhow!("Gist ID invalid.")));
+        }
 
         let gist_result = jserr!(github::retrieve_gist_message(gist_id.clone()).await);
-
         let mut vc = jserr!(github::build_gist_vc(&pk, github_username.clone()));
 
         // check for matching usernames
         if github_username.to_lowercase() != gist_result.owner.login.to_lowercase() {
             jserr!(Err(anyhow!(format!(
-                "Different Github username {} v. {}",
+                "Different GitHub username {} v. {}",
                 github_username, gist_result.owner.login
             ))));
         }
 
-        let (sig_target, sig) = jserr!(extract_signature(
-            gist_result.files.tzprofiles_verification.content.clone()
-        ));
+        let mut done = false;
 
-        jserr!(verify_signature(&sig_target, &pk, &sig));
+        for (_k, v) in gist_result.files {
+            let object = match v.as_object() {
+                None => continue,
+                Some(x) => x,
+            };
 
+            let str_val = match object.get("content") {
+                None => continue,
+                Some(x) => x,
+            };
+
+            let post = match str_val.as_str() {
+                None => continue,
+                Some(x) => x,
+            };
+
+            let (sig_target, sig) = match extract_signature(post.to_string()) {
+                Err(_) => continue,
+                Ok((x, y)) => (x, y),
+            };
+
+            let correct_attestation = attest(SubjectType::GitHub(Subject {
+                id: github_username.clone(),
+                key: pkh.clone(),
+            }));
+
+            if sig_target != correct_attestation {
+                continue;
+            }
+
+            match verify_signature(&sig_target, &pk, &sig) {
+                Ok(_) => {
+                    done = true;
+                    break;
+                }
+                Err(_) => {}
+            };
+        }
+
+        if !done {
+            jserr!(Err(anyhow!(
+                "Did not find file with valid signature in given Gist"
+            )))
+        }
         let mut props = HashMap::new();
         props.insert(
             "publicKeyJwk".to_string(),
@@ -458,6 +523,10 @@ pub async fn gist_lookup(
         );
 
         let mut evidence_map = HashMap::new();
+        evidence_map.insert(
+            "handle".to_string(),
+            serde_json::Value::String(github_username),
+        );
 
         evidence_map.insert(
             "timestamp".to_string(),
@@ -465,16 +534,6 @@ pub async fn gist_lookup(
         );
 
         evidence_map.insert("gistId".to_string(), serde_json::Value::String(gist_id));
-
-        evidence_map.insert(
-            "gistApiAddress".to_string(),
-            serde_json::Value::String("https://api.github.com/gists/".to_string()),
-        );
-
-        evidence_map.insert(
-            "gistMessage".to_string(),
-            serde_json::Value::String(gist_result.files.tzprofiles_verification.content.clone()),
-        );
 
         evidence_map.insert(
             "gistVersion".to_string(),
@@ -487,7 +546,7 @@ pub async fn gist_lookup(
 
         let evidence = Evidence {
             id: None,
-            type_: vec!["GithubVerificationMessage".to_string()],
+            type_: vec!["GitHubVerificationMessage".to_string()],
             property_set: Some(evidence_map),
         };
         vc.evidence = Some(OneOrMany::One(evidence));
@@ -498,7 +557,8 @@ pub async fn gist_lookup(
                 &LinkedDataProofOptions {
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
-                }
+                },
+                &DIDWeb
             )
             .await
         );

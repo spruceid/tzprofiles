@@ -1,10 +1,7 @@
-from dipdup.models import OperationData, Transaction, Origination, BigMapDiff, BigMapData, BigMapAction
-from dipdup.context import HandlerContext, RollbackHandlerContext
-from typing import Optional
 from typing import cast
 
-
-import tzprofiles_indexer.models as models
+from dipdup.context import HandlerContext
+from dipdup.models import Origination
 
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
 
