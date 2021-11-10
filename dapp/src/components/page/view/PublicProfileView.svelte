@@ -1,35 +1,28 @@
 <script lang="ts">
-  import { searchAddress } from 'src/store';
   import { useParams } from 'svelte-navigator';
   import { CopyButton, ClaimIcon, ProfileImagePlaceholder } from 'components';
   import type { BasicDraft, Claim, ClaimMap } from 'src/helpers';
+  import { formatWebsite } from 'src/helpers/claims';
+  import { publicProfileViewTooltip } from './publicProfileViewHelper';
   import './publicProfileView.scss';
 
   export let claimsMap: ClaimMap;
+
   // Specially treat the basic profile.
   const basicClaim: Claim | false =
     claimsMap?.basic?.content && claimsMap.basic;
   const basicDraft = basicClaim?.draft as BasicDraft;
-
   const otherClaims: Array<Claim> = Object.values(claimsMap).filter(
     (x) => x.type !== 'basic' && x.content
   );
-
   const params = useParams();
-
-  const formatWebsite = (url: string): string => {
-    if (url.startsWith('https://' || 'www.' || 'http://')) {
-      return url;
-    }
-    return 'http://' + url;
-  };
 
   let isCredentialSourceDropdownOpen = false;
   $: shouldDisplayOriginalImage = true;
 </script>
 
 <div
-  class="self-center w-full break-all md:max-w-lg lg:max-w-lg p-6 fade-in rounded-xl bg-white dropshadow-default"
+  class="self-center w-full break-all p-6 fade-in rounded-xl bg-white dropshadow-default public-profile-container"
 >
   {#if basicClaim}
     {#if !basicDraft.logo || !shouldDisplayOriginalImage}
@@ -48,16 +41,17 @@
       {basicDraft.alias || ''}
     </div>
   {/if}
-
   <div class="flex flex-row items-center">
     <div class="flex flex-row items-center cursor-pointer bubble-outline">
       <div class="address-container">
         {$params.address}
       </div>
-      <CopyButton text={$searchAddress} color="gray" class="w-4 h-4 ml-2" />
+      <CopyButton text={$params.address} color="gray" class="w-4 h-4 ml-2" />
     </div>
+  </div>
+  <div class="flex flex-row items-center mt-2">
     {#each Object.values(otherClaims) as claim}
-      <ClaimIcon {claim} />
+      <ClaimIcon {claim} tooltip={publicProfileViewTooltip(claim)} />
     {/each}
   </div>
 
@@ -74,13 +68,12 @@
     </div>
   {/if}
   <div
-    class="cursor-pointer font-semibold mb-4"
+    class="cursor-pointer font-semibold my-4"
     on:click={() =>
       (isCredentialSourceDropdownOpen = !isCredentialSourceDropdownOpen)}
   >
     View Credential Sources
   </div>
-
   {#if isCredentialSourceDropdownOpen}
     {#each Object.values(claimsMap).filter((x) => !!x.content) as claim}
       <div class="flex w-full justify-between	my-2">

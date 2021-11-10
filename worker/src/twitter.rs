@@ -1,5 +1,5 @@
 use crate::SPRUCE_DIDWEB;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use chrono::{SecondsFormat, Utc};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
 use serde::Deserialize;

@@ -15,3 +15,8 @@ export { default as ViewIcon } from './Eye.svelte';
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 export { default as Eye } from './Eye.svelte';
 export { default as InfoIcon } from './InfoIcon.svelte';
+export { default as DiscordIcon } from './DiscordIcon.svelte';
+export { default as EditIcon } from './EditIcon.svelte';
+export { default as DeleteIcon } from './DeleteIcon.svelte';
+export { default as EllipseIcon } from './EllipseIcon.svelte';
+export { default as GlobeIcon } from './GlobeIcon.svelte';

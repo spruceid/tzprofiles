@@ -1,6 +1,11 @@
-import {Kepler, getOrbitId} from 'kepler-sdk';
+import { Kepler, getOrbitId } from 'kepler-sdk';
 
-export const addToKepler = async (kepler: Kepler, orbit: string, ...obj: Array<any>) => {
+export const addToKepler = async (
+  kepler: Kepler,
+  orbit: string,
+  pkh: string,
+  ...obj: Array<any>
+) => {
   obj.forEach((o) => console.log(o));
   if (kepler) {
     // Get around the error of possibly passing nothing.
@@ -10,6 +15,10 @@ export const addToKepler = async (kepler: Kepler, orbit: string, ...obj: Array<a
     }
 
     const res = await kepler.put(orbit, f, ...obj);
+    console.log('RES', res);
+    if (res.status === 404) {
+      await saveToKepler(kepler, pkh, ...[f, ...obj]);
+    }
     if (!res.ok || res.status !== 200) {
       throw new Error(`Failed to create orbit: ${res.statusText}`);
     }
@@ -22,7 +31,11 @@ export const addToKepler = async (kepler: Kepler, orbit: string, ...obj: Array<a
   throw new Error('No Kepler integration found');
 };
 
-export const saveToKepler = async (kepler: Kepler, pkh: string, ...obj: Array<any>) => {
+export const saveToKepler = async (
+  kepler: Kepler,
+  pkh: string,
+  ...obj: Array<any>
+) => {
   obj.forEach((o) => console.log(o));
   if (kepler) {
     // Get around the error of possibly passing nothing.
@@ -40,11 +53,18 @@ export const saveToKepler = async (kepler: Kepler, pkh: string, ...obj: Array<an
 
       return addresses.split('\n');
     } catch (e) {
-      console.warn(`Failed in create new orbit with error: ${e?.message || JSON.stringify(e)}`)
-      console.warn("Trying existing orbit")
+      console.warn(
+        `Failed in create new orbit with error: ${
+          e?.message || JSON.stringify(e)
+        }`
+      );
+      console.warn('Trying existing orbit');
       try {
-        let id = await getOrbitId(pkh, {domain: process.env.KEPLER_URL, index: 0});
-        return await addToKepler(kepler, id, ...[f, ...obj]);
+        let id = await getOrbitId(pkh, {
+          domain: process.env.KEPLER_URL,
+          index: 0,
+        });
+        return await addToKepler(kepler, id, pkh, ...[f, ...obj]);
       } catch (err) {
         throw err;
       }

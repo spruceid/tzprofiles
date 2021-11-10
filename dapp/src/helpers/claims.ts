@@ -1,31 +1,34 @@
 import SvelteComponentDev from '*.svelte';
 import { BeaconWallet } from '@taquito/beacon-wallet';
-import {PersonOutlined, TwitterIcon, EthereumIcon} from 'components';
 import { signClaim } from 'src/utils';
+import {
+  PersonOutlined,
+  TwitterIcon,
+  EthereumIcon,
+  DiscordIcon,
+  GlobeIcon,
+} from 'components';
 import * as tzp from 'tzprofiles';
+import { tzprofileChecker } from './publicAttestation';
+import type {variant as Attestation} from './publicAttestation'
 
 // TODO: Move to store?
 export const exhaustiveCheck = (arg: never) => {
   // Forces the type checker to complain if you've missed a sum type.
   // See https://dev.to/babak/exhaustive-type-checking-with-typescript-4l3f
-}
+};
+
+// The types of claims supported by the UI.
+export type ClaimType = 'basic' | 'twitter' | 'ethereum' | 'discord' | 'dns';
 
 // NOTE: Ethereum backwards compatibility
-export type ClaimVCType = "BasicProfile" 
-  | 'TwitterVerification' 
-  | 'EthereumControl' 
+export type ClaimVCType =
+  | 'BasicProfile'
+  | 'TwitterVerification'
+  | 'EthereumControl'
   | 'EthereumAddressControl'
-
-export type ClaimType = 'basic' 
-  | 'ethereum' 
-  | 'twitter';
-
-// All of the claim types to allow searching for exisitence in a collection.
-const claimTypes: Array<ClaimType> = [
-  'basic', 
-  'ethereum',
-  'twitter'  
-];
+  | 'DiscordVerification'
+  | 'DnsVerification';
 
 // TODO: Type better? Define what VCs look like generically?
 export const claimTypeFromVC = (vc: any): ClaimType | false => {
@@ -38,79 +41,105 @@ export const claimTypeFromVC = (vc: any): ClaimType | false => {
 
     switch (type) {
       case 'BasicProfile':
-        return 'basic'
+        return 'basic';
       // NOTE: Ethereum backwards compatibility
       case 'EthereumControl':
       case 'EthereumAddressControl':
         return 'ethereum';
       case 'TwitterVerification':
         return 'twitter';
+      case 'DiscordVerification':
+        return 'discord';
+      case 'DnsVerification':
+        return 'dns';
       default:
     }
   }
 
   return false;
-}
+};
+
+// All of the claim types to allow searching for exisitence in a collection.
+const claimTypes: Array<ClaimType> = [
+  'basic',
+  'twitter',
+  'ethereum',
+  'discord',
+  'dns',
+];
 
 export interface BasicDraft {
-  alias: string,
-  description: string,
-  logo: string
-  website: string
+  alias: string;
+  description: string;
+  logo: string;
+  website: string;
 }
 
 export interface EthereumDraft {
-  sameAs: string,
-  address: string,
+  sameAs: string;
+  address: string;
 }
 
 export interface TwitterDraft {
-  handle: string
-  tweetUrl: string
+  handle: string;
+  tweetUrl: string;
 }
 
-export type ClaimDraft = BasicDraft 
+export interface DiscordDraft {
+  handle: string;
+}
+
+export interface DnsDraft {
+  address: string;
+}
+
+export type ClaimDraft =
+  | BasicDraft
+  | TwitterDraft
   | EthereumDraft
-  | TwitterDraft 
+  | DiscordDraft
+  | DnsDraft;
 
 /*
-* UI Text & Assets
-*/
-export interface ClaimUIAssets { // Long form description of the claim creation process
-  description: string,
+ * UI Text & Assets
+ */
+export interface ClaimUIAssets {
+  // Long form description of the claim creation process
+  description: string;
   // Short form display text of the claim
-  display: string,
+  display: string;
   // Icon of the claim shown
-  icon: typeof SvelteComponentDev,
+  icon: typeof SvelteComponentDev;
   // Route of the create UI for the given claim
-  route: string,
+  route: string;
   // Description of route for the UI
-  routeDescription: string,
+  routeDescription: string;
   // Proof type of the claim
-  proof: string,
+  proof: string;
   // Title of the claim in the UI
-  title: string,
+  title: string;
   // Type of the claim displayed to the user
-  type: string,
-};
+  type: string;
+}
 
 export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
   switch (ct) {
-    case 'basic': 
+    case 'basic':
       return {
-        description: 'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
+        description:
+          'This process is used to generate some basic profile information about yourself by filling in an alias, description, and logo for your profile.',
         display: 'Basic Profile Information',
         icon: PersonOutlined,
         route: '/basic-profile',
         routeDescription: 'Basic Profile Information',
         proof: 'Self-Attestation',
         title: 'Basic Profile',
-        type: 'Basic Profile'
-      }
-
-    case 'ethereum': 
+        type: 'Basic Profile',
+      };
+    case 'ethereum':
       return {
-        description: 'This process is used to link your Ethereum address to your Tezos account by connecting to MetaMask, signing using your Ethereum address, and finally receiving the verification.',
+        description:
+          'This process is used to link your Ethereum address to your Tezos account by connecting to MetaMask, signing using your Ethereum address, and finally receiving the verification.',
         display: 'Ethereum Address Ownership',
         icon: EthereumIcon,
         route: '/ethereum',
@@ -118,11 +147,11 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         proof: 'Address Signature',
         title: 'Ethereum Address Ownership',
         type: 'Address Ownership',
-      }
-
+      };
     case 'twitter':
-      return  {
-        description: 'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
+      return {
+        description:
+          'This process is used to link your Twitter account to your Tezos account by signing a message using your private key, entering your Twitter handle, and finally, tweeting that message.',
         display: 'Twitter Account Verification',
         icon: TwitterIcon,
         route: '/twitter',
@@ -130,21 +159,45 @@ export const newDisplay = (ct: ClaimType): ClaimUIAssets => {
         proof: 'Tweet',
         title: 'Twitter Verification',
         type: 'Social Media',
-      }
+      };
+    case 'discord':
+      return {
+        description:
+          'This process is used to link your Discord account to your Tezos account by signing a message using your private key, entering your Discord handle, and finally, sending that message in a channel.',
+        display: 'Discord Account Verification',
+        icon: DiscordIcon,
+        route: '/discord',
+        routeDescription: 'Discord Account Information',
+        proof: 'Discord Message',
+        title: 'Discord Verification',
+        type: 'Social Media',
+      };
+    case 'dns':
+      return {
+        description:
+          'This process is used to link your web domain name to your Tezos account by signing a message using your private key, storing the signature in a TXT record, and finally retrieving that data for verification.',
+        display: 'Web Domain Verification',
+        icon: GlobeIcon,
+        route: '/dns',
+        routeDescription: 'Domain Ownership',
+        proof: 'TXT Record',
+        title: 'DNS Verification',
+        type: 'Domain Ownership',
+      };
   }
 
   exhaustiveCheck(ct);
-}
+};
 
 // Creates default empty draft for first time claim creation
-export const newDraft = (ct: ClaimType): ClaimDraft => { 
-  switch (ct) { 
-    case 'basic': 
+export const newDraft = (ct: ClaimType): ClaimDraft => {
+  switch (ct) {
+    case 'basic':
       return {
         alias: '',
         description: '',
         logo: '',
-        website: ''
+        website: '',
       };
     case 'ethereum':
       return {
@@ -155,54 +208,54 @@ export const newDraft = (ct: ClaimType): ClaimDraft => {
     case 'twitter':
       return {
         handle: '',
-        tweetUrl: ''
+        tweetUrl: '',
       };
   }
 
-  exhaustiveCheck(ct);
-}
+  // exhaustiveCheck(ct);
+};
 
 export interface Claim {
   // the saved content from Kepler which the claim represents
   // TODO: Replace object with a sum type?
-  content: object | false,
+  content: object | false;
 
-  contractType: tzp.ClaimType,
+  contractType: tzp.ClaimType;
 
   // Text and images used to render the claim
-  display: ClaimUIAssets,
+  display: ClaimUIAssets;
 
   // The user supplied changes to the concept.
   // If content->draft !deepEquals draft, show create/update UI.
-  draft: ClaimDraft,
+  draft: ClaimDraft;
 
   // The kepler reference to the existing claim, false when not saved to kepler.
   irl: string | false;
 
   // valid signed JSON VC
   // TODO: Use content's type if it gets more specific.
-  preparedContent: object | false,
+  preparedContent: object | false;
 
   // Is the claim saved to the chain?
-  onChain: boolean,
+  onChain: boolean;
   // Type of claim
   type: ClaimType;
 }
 
 export interface ClaimMap {
-  [index: string]: Claim
+  [index: string]: Claim;
 }
 
 export const addDefaults = (cm: ClaimMap): ClaimMap => {
   for (let i = 0, n = claimTypes.length; i < n; i++) {
-    let ct  = claimTypes[i];
+    let ct = claimTypes[i];
     if (!cm[ct]) {
       cm[ct] = newClaim(ct);
     }
   }
 
-  return cm
-}
+  return cm;
+};
 
 // TODO: Make contractType a parameter?
 export const newClaim = (ct: ClaimType): Claim => {
@@ -214,50 +267,79 @@ export const newClaim = (ct: ClaimType): Claim => {
     preparedContent: false,
     onChain: false,
     type: ct,
-    irl: false
-  }
-}
+    irl: false,
+  };
+};
 
 // TODO: Replace any with more intelligent typing
 export const contentToDraft = (ct: ClaimType, content: any): ClaimDraft => {
   switch (ct) {
-    case "basic": {
-      const {credentialSubject} = content;
-      const {alias, description, logo, website} = credentialSubject;
+    case 'basic': {
+      const { credentialSubject } = content;
+      const { alias, description, logo, website } = credentialSubject;
 
       return {
         alias,
         description,
         logo,
-        website
-      }
+        website,
+      };
     }
     case 'ethereum': {
-      const {credentialSubject} = content;
+      const { credentialSubject } = content;
       // NOTE: Ethereum backwards compat.
-      const {address, wallet, sameAs} = credentialSubject;
+      const { address, wallet, sameAs } = credentialSubject;
       return {
         address: address || wallet,
-        sameAs
-      }
+        sameAs,
+      };
     }
-
-    case "twitter": {
-      const {evidence, credentialSubject} = content;
-      const {sameAs} = credentialSubject;
-      const {tweetId} = evidence;
+    case 'twitter': {
+      const { evidence, credentialSubject } = content;
+      const { sameAs } = credentialSubject;
+      const { tweetId } = evidence;
       const handle = sameAs.replace('https://twitter.com/', '');
       const tweetUrl = `https://twitter.com/${handle}/status/${tweetId}`;
 
       return {
         handle,
-        tweetUrl
-      }
+        tweetUrl,
+      };
+    }
+    case 'discord': {
+      const { evidence } = content;
+
+      return {
+        handle: evidence.handle,
+      };
+    }
+    case 'dns': {
+      const { credentialSubject } = content;
+      let sameAsString: string = credentialSubject.sameAs;
+
+      return {
+        address: sameAsString.substring(4, sameAsString.length),
+      };
     }
   }
+};
 
-  exhaustiveCheck(ct);
-}
+export const checkIsWebsiteLive = async (url: string): Promise<boolean> => {
+  try {
+    await fetch(`https://${url}`);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+export const formatWebsite = (url: string): string => {
+  if (url.match(/^(https:\/\/|http:\/\/|www\.).*$/g)) {
+    return url;
+  }
+  return 'http://' + url;
+};
 
 export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
   if (!c.content) {
@@ -284,12 +366,13 @@ export const claimToOutlink = (ct: ClaimType, c: Claim): string => {
       return `https://www.twitter.com/${draft.handle}`;
     }
   }
-
-  exhaustiveCheck(ct);
-}
+};
 
 // Create claim from a ClaimType and the result of tzprofilesClient's calls
-export const claimFromTriple = (ct: ClaimType, triple: tzp.ValidContent<string, tzp.ClaimType, string>): Claim => {
+export const claimFromTriple = (
+  ct: ClaimType,
+  triple: tzp.ValidContent<string, tzp.ClaimType, string>
+): Claim => {
   let content = JSON.parse(triple[1]);
   return {
     content,
@@ -299,9 +382,9 @@ export const claimFromTriple = (ct: ClaimType, triple: tzp.ValidContent<string, 
     preparedContent: false,
     onChain: true,
     type: ct,
-    irl: triple[0]
-  }
-}
+    irl: triple[0],
+  };
+};
 
 // Check if user has unpersisted changes.
 export const isUnsavedDraft = (c: Claim): boolean => {
@@ -310,91 +393,58 @@ export const isUnsavedDraft = (c: Claim): boolean => {
   }
 
   return deepEqual(c.draft, contentToDraft(c.type, c.content));
-}
+};
 
 /*
-* Social Media Functions
-*/
+ * Social Media Functions
+ */
 
-export type socialMediaClaimType = "twitter";
-// | "discord"
-// | "instagram"
+export const getUnsignedAttestation = (attest: Attestation): string => {
+  return tzprofileChecker(attest)
+};
 
-const socialMediaTitle = (smType: socialMediaClaimType): string => {
-  switch (smType) {
-    case 'twitter': 
-      return 'Twitter';
-  }
-
-  exhaustiveCheck(smType);
-}
-
-const socialMediaHandle = (smType: socialMediaClaimType, handle: string): string => {
-  switch (smType) {
-    case 'twitter': 
-      return `@${handle}`;
-  }
-
-  exhaustiveCheck(smType);
-}
-
-const tzpHandle = (smType: socialMediaClaimType): string => {
-  switch (smType) {
-    case 'twitter': 
-      return socialMediaHandle(smType, 'tzprofiles');
-  }
-
-  exhaustiveCheck(smType);
-}
-
-export const getUnsignedMessage = (
-  smType: socialMediaClaimType, 
-  // TODO: Type better
-  userData: any,
-  handle: string
+export const getPreparedUnsignedAttestation = (
+  attest: Attestation
 ): string => {
-  let addr = userData?.account?.address;
-  if (!addr) {
-    throw new Error("Could not find Tezos address in user data");
-  }
-  
-  return `I am attesting that this ${socialMediaTitle(smType)} handle ${socialMediaHandle(smType, handle)} is linked to the Tezos account ${addr} for ${tzpHandle(smType)}`
-}
+  return `Tezos Signed Message: ${getUnsignedAttestation(attest)}`;
+};
 
-export const getPreparedUnsignedMessage = (
-  smType: socialMediaClaimType, 
-  // TODO: Type better
+export const getSignedAttestation = async (
+  attest: Attestation,
+  // NOTE: We only need this for the adder, can we get it from the wallet?
   userData: any,
-  handle: string
-): string => {
-  return `Tezos Signed Message: ${getUnsignedMessage(smType, userData, handle)}`;
-}
-
-export const getSignedClaim = async (
-  smType: socialMediaClaimType, 
-  // TODO: Type better
-  userData: any,
-  handle: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  const msg = `${getPreparedUnsignedMessage(smType, userData, handle)}\n\n`;
+  const msg = `${getPreparedUnsignedAttestation(attest)}`;
   const sig = await signClaim(userData, msg, wallet);
-  return `sig:${sig}`
-}
+  switch (attest.type) {
+    case "dns":
+      return `tzprofiles-verification=${sig}`;
+    default:
+      return `sig:${sig}`;
+  }
+};
 
-export const getFullSocialMediaClaim = async (
-  smType: socialMediaClaimType, 
+export const getFullAttestation = async (
+  attest: Attestation,
   // TODO: Type better
+  // NOTE: We only need this for the adder, can we get it from the wallet?
   userData: any,
-  handle: string,
   wallet: BeaconWallet
 ): Promise<string> => {
-  return `${getUnsignedMessage(smType, userData, handle)}\n\n${await getSignedClaim(smType, userData, handle, wallet)}`
-}
+  // special case DNS.
+  // It's this or do a different check on the verifcation side.
+  switch (attest.type) {
+    case "dns":
+      return `${getUnsignedAttestation(attest)}=${await getSignedAttestation(attest, userData, wallet)}`;
+    default:
+      return `${getUnsignedAttestation(attest)}${await getSignedAttestation(attest, userData, wallet)}`;
+  }
+};
 
-/* 
-* Things that should be built in
-*/
+/*
+ * Things that should be built in
+ */
 
 // Because === is referential equality and JSON stringify mixes up keys.
 const deepEqual = (object1: object, object2: object): boolean => {
@@ -414,16 +464,16 @@ const deepEqual = (object1: object, object2: object): boolean => {
     const val2 = object2[key];
     const areObjects = isObject(val1) && isObject(val2);
     if (
-      areObjects && !deepEqual(val1, val2) 
-      || !areObjects && val1 !== val2
+      (areObjects && !deepEqual(val1, val2)) ||
+      (!areObjects && val1 !== val2)
     ) {
       return false;
     }
   }
 
   return true;
-}
+};
 
 const isObject = (object): boolean => {
   return object != null && typeof object === 'object';
-}
+};

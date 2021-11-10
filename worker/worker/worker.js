@@ -3,8 +3,7 @@
  * boolean indicating if the request uses that HTTP method,
  * header, host or referrer.
  */
-const Method = (method) => (req) =>
-  req.method.toLowerCase() === method.toLowerCase();
+const Method = (method) => (req) => req.method.toLowerCase() === method.toLowerCase();
 const Connect = Method("connect");
 const Delete = Method("delete");
 const Get = Method("get");
@@ -143,11 +142,7 @@ function handleOptions(request) {
   // Make sure the necessary headers are present
   // for this to be a valid pre-flight request
   let headers = request.headers;
-  if (
-    headers.get("Origin") !== null &&
-    headers.get("Access-Control-Request-Method") !== null &&
-    headers.get("Access-Control-Request-Headers") !== null
-  ) {
+  if (headers.get("Origin") !== null && headers.get("Access-Control-Request-Method") !== null && headers.get("Access-Control-Request-Headers") !== null) {
     // Handle CORS pre-flight request.
     // If you want to check or reject the requested method + headers
     // you can do that here.
@@ -155,9 +150,7 @@ function handleOptions(request) {
       ...corsHeaders,
       // Allow all future content Request headers to go back to browser
       // such as Authorization (Bearer) or X-Client-Name-Version
-      "Access-Control-Allow-Headers": request.headers.get(
-        "Access-Control-Request-Headers"
-      ),
+      "Access-Control-Allow-Headers": request.headers.get("Access-Control-Request-Headers"),
     };
 
     return new Response(null, {
@@ -182,13 +175,7 @@ async function handler_witness_tweet(request) {
     let tweet_id = searchParams.get("tweet_id");
     const { witness_tweet } = wasm_bindgen;
     await wasm_bindgen(wasm);
-    const vc = await witness_tweet(
-      TZPROFILES_ME_PRIVATE_KEY,
-      pk,
-      TWITTER_BEARER_TOKEN,
-      handle,
-      tweet_id
-    );
+    const vc = await witness_tweet(TZPROFILES_ME_PRIVATE_KEY, pk, TWITTER_BEARER_TOKEN, handle, tweet_id);
     return new Response(vc, { status: 200, headers: headers });
   } catch (error) {
     return new Response(error, { status: 500, headers: headers });
@@ -206,16 +193,50 @@ async function handler_discord_message(request) {
     const discord_handle = searchParams.get("discordHandle");
 
     await wasm_bindgen(wasm);
-    const discordVc = await witness_discord(
-      TZPROFILES_ME_PRIVATE_KEY,
-      pk,
-      DISCORD_AUTHORIZATION_TOKEN,
-      discord_handle,
-      channel_id,
-      message_id
-    );
+    const discordVc = await witness_discord(TZPROFILES_ME_PRIVATE_KEY, pk, DISCORD_AUTHORIZATION_TOKEN, discord_handle, channel_id, message_id);
 
     return new Response(JSON.stringify(discordVc), {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(error, { status: 500, headers: headers });
+  }
+}
+
+async function handler_dns_lookup(request) {
+  try {
+    const { dns_lookup } = wasm_bindgen;
+    const { searchParams } = new URL(request.url);
+
+    const pk = decodeURI(searchParams.get("pk"));
+    const domain = decodeURI(searchParams.get("domain"));
+
+    await wasm_bindgen(wasm);
+    const dns_vc = await dns_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, domain);
+
+    return new Response(JSON.stringify(dns_vc), {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(error, { status: 500, headers: headers });
+  }
+}
+
+async function handle_github_lookup(request) {
+  try {
+    const { gist_lookup } = wasm_bindgen;
+    const { searchParams } = new URL(request.url);
+
+    const pk = decodeURI(searchParams.get("pk"));
+    const gistId = decodeURI(searchParams.get("gistId"));
+    const githubUsername = decodeURI(searchParams.get("githubUsername"));
+
+    await wasm_bindgen(wasm);
+    const dns_vc = await gist_lookup(TZPROFILES_ME_PRIVATE_KEY, pk, gistId, githubUsername);
+
+    return new Response(dns_vc, {
       status: 200,
       headers: headers,
     });
@@ -228,8 +249,10 @@ async function handler_witness_instagram_post(request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    let pk = decodeURI(searchParams.get("pk"));
+    let pk = decodeURIComponent(searchParams.get("pk"));
+    let sig_target = decodeURIComponent(searchParams.get("sig_target"));
     let handle = searchParams.get("handle");
+    let sig_type = searchParams.get("sig_type");
 
     let kvEntry = await INSTAGRAM_CLAIM.get(handle.toLowerCase());
     if (!kvEntry) {
@@ -249,7 +272,9 @@ async function handler_witness_instagram_post(request) {
       pk,
       handle,
       kvObj.link,
-      kvObj.sig
+      kvObj.sig,
+      sig_target,
+      sig_type,
     );
 
     return new Response(vc, { status: 200, headers: headers });
@@ -270,18 +295,10 @@ async function handler_instagram_login(request) {
     const { handle_instagram_login } = wasm_bindgen;
     await wasm_bindgen(wasm);
 
-    let kvEntry = await handle_instagram_login(
-      IG_APP_ID,
-      IG_APP_SECRET,
-      IG_REDIRECT_URI,
-      code
-    );
+    let kvEntry = await handle_instagram_login(IG_APP_ID, IG_APP_SECRET, IG_REDIRECT_URI, code);
     let kvObj = JSON.parse(kvEntry);
 
-    await INSTAGRAM_CLAIM.put(
-      kvObj.key.toLowerCase(),
-      JSON.stringify(kvObj.val)
-    );
+    await INSTAGRAM_CLAIM.put(kvObj.key.toLowerCase(), JSON.stringify(kvObj.val));
 
     const res = `<html>
     <body>
@@ -318,15 +335,14 @@ async function handler_data_deletion(request) {
 async function handleRequest(request) {
   const r = new Router();
   r.get("/witness_tweet", (request) => handler_witness_tweet(request));
-  r.get("/witness_instagram_post", (request) =>
-    handler_witness_instagram_post(request)
-  );
+  r.get("/witness_instagram_post", (request) => handler_witness_instagram_post(request));
   r.get("/instagram_login", (request) => handler_instagram_login(request));
-  r.get("/instagram_data_deletion", (request) =>
-    handler_data_deletion(request)
-  );
+  r.get("/instagram_data_deletion", (request) => handler_data_deletion(request));
   r.get("/instagram-deauth", (request) => handler_data_deletion(request));
   r.get("/witness_discord", (request) => handler_discord_message(request));
+  r.get("/witness_dns", (request) => handler_dns_lookup(request));
+  r.get("/witness_github", (request) => handle_github_lookup(request));
   const resp = await r.route(request);
   return resp;
 }
+

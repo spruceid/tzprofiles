@@ -77,7 +77,7 @@
           class="mr-2"
         >
           <Option value="mainnet" text="mainnet" selected />
-          <Option value="edonet" text="edonet" />
+          <Option value="granadanet" text="granadanet" />
           <Option value="florencenet" text="florencenet" />
           <Option value="custom" text="localhost" />
         </Select>

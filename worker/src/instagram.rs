@@ -81,10 +81,6 @@ pub struct KVWrapper {
     pub val: KVInner,
 }
 
-pub fn target_from_handle(handle: &str, pkh: &str) -> String {
-    return format!("I am attesting that this Instagram handle @{} is linked to the Tezos account {} for Tezos Profiles\n\n", handle, pkh);
-}
-
 pub async fn retrieve_user(access_token: &str) -> Result<User> {
     let url = format!(
         "https://graph.instagram.com/me?fields=id,username&access_token={}",
@@ -117,8 +113,8 @@ pub async fn retrieve_post(user: &User, access_token: &str) -> Result<(String, S
         let post: CaptionWrapper = client.get(Url::parse(&url)?).send().await?.json().await?;
 
         for line in post.caption.split('\n').collect::<Vec<&str>>() {
-            if line.starts_with("sig:") {
-                return Ok((line[4..].to_string(), post.permalink));
+            if line.starts_with("__sig:") {
+                return Ok((line[6..].to_string(), post.permalink));
             }
         }
     }
@@ -126,7 +122,7 @@ pub async fn retrieve_post(user: &User, access_token: &str) -> Result<(String, S
     Err(anyhow!("No post with signature found in recent posts"))
 }
 
-pub fn build_instagram_vc_(pk: &JWK, instagram_handle: &str) -> Result<Credential> {
+pub fn build_tzp_instagram_vc(pk: &JWK, instagram_handle: &str) -> Result<Credential> {
     Ok(serde_json::from_value(json!({
       "@context": [
           "https://www.w3.org/2018/credentials/v1",
