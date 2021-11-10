@@ -1,4 +1,3 @@
-from contextlib import suppress
 from typing import cast
 
 from dipdup.context import HookContext
@@ -14,10 +13,14 @@ async def fetch_claims(
         raise RuntimeError('`tzp` datasource is missing')
     tzp = cast(TZPDatasource, tzp)
 
-    async for profile in models.TZProfile.filter(valid_claims__isnull=True):
+    async for profile in models.TZProfile.filter(fetched=False, failed=False):
         ctx.logger.info('Fetching claims for %s', profile.contract)
-        with suppress(Exception):
+        try:
             claims = await tzp.resolve(profile.contract)
             profile.valid_claims = claims["valid"]
             profile.invalid_claims = claims["invalid"]
-            await profile.save()
+            profile.fetched = True  # type: ignore
+        except Exception:
+            ctx.logger.exception('Failed to load profile from TZP API')
+            profile.failed = True  # type: ignore
+        await profile.save()

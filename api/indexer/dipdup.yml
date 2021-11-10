@@ -69,6 +69,10 @@ hooks:
   fetch_claims:
     callback: fetch_claims
 
+jobs:
+  fetch_claims:
+    hook: fetch_claims
+    interval: 60
 
 sentry:
   dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
