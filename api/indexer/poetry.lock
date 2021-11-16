@@ -268,7 +268,7 @@ http = ["httpx"]
 
 [[package]]
 name = "dipdup"
-version = "3.1.2"
+version = "3.1.3"
 description = "Python SDK for developing indexers of Tezos smart contracts inspired by The Graph"
 category = "main"
 optional = false
@@ -301,7 +301,7 @@ pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
 reference = "feat/subs-manager-revived"
-resolved_reference = "7b2e5363ea78a1cd825114c101715a30a2503bf1"
+resolved_reference = "f095ce3059bfcf0232bf14a187233cb23249c761"
 
 [[package]]
 name = "dnspython"
@@ -703,7 +703,7 @@ websockets = "10.1"
 type = "git"
 url = "https://github.com/baking-bad/pysignalr.git"
 reference = "initial-release"
-resolved_reference = "c1240a82d21554f0c3047addaf0428606ea5e981"
+resolved_reference = "9ddb76b80f767d4c651aee4888f4fd38a054f42a"
 
 [[package]]
 name = "pysnooper"

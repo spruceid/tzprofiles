@@ -30,6 +30,7 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
+      retry_multiplier: 2
       ratelimit_rate: 300
       ratelimit_period: 30
       connection_limit: 50
