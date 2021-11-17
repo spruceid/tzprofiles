@@ -301,7 +301,7 @@ pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
 reference = "feat/subs-manager-revived"
-resolved_reference = "9e284d59b30ad986a22fa7fbb2bc9f04979a0c6d"
+resolved_reference = "94d6e07b949f0742f6eb0e1868c3df3768ed8895"
 
 [[package]]
 name = "dnspython"
