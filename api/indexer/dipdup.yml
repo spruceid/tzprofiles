@@ -35,7 +35,7 @@ datasources:
       retry_multiplier: 2
       ratelimit_rate: 300
       ratelimit_period: 30
-      connection_limit: 50
+      connection_limit: 25
 
 templates:
   tzprofiles:
