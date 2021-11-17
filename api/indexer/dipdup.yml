@@ -45,12 +45,7 @@ templates:
       - <contract>
     types:
       - transaction
-      - origination
     handlers:
-      - callback: on_origination
-        pattern:
-          - type: origination
-            originated_contract: <contract>
       - callback: on_update
         pattern:
           - destination: <contract>

@@ -2,6 +2,7 @@ from typing import cast
 
 from dipdup.context import HandlerContext
 from dipdup.models import Origination
+import tzprofiles_indexer.models as models
 
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
 
@@ -22,3 +23,7 @@ async def on_factory_origination(
         template="tzprofiles",
         values=dict(contract=originated_contract),
     )
+
+    owner = tzprofile_origination.storage.owner
+    ctx.logger.info('Profile created: %s, owner %s', originated_contract, owner)
+    await models.TZProfile(account=owner, contract=originated_contract).save()
