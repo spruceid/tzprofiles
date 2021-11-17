@@ -2,8 +2,8 @@ from tortoise import Model, fields
 
 
 class TZProfile(Model):
-    account = fields.CharField(36, pk=True)
-    contract = fields.CharField(36)
+    contract = fields.CharField(36, pk=True)
+    account = fields.CharField(36, index=True)
 
     valid_claims = fields.JSONField(null=True)
     invalid_claims = fields.JSONField(null=True)
