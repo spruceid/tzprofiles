@@ -8,8 +8,8 @@ license = "Apache-2.0"
 [tool.poetry.dependencies]
 python = "^3.8"
 # dipdup = "^3.1.2"
-dipdup = {path = "../../../dipdup", develop = true}
-# dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "feat/subs-manager-revived"}
+# dipdup = {path = "../../../dipdup", develop = true}
+dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "feat/subs-manager-revived"}
 
 
 [tool.poetry.dev-dependencies]

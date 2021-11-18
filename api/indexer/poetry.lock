@@ -273,7 +273,7 @@ description = "Python SDK for developing indexers of Tezos smart contracts inspi
 category = "main"
 optional = false
 python-versions = "^3.8"
-develop = true
+develop = false
 
 [package.dependencies]
 aiohttp = "^3.8.0"
@@ -298,8 +298,10 @@ tortoise-orm = "0.17.8"
 pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 
 [package.source]
-type = "directory"
-url = "../../../dipdup"
+type = "git"
+url = "https://github.com/dipdup-net/dipdup-py.git"
+reference = "feat/subs-manager-revived"
+resolved_reference = "e2e7b8bb8cbd4341aea407532d1215f05676cc48"
 
 [[package]]
 name = "dnspython"
@@ -701,7 +703,7 @@ websockets = "10.1"
 type = "git"
 url = "https://github.com/baking-bad/pysignalr.git"
 reference = "initial-release"
-resolved_reference = "9a2e1ad32bd6142daad653bbaea7714167dd6864"
+resolved_reference = "e51fee05103a99d5165fed9ed3cc3d31be8f26d3"
 
 [[package]]
 name = "pysnooper"
@@ -812,7 +814,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "sentry-sdk"
-version = "1.4.3"
+version = "1.5.0"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
@@ -991,7 +993,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "83cc365821409642b5d91a7457a00463568b47f94ba76616f9b3ff4260c6d7a7"
+content-hash = "a5dd66c32e95277bbb2bd3a724bbeb952e6a2b62fdabacbc03450b729ae455b1"
 
 [metadata.files]
 aiohttp = [
@@ -1733,8 +1735,8 @@ semver = [
     {file = "semver-2.13.0.tar.gz", hash = "sha256:fa0fe2722ee1c3f57eac478820c3a5ae2f624af8264cbdf9000c980ff7f75e3f"},
 ]
 sentry-sdk = [
-    {file = "sentry-sdk-1.4.3.tar.gz", hash = "sha256:b9844751e40710e84a457c5bc29b21c383ccb2b63d76eeaad72f7f1c808c8828"},
-    {file = "sentry_sdk-1.4.3-py2.py3-none-any.whl", hash = "sha256:c091cc7115ff25fe3a0e410dbecd7a996f81a3f6137d2272daef32d6c3cfa6dc"},
+    {file = "sentry-sdk-1.5.0.tar.gz", hash = "sha256:789a11a87ca02491896e121efdd64e8fd93327b69e8f2f7d42f03e2569648e88"},
+    {file = "sentry_sdk-1.5.0-py2.py3-none-any.whl", hash = "sha256:0db297ab32e095705c20f742c3a5dac62fe15c4318681884053d0898e5abb2f6"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

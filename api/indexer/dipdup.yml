@@ -31,11 +31,11 @@ datasources:
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
       retry_count: 10
-      retry_sleep: 2
-      retry_multiplier: 2
-      ratelimit_rate: 300
-      ratelimit_period: 30
-      connection_limit: 25
+      retry_sleep: 60
+      retry_multiplier: 1
+      ratelimit_rate: 100
+      ratelimit_period: 1
+      connection_timeout: 900
 
 templates:
   tzprofiles:

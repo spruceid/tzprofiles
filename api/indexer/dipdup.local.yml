@@ -14,4 +14,4 @@ advanced:
   skip_hasura: True
   postpone_jobs: True
   early_realtime: True
-  merge_subscriptions: False
+  merge_subscriptions: True
