@@ -273,7 +273,7 @@ description = "Python SDK for developing indexers of Tezos smart contracts inspi
 category = "main"
 optional = false
 python-versions = "^3.8"
-develop = false
+develop = true
 
 [package.dependencies]
 aiohttp = "^3.8.0"
@@ -298,10 +298,8 @@ tortoise-orm = "0.17.8"
 pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/dipdup-net/dipdup-py.git"
-reference = "feat/subs-manager-revived"
-resolved_reference = "e2e7b8bb8cbd4341aea407532d1215f05676cc48"
+type = "directory"
+url = "../../../dipdup"
 
 [[package]]
 name = "dnspython"
@@ -993,7 +991,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a5dd66c32e95277bbb2bd3a724bbeb952e6a2b62fdabacbc03450b729ae455b1"
+content-hash = "83cc365821409642b5d91a7457a00463568b47f94ba76616f9b3ff4260c6d7a7"
 
 [metadata.files]
 aiohttp = [

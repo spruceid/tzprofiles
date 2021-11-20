@@ -13,10 +13,6 @@ hasura:
   url: http://hasura:8080
   admin_secret: ${ADMIN_SECRET:-changeme}
 
-# database:
-#   kind: sqlite
-#   path: tzprofiles.sqlite3
-
 contracts:
   tzprofile_old:
     address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
@@ -74,7 +70,13 @@ hooks:
 jobs:
   fetch_claims:
     hook: fetch_claims
-    interval: 60
+    daemon: True
+
+advanced:
+  skip_hasura: True
+  postpone_jobs: False
+  early_realtime: True
+  merge_subscriptions: True
 
 sentry:
   dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
