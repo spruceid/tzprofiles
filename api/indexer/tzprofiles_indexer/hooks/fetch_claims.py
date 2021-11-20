@@ -27,4 +27,5 @@ async def fetch_claims(
                 profile.failed = True  # type: ignore
             await profile.save()
 
+        ctx.logger.info('No claims to fetch, sleeping 5 seconds')
         await asyncio.sleep(5)
