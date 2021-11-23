@@ -1,16 +1,16 @@
-spec_version: 1.1
+spec_version: 1.2
 package: tzprofiles_indexer
 
 database:
   kind: postgres
-  host: db
+  host: ${PSQL_HOST:-db}
   port: 5432
   user: dipdup
   password: ${POSTGRES_PASSWORD:-changeme}
   database: dipdup
 
 hasura:
-  url: http://hasura:8080
+  url: ${HASURA_URL:-http://hasura:8080}
   admin_secret: ${ADMIN_SECRET:-changeme}
 
 # database:
@@ -29,6 +29,13 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
+    http:
+      retry_count: 10
+      retry_sleep: 60
+      retry_multiplier: 1
+      ratelimit_rate: 100
+      ratelimit_period: 1
+      connection_timeout: 900
 
 templates:
   tzprofiles:
@@ -56,13 +63,17 @@ indexes:
     types:
       - origination
     handlers:
-      - callback: on_factory_origination
-        pattern:
-          - type: origination
-            similar_to: tzprofile
+      # - callback: on_factory_origination
+      #   pattern:
+      #     - type: origination
+      #       similar_to: tzprofile
       - callback: on_factory_origination
         pattern:
           - type: origination
             similar_to: tzprofile_old
-    stateless: True
-    # last_block: 1591300
+
+advanced:
+  # skip_hasura: True
+  # postpone_jobs: True
+  # early_realtime: True
+  merge_subscriptions: True
