@@ -286,7 +286,7 @@ datamodel-code-generator = "^0.11.1"
 fcache = "^0.4.7"
 pydantic = "^1.8.1"
 pyhumps = "^3.0.2"
-pysignalr = {git = "https://github.com/baking-bad/pysignalr.git", branch = "initial-release"}
+pysignalr = "^0.1.0"
 python-dotenv = "^0.18.0"
 "ruamel.yaml" = "^0.17.2"
 sentry-sdk = "^1.1.0"
@@ -300,8 +300,8 @@ pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
-reference = "feat/subs-manager-revived"
-resolved_reference = "32c2ad9a545e640dca2cff490b01a07baf17ba4d"
+reference = "aux/gotta-go-fast"
+resolved_reference = "0c64e78ba1b2ccc1b677505ed2bc58292dcb6b7e"
 
 [[package]]
 name = "dnspython"
@@ -687,23 +687,16 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "pysignalr"
-version = "0.0.1"
+version = "0.1.0"
 description = "Modern, reliable and async-ready client for SignalR protocol"
 category = "main"
 optional = false
-python-versions = "^3.8"
-develop = false
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
-aiohttp = "^3.7.4"
-msgpack = "^1.0.2"
+aiohttp = ">=3.7.4,<4.0.0"
+msgpack = ">=1.0.2,<2.0.0"
 websockets = "10.1"
-
-[package.source]
-type = "git"
-url = "https://github.com/baking-bad/pysignalr.git"
-reference = "initial-release"
-resolved_reference = "e51fee05103a99d5165fed9ed3cc3d31be8f26d3"
 
 [[package]]
 name = "pysnooper"
@@ -993,7 +986,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a5dd66c32e95277bbb2bd3a724bbeb952e6a2b62fdabacbc03450b729ae455b1"
+content-hash = "37ff10cf816cbdf052888c1680c42e94f38720ad9fd1d12c8814ce9b50348c95"
 
 [metadata.files]
 aiohttp = [
@@ -1596,7 +1589,10 @@ pyrsistent = [
     {file = "pyrsistent-0.18.0-cp39-cp39-win_amd64.whl", hash = "sha256:404e1f1d254d314d55adb8d87f4f465c8693d6f902f67eb6ef5b4526dc58e6ea"},
     {file = "pyrsistent-0.18.0.tar.gz", hash = "sha256:773c781216f8c2900b42a7b638d5b517bb134ae1acbebe4d1e8f1f41ea60eb4b"},
 ]
-pysignalr = []
+pysignalr = [
+    {file = "pysignalr-0.1.0-py3-none-any.whl", hash = "sha256:aff25fa4cc2cf1ef5a8d855a9d95fb2cc55006146541dd76ad3117598a87d7d8"},
+    {file = "pysignalr-0.1.0.tar.gz", hash = "sha256:e18196a6374c1e809d80445052bb86e7fc71d42c4e692a9b447b681a677d743c"},
+]
 pysnooper = [
     {file = "PySnooper-0.5.0-py2.py3-none-any.whl", hash = "sha256:7280fd86cd1da732fade981e00998bf01be39e9e4a58b418469f47203cc329b1"},
     {file = "PySnooper-0.5.0.tar.gz", hash = "sha256:ec3c4648dbe3bc848a0ecea5e2ffea3a5947797599afb627a68ac4e44454116b"},
@@ -1785,6 +1781,7 @@ typed-ast = [
 ]
 typing-extensions = [
     {file = "typing_extensions-4.0.0-py3-none-any.whl", hash = "sha256:829704698b22e13ec9eaf959122315eabb370b0884400e9818334d8b677023d9"},
+    {file = "typing_extensions-4.0.0.tar.gz", hash = "sha256:2cdf80e4e04866a9b3689a51869016d36db0814d84b8d8a568d22781d45d27ed"},
 ]
 tzdata = [
     {file = "tzdata-2021.5-py2.py3-none-any.whl", hash = "sha256:3eee491e22ebfe1e5cfcc97a4137cd70f092ce59144d81f8924a844de05ba8f5"},
