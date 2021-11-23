@@ -26,14 +26,22 @@ For now, only a GraphQL API is available at `/v1/graphql` (to be used with
 POST). Following are a couple examples of queries.
 
 Retrieve the profile for an account:
-```json
+```javascript
 // Query (escape line returns in strings)
 {
   "query":"query MyQuery {
       tzprofiles_by_pk(account: \"tz1XUUF8dS4CxkdNE26DX8SEUPTZnt5t97Tt\") {
-        invalid_claims
-          valid_claims
-          contract
+        account
+        website
+        twitter
+        logo
+        github
+        ethereum
+        domain_name
+        discord
+        description
+        contract
+        alias
       }
     }",
   "variables":null,
@@ -44,27 +52,24 @@ Retrieve the profile for an account:
 {
   "data": {
     "tzprofiles_by_pk": {
-      "valid_claims": [
-        [
-          "kepler://v0:...",
-          "...",
-          "VerifiableCredential"
-        ],
-        [
-          "kepler://v0:...",
-          "...",
-          "VerifiableCredential"
-        ]
-      ],
-      "invalid_claims": [],
-      "contract": "KT1AUeTZ4eyGWpMjxu7b8VLZA8uHnNcwZ4ZF"
+      "account": "tz1XUUF8dS4CxkdNE26DX8SEUPTZnt5t97Tt",
+      "alias": "Testman",
+      "contract": "KT1AUeTZ4eyGWpMjxu7b8VLZA8uHnNcwZ4ZF",
+      "description": "Test",
+      "discord": null,
+      "domain_name": null,
+      "ethereum": null,
+      "github": null,
+      "logo": "Testing",
+      "twitter": "TestTes57849868",
+      "website": "Testing"
     }
   }
 }
 ```
 
 Retrieve the total number of profiles and their account:
-```json
+```javascript
 // Query (escape line returns in strings)
 {
   "query":"query MyQuery {
