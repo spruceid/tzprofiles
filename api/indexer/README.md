@@ -105,34 +105,31 @@ Retrieve the total number of profiles and their account:
 ## Architecture
 
 ```
-         ┌──────────┐      ┌────┐
-         │Blockchain◄──────┤TzKT│
-         └─────▲────┘      └──▲─┘
-               │              │
-               │      ┌───────┼──────┐
-┌──────┐     ┌─┴─┐    │  ┌────┴───┐  │
-│Kepler◄─────┤API◄────┼──┤DipDup +│  │
-└──────┘     └───┘    │  │Handlers│  │
-                      │  └────┬───┘  │
-                      │       │      │
-                      │ ┌─────▼────┐ │
-                      │ │PostgresQL│ │
-                      │ └─────▲────┘ │
-                      │       │      │
-                      │   ┌───┴──┐   │
-                      │   │Hasura│   │
-                      │   └──▲───┘   │
-                      └──────┼───────┘
-                           Indexer
-                             │
+┌──────────┐      ┌────┐
+│Blockchain◄──────┤TzKT│
+└──────────┘      └──▲─┘
+                     │
+             ┌───────┼──────┐
+┌──────┐     │  ┌────┴───┐  │
+│Kepler◄─────┼──┤DipDup +│  │
+└──────┘     │  │Handlers│  │
+             │  └────┬───┘  │
+             │       │      │
+             │ ┌─────▼────┐ │
+             │ │PostgresQL│ │
+             │ └─────▲────┘ │
+             │       │      │
+             │   ┌───┴──┐   │
+             │   │Hasura│   │
+             │   └──▲───┘   │
+             └──────┼───────┘
+                  Indexer
+                    │
 
-                             o
-                            -|-
-                            / \
+                    o
+                   -|-
+                   / \
 ```
-
-For simplicity, the indexer relies on the [API service](../service) to fetch the
-claims and validate them with DIDkit.
 
 ## Limitations
 
