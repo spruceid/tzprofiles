@@ -301,7 +301,7 @@ pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
 reference = "aux/gotta-go-fast"
-resolved_reference = "0c64e78ba1b2ccc1b677505ed2bc58292dcb6b7e"
+resolved_reference = "f5b419cc3fceb9edd8b91540a20761bc8bbe6f65"
 
 [[package]]
 name = "dnspython"
