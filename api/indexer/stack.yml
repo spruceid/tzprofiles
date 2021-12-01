@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  indexer:
+    image: ${DOCKER_REGISTRY:-ghcr.io}/dipdup-net/tzprofiles:${TAG:-latest}
+    build: .
+    depends_on:
+      - db
+      - hasura
+    command: ["-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run"]
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - internal
+    volumes:
+      - cache:/home/dipdup/.cache
+
+  db:
+    image: timescale/timescaledb:2.4.2-pg12
+    volumes:
+      - db:/var/lib/postgresql/data
+      - backup:/var/lib/postgresql/backup
+    environment: 
+      - POSTGRES_USER=dipdup
+      - POSTGRES_DB=dipdup
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - internal
+
+  hasura:
+    image: hasura/graphql-engine:v2.0.10
+    depends_on:
+      - db
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD:-changeme}@db:5432/dipdup
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=false
+      - HASURA_GRAPHQL_DEV_MODE=false
+      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup, http-log, webhook-log, websocket-log, query-log
+      - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
+      - HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.${DOMAIN}.loadbalancer.server.port=8080
+        - traefik.http.routers.${DOMAIN}.rule=Host(`${DOMAIN}.${ROOT_DOMAIN}`)
+        - traefik.http.routers.${DOMAIN}.entrypoints=https
+    networks:
+      - internal
+      - traefik-public
+
+volumes:
+  db:
+  cache:
+  backup:
+
+networks:
+  internal:
+  traefik-public:
+    external: true
