@@ -73,7 +73,6 @@ jobs:
     daemon: True
 
 advanced:
-  skip_hasura: True
   postpone_jobs: False
   early_realtime: True
   merge_subscriptions: True
