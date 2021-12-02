@@ -194,16 +194,28 @@ pub async fn witness_tweet(
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
         let twitter_res = jserr!(twitter::retrieve_tweet(twitter_token, tweet_id.clone()).await);
         let mut vc = jserr!(twitter::build_twitter_vc(&pk, &twitter_handle));
+        let user = match twitter_res.includes.users.first() {
+            Some(u) => u,
+            None => {
+                return jserr!(Err(anyhow!("Could not find user in Twitter API Response")));
+            }
+        };
 
-        if twitter_handle.to_lowercase() != twitter_res.includes.users[0].username.to_lowercase() {
+        if twitter_handle.to_lowercase() != user.username.to_lowercase() {
             jserr!(Err(anyhow!(format!(
                 "Different twitter handle {} v. {}",
                 twitter_handle.to_lowercase(),
-                twitter_res.includes.users[0].username.to_lowercase()
+                user.username.to_lowercase()
             ))));
         }
+        let data = match twitter_res.data.first() {
+            Some(d) => d,
+            None => {
+                return jserr!(Err(anyhow!("Could not find tweet text data in Twitter API Response")));
+            }
+        };
 
-        let (sig_target, sig) = jserr!(extract_signature(twitter_res.data[0].text.clone()));
+        let (sig_target, sig) = jserr!(extract_signature(data.text.clone()));
 
         let correct_attestation = attest(SubjectType::Twitter(Subject {
             id: twitter_handle.clone(),
