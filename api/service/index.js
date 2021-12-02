@@ -6,6 +6,7 @@ global.fetch = fetch;
 
 import cors from 'cors';
 import express from 'express';
+import { param, validationResult } from 'express-validator';
 import tzprofiles from '@spruceid/tzprofiles';
 import kepler from "kepler-sdk";
 import didkit from 'didkit-wasm-node';
@@ -19,8 +20,13 @@ app.get('/_healthz', async function(_, res, __) {
     res.send(true)
 })
 
-app.get('/:address', async function(req, res, next) {
+app.get('/:address', [param('address').matches(/^[A-Za-z\d]+$/i)], async function(req, res, next) {
     try {
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            return res.status(400).send(err);
+        }
         const content = await retrieve(req.params.address, "mainnet", req.query);
         res.send(content)
     } catch (err) {
@@ -28,8 +34,13 @@ app.get('/:address', async function(req, res, next) {
     }
 })
 
-app.get('/:address/:network', async function(req, res, next) {
+app.get('/:address/:network', [param('address').matches(/^[A-Za-z\d]+$/i), param('network').matches(/^[A-Za-z]+$/i)], async function(req, res, next) {
     try {
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            return res.status(400).send(err);
+        }
         const content = await retrieve(req.params.address, req.params.network, req.query);
         res.send(content)
     } catch (err) {
