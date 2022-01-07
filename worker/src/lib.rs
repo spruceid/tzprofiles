@@ -379,7 +379,7 @@ pub async fn dns_lookup(
         let pkh = jserr!(hash_public_key(&pk));
         let sk: JWK = jserr!(serde_json::from_str(&secret_key_jwk));
 
-        let re = Regex::new(r"^(([a-zA-Z]([a-zA-Z\d-]*[a-zA-Z\d])*)\.)+[a-zA-Z]{2,}$").unwrap();
+        let re = Regex::new(r"^(([a-zA-Z\d]([a-zA-Z\d-]*[a-zA-Z\d])*)\.)+[a-zA-Z]{2,}$").unwrap();
         if !re.is_match(&domain) {
             jserr!(Err(anyhow!("Invalid domain name.")));
         }

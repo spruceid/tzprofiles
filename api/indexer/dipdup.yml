@@ -3,14 +3,14 @@ package: tzprofiles_indexer
 
 database:
   kind: postgres
-  host: db
+  host: ${PSQL_HOST:-db}
   port: 5432
   user: dipdup
   password: ${POSTGRES_PASSWORD:-changeme}
   database: dipdup
 
 hasura:
-  url: http://hasura:8080
+  url: ${HASURA_URL:-http://hasura:8080}
   admin_secret: ${ADMIN_SECRET:-changeme}
 
 contracts:
@@ -58,26 +58,12 @@ indexes:
         pattern:
           - type: origination
             similar_to: tzprofile
-      - callback: on_factory_origination
-        pattern:
-          - type: origination
-            similar_to: tzprofile_old
-
-hooks:
-  fetch_claims:
-    callback: fetch_claims
-
-jobs:
-  fetch_claims:
-    hook: fetch_claims
-    daemon: True
+      # - callback: on_factory_origination
+      #   pattern:
+      #     - type: origination
+      #       similar_to: tzprofile_old
 
 advanced:
-  postpone_jobs: False
+  postpone_jobs: True
   early_realtime: True
   merge_subscriptions: True
-
-sentry:
-  dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
-  environment: local
-  debug: true

@@ -2,19 +2,20 @@ from tortoise import Model, fields
 
 
 class TZProfile(Model):
-    contract = fields.CharField(36, pk=True)
-    account = fields.CharField(36, index=True)
-
-    valid_claims = fields.JSONField(null=True)
-    invalid_claims = fields.JSONField(null=True)
-
-    fetched = fields.BooleanField(default=False)
-    failed = fields.BooleanField(default=False)
-
-    # twitter = fields.CharField(max_length=255)
-    # domain_name = fields.CharField(max_length=255)
-    # discord = fields.CharField(max_length=255)
-    # github = fields.CharField(max_length=255)
+    account = fields.CharField(36, pk=True)
+    contract = fields.CharField(36)
+    valid_claims = fields.JSONField()
+    invalid_claims = fields.JSONField()
+    errored = fields.BooleanField()
+    alias = fields.TextField(null=True)
+    description = fields.TextField(null=True)
+    logo = fields.TextField(null=True)
+    website = fields.TextField(null=True)
+    twitter = fields.CharField(max_length=256, null=True)
+    domain_name = fields.TextField(null=True)
+    discord = fields.CharField(max_length=256, null=True)
+    github = fields.CharField(max_length=256, null=True)
+    ethereum = fields.CharField(max_length=42, null=True)
 
     class Meta:
         table = 'tzprofiles'
