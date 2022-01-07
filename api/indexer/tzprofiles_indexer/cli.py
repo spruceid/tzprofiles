@@ -26,5 +26,6 @@ async def resolver(ctx):
             async for profile in TZProfile.filter(resolved=False):
                 logging.info(f'Resolving profile {profile.contract}')
                 await resolve_profile(profile)
+                await profile.save()
 
             await asyncio.sleep(1)

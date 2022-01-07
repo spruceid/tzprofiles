@@ -23,19 +23,19 @@ class TZProfile(Model):
     ethereum = fields.CharField(max_length=42, null=True)
 
     def reset(self) -> None:
-        self.valid_claims = []
-        self.invalid_claims = []
-        self.failed = False
-        self.fetched = False
-        self.alias = None
-        self.description = None
-        self.logo = None
-        self.website = None
-        self.twitter = None
-        self.domain_name = None
-        self.discord = None
-        self.github = None
-        self.ethereum = None
+        self.valid_claims = []  # type: ignore
+        self.invalid_claims = []  # type: ignore
+        self.failed = False  # type: ignore
+        self.fetched = False  # type: ignore
+        self.alias = None  # type: ignore
+        self.description = None  # type: ignore
+        self.logo = None  # type: ignore
+        self.website = None  # type: ignore
+        self.twitter = None  # type: ignore
+        self.domain_name = None  # type: ignore
+        self.discord = None  # type: ignore
+        self.github = None  # type: ignore
+        self.ethereum = None  # type: ignore
 
     class Meta:
         table = 'tzprofiles'
