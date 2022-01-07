@@ -281,7 +281,7 @@ description = "Python SDK for developing indexers of Tezos smart contracts inspi
 category = "main"
 optional = false
 python-versions = "^3.8"
-develop = false
+develop = true
 
 [package.dependencies]
 aiohttp = "^3.8.0"
@@ -308,10 +308,8 @@ typing-inspect = "^0.6.0"
 pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/dipdup-net/dipdup-py.git"
-reference = "feat/prometheus"
-resolved_reference = "8dc88cbf60fe9d9e21b061017fa5f2d4e20ad416"
+type = "directory"
+url = "../../../dipdup"
 
 [[package]]
 name = "dnspython"
@@ -1030,7 +1028,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "418eeef5f4f8872a4b861469cd5c84e5c2b7c37861e5c2d24c732be5372e307a"
+content-hash = "1a09a8ff7ad78842912bf88b73472e9dad8f35e5f1c9a48026bc5bd3f9ca8aa2"
 
 [metadata.files]
 aiohttp = [

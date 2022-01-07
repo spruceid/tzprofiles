@@ -2,9 +2,9 @@ from typing import cast
 
 from dipdup.context import HandlerContext
 from dipdup.models import Origination
-from tzprofiles_indexer.handlers import resolve_profile
 
 import tzprofiles_indexer.models as models
+from tzprofiles_indexer.handlers import save_claims
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
 
 
@@ -25,15 +25,8 @@ async def on_factory_origination(
         values=dict(contract=originated_contract),
     )
 
-    profile, created = await models.TZProfile.get_or_create(
+    profile, _ = await models.TZProfile.get_or_create(
         account=tzprofile_origination.storage.owner,
-        defaults={
-            "contract": tzprofile_origination.data.originated_contract_address,
-            "valid_claims": [],
-            "invalid_claims": [],
-            "errored": False,
-        },
+        defaults={"contract": tzprofile_origination.data.originated_contract_address},
     )
-    if created:
-        await resolve_profile(tzprofile_origination.storage.claims, profile)
-        await profile.save()
+    await save_claims(profile, tzprofile_origination.storage.claims)
