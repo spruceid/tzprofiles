@@ -311,7 +311,7 @@ pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
 reference = "feat/prometheus"
-resolved_reference = "4d1a72231417bdeb1ea0d651212b544d8291a7ef"
+resolved_reference = "b97e2cd695c4d70b32dc6feb4c983bd253734336"
 
 [[package]]
 name = "dnspython"
