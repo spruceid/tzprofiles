@@ -30,6 +30,9 @@ cover:
 build:
 	poetry build
 
+image:
+	docker build . -t tzprofiles-indexer:${TAG}
+
 up:
 	docker-compose -f docker-compose.local.yml up -d db hasura
 
