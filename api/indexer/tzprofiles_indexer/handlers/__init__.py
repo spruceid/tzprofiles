@@ -155,7 +155,7 @@ async def save_claims(profile: TZProfile, claims: List[Claim]) -> None:
 # TODO: Need to handle cases where storage.owner != originator
 async def resolve_profile(profile: TZProfile) -> None:
     for claim in profile.unprocessed_claims:
-        string_0, bytes_, string_1 = claim
+        string_0, string_1, bytes_ = claim
         if string_1 != "VerifiableCredential":
             continue
         try:
