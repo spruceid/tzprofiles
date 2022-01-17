@@ -48,8 +48,8 @@
       onChange={setSelectedNetwork}
     >
       <Option value="mainnet" text="mainnet" selected />
-      <Option value="granadanet" text="granadanet" />
-      <Option value="florencenet" text="florencenet" />
+      <Option value="hangzhounet" text="hangzhounet" /> 
+      <!-- Option value="ithicanet" text="ithicanet" --> 
       <Option value="custom" text="localhost" />
     </Select>
     <div>
