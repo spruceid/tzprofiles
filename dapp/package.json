@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
-    "@spruceid/tzprofiles": "^1.0.0",
+    "@spruceid/tzprofiles": "^1.0.1",
     "@taquito/beacon-wallet": "^11.1.0",
     "@taquito/local-forging": "^11.1.0",
     "@taquito/taquito": "^11.1.0",
