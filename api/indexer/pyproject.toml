@@ -5,9 +5,6 @@ description = ""
 authors = ["Spruce Systems, Inc."]
 license = "Apache-2.0"
 
-[tool.poetry.scripts]
-dipdup = 'tzprofiles_indexer.cli:cli'
-
 [tool.poetry.dependencies]
 python = "^3.8"
 # dipdup = "^4.0.2"

@@ -29,3 +29,6 @@ async def resolver(ctx):
                 await profile.save()
 
             await asyncio.sleep(1)
+
+if __name__ == '__main__':
+    cli(prog_name='dipdup', standalone_mode=False)  # type: ignore
