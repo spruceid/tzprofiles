@@ -26,7 +26,7 @@ class TZProfile(Model):
         self.valid_claims = []  # type: ignore
         self.invalid_claims = []  # type: ignore
         self.failed = False  # type: ignore
-        self.fetched = False  # type: ignore
+        self.resolved = False  # type: ignore
         self.alias = None  # type: ignore
         self.description = None  # type: ignore
         self.logo = None  # type: ignore
