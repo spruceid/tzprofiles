@@ -48,7 +48,7 @@ class ContractClient {
             let t = this.signer.type;
             switch (this.signer.type) {
                 case "key":
-                    yield signer_1.importKey(this.tezos, this.signer.key.email, this.signer.key.password, this.signer.key.mnemonic.join(' '), this.signer.key.secret);
+                    yield (0, signer_1.importKey)(this.tezos, this.signer.key.email, this.signer.key.password, this.signer.key.mnemonic.join(' '), this.signer.key.secret);
                     this.signerSet = true;
                     return;
                 case "secret":

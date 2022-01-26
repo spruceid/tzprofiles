@@ -1,7 +1,7 @@
 enum NetworkType {
   MAINNET = 'mainnet',
-  FLORENCENET = 'florencenet',
-  GRANADANET = 'granadanet',
+  HANGZHOUNET = 'hangzhounet',
+  // ITHICANET = 'ithicanet',
   CUSTOM = 'custom',
 }
 
