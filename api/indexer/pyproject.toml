@@ -9,7 +9,7 @@ license = "Apache-2.0"
 python = "^3.8"
 # dipdup = "^4.0.2"
 # dipdup = {path = "../../../dipdup", develop = true}
-dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "feat/prometheus"}
+dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "tmp/prometheus-and-metadata"}
 tenacity = "^8.0.1"
 didkit = "0.0.2"
 

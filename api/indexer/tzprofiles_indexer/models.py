@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from tortoise import Model, fields
 
 
@@ -36,6 +38,20 @@ class TZProfile(Model):
         self.discord = None  # type: ignore
         self.github = None  # type: ignore
         self.ethereum = None  # type: ignore
+
+    @property
+    def metadata(self) -> Dict[str, Any]:
+        return {
+            'alias': self.alias,
+            'description': self.description,
+            'logo': self.logo,
+            'website': self.website,
+            'twitter': self.twitter,
+            'domain_name': self.domain_name,
+            'discord': self.discord,
+            'github': self.github,
+            'ethereum': self.ethereum,
+        }
 
     class Meta:
         table = 'tzprofiles'
