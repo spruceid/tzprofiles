@@ -7,7 +7,7 @@ export const findAddressFromDomain = async (
     let searchParams =
       '{\n  domain(validity: VALID, name: ' +
       `"${domain}"` +
-      ') {\n    owner\n  }\n}\n';
+      ') {\n    address\n  }\n}\n';
 
     const res = await fetch('https://api.tezos.domains/graphql', {
       method: 'POST',
