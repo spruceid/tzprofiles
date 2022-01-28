@@ -25,7 +25,7 @@ export const findAddressFromDomain = async (
     if (!data.data.domain) {
       throw new Error(`No valid address found for ${domain}`);
     } else {
-      return data.data.domain.owner;
+      return data.data.domain.address;
     }
   } catch (err) {
     throw new Error(`No valid address found for ${domain}`);
