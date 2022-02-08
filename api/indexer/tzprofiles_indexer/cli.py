@@ -29,7 +29,11 @@ async def resolver(ctx):
                 logging.info(f'Resolving profile {profile.contract}')
                 await resolve_profile(profile)
                 await profile.save()
-                await dipdup_ctx.update_contract_metadata(profile.contract, profile.metadata)
+                await dipdup_ctx.update_contract_metadata(
+                    network=ctx.datasource.network,
+                    address=profile.contract,
+                    metadata=profile.metadata,
+                )
 
             await asyncio.sleep(1)
 
