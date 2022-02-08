@@ -30,7 +30,7 @@ async def resolver(ctx):
                 await resolve_profile(profile)
                 await profile.save()
                 await dipdup_ctx.update_contract_metadata(
-                    network=ctx.datasource.network,
+                    network='mainnet',
                     address=profile.contract,
                     metadata=profile.metadata,
                 )
