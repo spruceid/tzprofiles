@@ -279,7 +279,7 @@ python-versions = "*"
 
 [[package]]
 name = "dipdup"
-version = "4.2.2"
+version = "4.2.3"
 description = "Python SDK for developing indexers of Tezos smart contracts inspired by The Graph"
 category = "main"
 optional = false
@@ -315,7 +315,7 @@ pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
 type = "git"
 url = "https://github.com/dipdup-net/dipdup-py.git"
 reference = "tmp/prometheus-and-metadata"
-resolved_reference = "fc4656cc219c5fd7c6c6b2435591ee6c58d7af9f"
+resolved_reference = "b7b9908329b8550f5ec6dd86ff1d7507e6138a80"
 
 [[package]]
 name = "dnspython"
