@@ -10,7 +10,6 @@ hasura:
   url: http://hasura:8080
   admin_secret: ${ADMIN_SECRET:-changeme}
   allow_aggregations: false
-  camel_case: true
 
 sentry:
   dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
