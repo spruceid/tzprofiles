@@ -27,13 +27,14 @@ module.exports = {
       },
       maxWidth: {
         '2/3': '66.67%',
+        '48': '12rem', // 192px
       },
       maxHeight: {
         '2/3': '66.67%',
         '5/6': '83.33%'
       },
       minWidth: {
-        '72': '18rem'
+        '72': '18rem', // 288px
       },
       minHeight: {
         '8': '2rem',

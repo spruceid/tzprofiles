@@ -1,11 +1,16 @@
-.splash-container{
+.splash-container {
     margin: 50px auto;
     max-width: 800px;
     display: flex;
     flex-direction: column;
     padding: 24px;
+
+    @media(max-width: 1023px) {
+        padding: 24px 16px;
+        margin-top: 40px;
+    }
 }
 
-.subtitle-container{
+.subtitle-container {
     max-width: 550px
 }

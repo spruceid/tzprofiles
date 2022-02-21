@@ -41,7 +41,7 @@
 </script>
 
 <nav
-  class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14 mb-6"
+  class="flex justify-between px-4 sm:px-8 pt-4 sm:pt-8 pb-4 text-white sm:px-12 xl:pt-14 mb-6"
 >
   <div
     on:click={() => {
@@ -52,21 +52,21 @@
     class="cursor-pointer flex flex-row items-center"
   >
     <TZProfileLogo class="sm:h-12 h-8" />
-    <div class="body font-semibold ml-6">Tezos Profiles</div>
+    <div class="body font-semibold ml-2 sm:ml-6 hidden sm:flex">Tezos Profiles</div>
   </div>
   <div />
   <div class="flex flex-row items-center">
     {#if $userData}
-      <Link to="/connect" class="mx-4 body font-semibold">My Profile</Link>
+      <Link to="/connect" class="ml-6 body font-semibold">My Profile</Link>
     {/if}
 
-    <Link to="/search" class="mx-4 body font-semibold">Search Profiles</Link>
+    <Link to="/search" class="ml-6 body font-semibold">Search Profiles</Link>
     {#if !$wallet}
-      <Link to="/faq" class="mx-4 body font-semibold">FAQ</Link>
+      <Link to="/faq" class="ml-6 body font-semibold">FAQ</Link>
     {/if}
 
     {#if $userData}
-      <div class="relative">
+      <div class="relative ml-6">
         <div
           class="flex flex-row items-center address-container py-3 px-4 cursor-pointer overall-wallet-container"
         >
