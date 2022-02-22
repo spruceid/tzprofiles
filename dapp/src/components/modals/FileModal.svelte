@@ -16,8 +16,12 @@
 </style>
 
 <script lang="ts">
-  import { CloseIcon } from 'components/icons';
-  import { onMount } from 'svelte';
+  import {
+    CloseIcon
+  } from 'components/icons';
+  import {
+    onMount
+  } from 'svelte';
 
   export let onClose: () => void;
   let innerClose = () => {
@@ -51,12 +55,10 @@
 </script>
 
 <div class="bg fade-in fixed pin z-50 overflow-auto flex">
-  <div class="modal-container relative p-8 bg-white w-full max-w-md m-auto flex-col flex">
-    <div
-      class="primary cursor-pointer text-bold mb-4 inline-block"
-      on:click={() => innerClose()}
-    >
-      <CloseIcon class="fill-current h-6 w-6" />
+  <div class="modal-container relative px-8 py-10 bg-white w-full max-w-sm m-auto flex-col flex items-center justify-center text-center relative">
+    <div class="primary cursor-pointer text-bold flex items-center justify-end top-4 right-6 absolute" on:click={()=> innerClose()}
+      >
+      <CloseIcon class="fill-current h-5 w-5 flex items-center justify-center" />
     </div>
     <slot />
   </div>

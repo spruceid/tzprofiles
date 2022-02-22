@@ -40,23 +40,31 @@
 
 {#if !$userData}
   <div class="w-full">
-    <div class="text-2xl font-bold body mb-6">Choose network and connect</div>
-    <Select
-      name="network"
-      id="network"
-      bind:value={selectedNetwork}
-      onChange={setSelectedNetwork}
-    >
-      <Option value="mainnet" text="mainnet" selected />
-      <Option value="hangzhounet" text="hangzhounet" /> 
-      <!-- Option value="ithicanet" text="ithicanet" --> 
-      <Option value="custom" text="localhost" />
-    </Select>
+    <div class="text-2xl font-bold body mb-6 pt-4">
+      Choose network and connect
+    </div>
+    <div class="flex items-center relative max-w-60 w-full mx-auto">
+      <Select
+        name="network"
+        id="network"
+        bind:value={selectedNetwork}
+        onChange={setSelectedNetwork}
+      >
+        <Option value="mainnet" text="mainnet" selected />
+        <Option value="hangzhounet" text="hangzhounet" />
+        <!-- Option value="ithicanet" text="ithicanet" -->
+        <Option value="custom" text="localhost" />
+      </Select>
+      <div
+        class="absolute flex items-center justify-center top-0 right-0 w-10 h-full bg-transparent"
+      >
+        <div class="arrow down" />
+      </div>
+    </div>
     <div>
       {#if showWalletButton}
         <PrimaryButton
-          small
-          class="my-4"
+          class="mt-8 max-w-48 w-full"
           onClick={async () => {
             await initWallet();
             const scrollY = document.body.style.top;
@@ -64,8 +72,8 @@
             document.body.style.top = '';
 
             document.body.style.height = '100%';
-            document.body.style["overflow-y"] = 'auto';
-            document.body.style["padding-right"] = '0px';
+            document.body.style['overflow-y'] = 'auto';
+            document.body.style['padding-right'] = '0px';
 
             window.scrollTo(0, parseInt(scrollY || '0') * -1);
             navigate('/connect');

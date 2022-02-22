@@ -1,5 +1,31 @@
-.select-container{
-    padding: 12px;
-    border-radius: 6px;
-    background-color: #f7f7f7;
+.select-container {
+  padding: 12px;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  max-width: 240px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+  &:focus {
+    outline: none;
+  }
+  &:-ms-expand {
+    display: none;
+  }
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }
