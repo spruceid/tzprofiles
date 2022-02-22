@@ -59,10 +59,10 @@
   });
 </script>
 
-<div class="table-container fade-in dropshadow-default mb-20">
+<div class="table-container fade-in dropshadow-default mb-4">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
-      <div class="text-2xl font-bold body">My Credentials</div>
+      <div class="text-xl sm:text-2xl font-bold body">My Credentials</div>
 
       <div class="flex flex-row items-center">
         <div class="mr-4">
@@ -122,13 +122,13 @@
         {#each Object.values($claimsStream).sort(sortClaimsByStatus) as claim}
           <tr>
             <td class="flex flex-row items-center">
-              <div class="icon-container">
+              <div class="flex items-center justify-start">
                 <svelte:component
                   this={claim.display.icon}
-                  class="w-10 h-12 mr-3 sm:w-4 sm:h-4"
+                  class="mr-3 w-4 h-4"
                 />
               </div>
-              <div>{claim.display.display}</div>
+              <div class="w-icon-describe-desk">{claim.display.display}</div>
             </td>
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.type}

@@ -6,7 +6,7 @@
 <BasePage class="flex-col flex-wrap items-center justify-center">
   <div class="flex flex-wrap justify-center w-full h-full">
     <div
-      class="flex flex-col self-center justify-around overflow-visible md:mx-10"
+      class="flex flex-col self-center justify-around overflow-auto mx-4 md:mx-10 mb-16"
     >
       {#if $loadingContracts}
         <LoadingSpinner class="rotating" />

@@ -40,6 +40,7 @@ module.exports = {
       width: {
         'fit-content': 'fit-content',
         15: '3.75rem',
+        'icon-describe-desk': 'calc(100% - 1rem - 0.75rem)',
       },
       height: {
         'fit-content': 'fit-content',

@@ -55,7 +55,7 @@
       <div class="address-container">
         {$params.address}
       </div>
-      <CopyButton text={$params.address} color="gray" class="w-4 h-4 ml-2" />
+      <CopyButton text={$params.address} color="gray" class="w-4 h-4" />
     </div>
   </div>
   <div class="flex flex-row items-center mt-2">

@@ -43,7 +43,7 @@
     <div class="text-2xl font-bold body mb-6 pt-4">
       Choose network and connect
     </div>
-    <div class="flex items-center relative max-w-60 w-full mx-auto">
+    <div class="flex items-center relative max-w-60 w-full mx-auto cursor-pointer">
       <Select
         name="network"
         id="network"
