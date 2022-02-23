@@ -59,7 +59,7 @@
 </script>
 
 <div
-  class="pl-4 pr-8 py-3 rounded fixed top-10 left-0 right-0 mx-auto lg:max-w-2/3 w-full transition-all ease-in-out duration-500 
+  class="pl-4 pr-8 py-3 rounded fixed top-10 left-0 right-0 mx-auto max-w-4/5 lg:max-w-2/3 w-full transition-all ease-in-out duration-500 
   {style} "
   role="alert"
   class:opacity-0={!fade}

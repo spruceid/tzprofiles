@@ -22,6 +22,7 @@ module.exports = {
         },
       },
       maxWidth: {
+        '4/5': 'calc(100% / 5 * 4)',
         '2/3': '66.67%',
         48: '12rem', // 192px
         52.5: '13.125rem', // 210px
@@ -32,6 +33,7 @@ module.exports = {
         '5/6': '83.33%',
       },
       minWidth: {
+        25: '6.25rem', // 100px
         72: '18rem', // 288px
       },
       minHeight: {

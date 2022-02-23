@@ -39,7 +39,7 @@
     id={name}
     {name}
     {placeholder}
-    class="disabled:opacity-100 flex w-full py-3 px-4 text-sm rounded-lg focus:outline-none {clazz} body input-container"
+    class="disabled:opacity-100 flex w-full py-3 px-4 text-sm rounded-lg focus:outline-none {clazz} body input-container h-12"
     class:lg:w-80={!fluid}
     class:text-gray-350={!value}
     class:pl-6={prefix}

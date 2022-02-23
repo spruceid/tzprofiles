@@ -125,10 +125,10 @@
               <div class="flex items-center justify-start">
                 <svelte:component
                   this={claim.display.icon}
-                  class="mr-3 w-4 h-4"
+                  class="sm:mr-3 w-4 h-4"
                 />
               </div>
-              <div class="w-icon-describe-desk">{claim.display.display}</div>
+              <div class="hidden sm:flex w-icon-describe-desk">{claim.display.display}</div>
             </td>
             <td class="px-2 sm:px-4 md:px-6">
               {claim.display.type}

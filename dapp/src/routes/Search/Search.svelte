@@ -58,7 +58,7 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<BasePage class="flex flex-col items-center justify-center">
+<BasePage class="flex flex-col items-center justify-center mx-auto">
   <div class="search-container dropshadow-default fade-in">
     <div class="mb-4 text-2xl text-left font-bold body">
       Tezos Profiles Explorer
@@ -67,27 +67,37 @@
       Tezos Profiles Explorer enables you to search for a Tezos Profile using a
       Tezos Address
     </div>
-    <div class="flex items-center mt-8">
+    <div class="flex items-center mt-8 justify-between">
       {#if !searching}
-        <Select
-          name="network"
-          id="network"
-          bind:value={localNetwork}
-          onChange={setSelectedNetwork}
-          class="mr-2"
+        <div
+          class="flex items-center relative max-w-60 w-full ml-0 cursor-pointer mr-4"
         >
-          <Option value="mainnet" text="mainnet" selected />
-          <Option value="hangzhounet" text="hangzhounet" />
-          <!-- Option value="ithicanet" text="ithicanet" / -->
-          <Option value="custom" text="localhost" />
-        </Select>
+          <Select
+            name="network"
+            id="network"
+            bind:value={localNetwork}
+            onChange={setSelectedNetwork}
+            class="w-full"
+          >
+            <Option value="mainnet" text="mainnet" selected />
+            <Option value="hangzhounet" text="hangzhounet" />
+            <!-- Option value="ithicanet" text="ithicanet" / -->
+            <Option value="custom" text="localhost" />
+          </Select>
+          <div
+            class="absolute flex items-center justify-center top-0 right-0 w-10 h-full bg-transparent"
+          >
+            <div class="arrow down" />
+          </div>
+        </div>
         <Input
           placeholder="Enter Tezos address or domain"
           bind:value={address}
           name="address-search"
+          fluid
         />
         <PrimaryButton
-          class="m-4"
+          class="ml-4 min-w-25"
           onClick={() => searchProfiles()}
           text="Find"
           small
