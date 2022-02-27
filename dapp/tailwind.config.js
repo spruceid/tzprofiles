@@ -27,6 +27,7 @@ module.exports = {
         48: '12rem', // 192px
         52.5: '13.125rem', // 210px
         60: '15rem', // 240px
+        144: '36rem', // 576px
       },
       maxHeight: {
         '2/3': '66.67%',

@@ -25,7 +25,7 @@
 >
   {#if prefix}
     <span
-      class="absolute text-xs left-2 leading-3"
+      class="absolute text-xs left-2 leading-3 top-8"
       class:text-gray-350={!value}
       class:text-gray-500={value}
       class:cursor-not-allowed={disabled}

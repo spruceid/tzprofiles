@@ -177,7 +177,7 @@
   import { BasePage } from 'components';
 </script>
 
-<BasePage class="flex flex-col bg-white">
+<BasePage class="flex flex-col bg-white 2xl:px-32 sm:px-8 px-4">
   <p class="c13"><span class="c2">Tezos Profiles </span></p>
   <p class="c13"><span class="c2">Terms &amp; Conditions</span></p>
   <p class="c13"><span class="c1 c19">Last Modified: May 4, 2021</span></p>

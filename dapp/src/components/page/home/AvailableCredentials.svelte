@@ -161,9 +161,9 @@
                     isCredentialModalOpen = true;
                     selectedClaimToView = claim;
                   }}
-                  class="cursor-pointer mr-4"
+                  class="cursor-pointer mr-2 sm:mr-4"
                 >
-                  <ViewIcon />
+                  <ViewIcon class="w-5 h-5 flex items-center justify-center" />
                 </div>
                 <MoreModal
                   onClickDelete={() => {

@@ -50,7 +50,7 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
+  class="flex flex-grow text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x flex-wrap items-center justify-center fade-in overflow-y-auto"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationDescription {display} iconColor="#00ACEE" />
@@ -61,10 +61,10 @@
       title="Enter Account Handle"
       description="Enter your Twitter account handle to verify and include in a message signed via your wallet."
     >
-      <div class="flex w-full mt-8">
+      <div class="flex w-full mt-4 flex-wrap">
         <Input
           placeholder="Enter your Twitter handle"
-          class="mr-8"
+          class="mr-8 mt-4"
           prefix="@"
           bind:value={twitterHandle}
           disabled={currentStep !== 1}
@@ -93,7 +93,7 @@
                 }
               });
             }}
-            class="ml-4 lg:ml-0"
+            class="mt-4"
             disabled={twitterHandle.length < 1}
             small
           />
@@ -210,7 +210,7 @@
 
     {#if currentStep > 4}
       <div
-        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-4 sm:p-10 rounded-lg dropshadow-default"
       >
         <PrimaryButton
           text="Return to Profile"

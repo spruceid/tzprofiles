@@ -19,6 +19,14 @@
   }
 }
 
+.search-wrap {
+  @media(max-width: 640px) {
+    .select-container {
+      max-width: 100%;
+    }
+  }
+}
+
 .arrow {
   border: solid black;
   border-width: 0 2px 2px 0;

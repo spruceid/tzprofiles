@@ -47,11 +47,11 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
+  class="flex flex-grow text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x flex-wrap items-center justify-center fade-in overflow-y-auto"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
     <div
-      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+      class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-4 sm:p-10 rounded-lg dropshadow-default"
     >
       <div
         class="mb-4 text-2xl text-left font-bold body flex flex-row items-center"
@@ -69,10 +69,10 @@
       title="Enter Web Domain Name"
       description="Please enter the web domain you wish to prove ownership of."
     >
-      <div class="flex w-full mt-8">
+      <div class="flex w-full mt-4 flex-wrap">
         <Input
           placeholder="Enter web domain name"
-          class="mr-8"
+          class="mr-8 mt-4"
           bind:value={domainUrl}
           disabled={currentStep !== 1}
           name="enter-domain"
@@ -108,7 +108,7 @@
                 }
               });
             }}
-            class="ml-4 lg:ml-0"
+            class="mt-4"
             small
           />
         {/if}
@@ -122,9 +122,9 @@
       description="Sign the message presented to you containing your domain."
     >
       {#if currentStep >= 2}
-        <div class="flex items-center w-full py-2 mt-8">
+        <div class="flex items-center w-full py-2 mt-4">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
+            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none mt-4"
             bind:value={dnsClaim}
             readonly
             disabled
@@ -135,7 +135,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Sign Message"
-          class="mt-8 lg:w-48"
+          class="mt-4 lg:w-48"
           onClick={async () => {
             next(async () => {
               dnsMessage = await getSignedAttestation(
@@ -178,9 +178,9 @@
         >.
       </div>
       {#if currentStep > 2}
-        <div class="flex items-center w-full py-2 mt-8">
+        <div class="flex items-center w-full py-2 mt-4">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
+            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 mt-4 w-full resize-none"
             bind:value={dnsMessage}
             readonly
             disabled
@@ -237,7 +237,7 @@
 
     {#if currentStep > 4}
       <div
-        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-4 sm:p-10 rounded-lg dropshadow-default"
       >
         <PrimaryButton
           text="Return to Profile"

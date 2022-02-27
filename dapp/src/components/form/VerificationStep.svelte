@@ -22,11 +22,11 @@
 </script>
 
 <div
-  class="flex mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+  class="flex mb-4 transition-all ease-in-out duration-500 bg-white p-4 sm:p-10 rounded-lg dropshadow-default"
   class:opacity-50={!isFilled}
 >
   <div
-    class="w-6 h-6 mr-4 rounded-full inline-table state-container-border text-bold"
+    class="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-4 rounded-full flex items-center justify-center state-container-border text-bold"
     class:state-container={isFilled}
   >
     {#if error}
@@ -36,10 +36,10 @@
     {:else if isDone}
       <CheckIcon class="w-4 h-4" />
     {:else}
-      <span class="w-6 h-6 p-2 text-sm font-bold text-center">{step}</span>
+      <span class="w-4 h-4 sm:w-6 sm:h-6 p-1 sm:p-2 text-xs sm:text-sm flex items-center justify-center font-bold text-center">{step}</span>
     {/if}
   </div>
-  <div class="flex flex-col w-full overflow-visible mr-8">
+  <div class="flex flex-col w-full overflow-visible md:mr-8">
     <div class="mb-4 text-2xl text-left font-bold body">{title}</div>
     {#if description}
       <div class="font-inter body">{description}</div>

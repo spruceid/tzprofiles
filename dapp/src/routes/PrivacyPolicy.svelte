@@ -48,7 +48,6 @@
     font-style: normal;
   }
   .c7 {
-    background-color: #ffffff;
     padding-top: 8pt;
     padding-bottom: 8pt;
     line-height: 1.2;
@@ -66,7 +65,6 @@
     font-style: normal;
   }
   .c2 {
-    background-color: #ffffff;
     padding-top: 0pt;
     padding-bottom: 8pt;
     line-height: 1.5;
@@ -75,7 +73,7 @@
     text-align: left;
   }
   .c8 {
-    color: #075567;
+    color: #222222;
     font-weight: 700;
     text-decoration: none;
     vertical-align: baseline;
@@ -106,7 +104,7 @@
     font-style: italic;
   }
   .c19 {
-    color: #075567;
+    color: #222222;
     text-decoration: none;
     vertical-align: baseline;
     font-family: 'Arial';
@@ -114,7 +112,7 @@
   }
   .c9 {
     font-size: 24pt;
-    color: #075567;
+    color: #222222;
     font-weight: 700;
   }
   .c0 {
@@ -158,7 +156,7 @@
   }
   h4 {
     padding-top: 14pt;
-    color: #666666;
+    color: #222222;
     font-size: 12pt;
     padding-bottom: 4pt;
     font-family: 'Arial';
@@ -175,7 +173,7 @@
   import { BasePage } from 'components';
 </script>
 
-<BasePage class="flex flex-col bg-white">
+<BasePage class="flex flex-col 2xl:px-32 sm:px-8 px-4">
   <div><p class="c15"><span class="c10" /></p></div>
   <h4 class="c7" id="h.pda1qljqrdj4">
     <span class="c19 c20">Privacy Policy</span>

@@ -115,7 +115,7 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap justify-center"
+  class="flex flex-grow text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x flex-wrap justify-center"
 >
   <div class="flex flex-col md:w-1/2">
     <VerificationStep
@@ -125,9 +125,9 @@
       description="Upload your credentials to Kepler, and deploy your Tezos Profile smart contract."
     >
       <div class="w-full body mt-8">
-        <div class="flex flex-row items-center">
+        <div class="flex items-start sm:items-center">
           <input
-            class="mr-4 body"
+            class="mt-1 sm:mt-0 mr-2 sm:mr-4 body"
             id="agreement"
             name="agreement"
             type="checkbox"

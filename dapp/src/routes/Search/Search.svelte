@@ -58,7 +58,7 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<BasePage class="flex flex-col items-center justify-center mx-auto">
+<BasePage class="flex flex-col items-center justify-center mx-4">
   <div class="search-container dropshadow-default fade-in">
     <div class="mb-4 text-2xl text-left font-bold body">
       Tezos Profiles Explorer
@@ -67,10 +67,10 @@
       Tezos Profiles Explorer enables you to search for a Tezos Profile using a
       Tezos Address
     </div>
-    <div class="flex items-center mt-8 justify-between">
+    <div class="flex flex-col sm:flex-row items-center mt-8 justify-between">
       {#if !searching}
         <div
-          class="flex items-center relative max-w-60 w-full ml-0 cursor-pointer mr-4"
+          class="flex items-center relative sm:max-w-60 w-full ml-0 cursor-pointer sm:mr-4 sm:mb-0 mb-4 search-wrap"
         >
           <Select
             name="network"
@@ -97,7 +97,7 @@
           fluid
         />
         <PrimaryButton
-          class="ml-4 min-w-25"
+          class="ml-4 min-w-25 sm:mt-0 mt-4"
           onClick={() => searchProfiles()}
           text="Find"
           small

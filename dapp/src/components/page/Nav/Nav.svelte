@@ -66,7 +66,7 @@
     {/if}
 
     {#if $userData}
-      <div class="relative sm:ml-6 ml-4">
+      <div class="relative sm:ml-6 ml-2">
         <div
           class="flex flex-row items-center address-container py-3 px-4 cursor-pointer overall-wallet-container"
         >

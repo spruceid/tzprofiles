@@ -38,9 +38,9 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-visible flex-wrap items-center justify-center"
+  class="flex flex-grow text-white 2xl:px-32 px-4 sm:px-8 overflow-visible flex-wrap items-center justify-center"
 >
-  <div class="flex flex-col justify-evenly md:w-1/2">
+  <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <VerificationDescription {display} />
 
     <VerificationStep
@@ -87,7 +87,7 @@
           name="logo"
           src={logo}
           alt="Logo"
-          class="object-contain w-32 h-32 bg-white border rounded-lg cursor-not-allowed border-green-550 opacity-60"
+          class="object-cover object-center w-32 h-32 bg-white border rounded-lg cursor-not-allowed border-green-550 opacity-60"
         />
       {/if}
 
