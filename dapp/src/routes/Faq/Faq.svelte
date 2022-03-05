@@ -2,7 +2,7 @@
   import { BasePage, TextBody2 } from 'components';
 </script>
 
-<BasePage class="flex flex-col flex-1 items-center justify-center md:mx-auto lg:mx-12 xl:mx-auto pt-18 sm:pt-22 md:pt-32">
+<BasePage class="flex flex-col flex-1 items-center justify-center md:mx-auto lg:mx-12 xl:mx-auto pt-18 sm:pt-22 md:pt-34">
   <h2 class="text-4xl sm:text-5xl font-bold text-center">FAQ</h2>
   <div class="splash-container fade-in">
     <TextBody2 value="What is Tezos Profiles?" class="mb-2 font-bold" />

@@ -115,7 +115,7 @@
 </script>
 
 <BasePage
-  class="flex flex-1 flex-col flex-wrap justify-center items-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x pt-18 sm:pt-22 md:pt-32"
+  class="flex flex-1 flex-col flex-wrap justify-center items-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x pt-18 sm:pt-22 md:pt-34"
 >
   <div class="flex flex-col md:w-1/2">
     <VerificationStep

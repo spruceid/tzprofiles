@@ -59,13 +59,13 @@
   });
 </script>
 
-<div class="table-container fade-in mb-4">
+<div class="table-container fade-in mb-4 p-4">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
       <div class="text-xl sm:text-2xl font-bold body">My Credentials</div>
 
       <div class="flex flex-row items-center">
-        <div class="mr-4">
+        <div class="ml-4">
           {#if $contractAddress}
             <PrimaryButton
               small

@@ -6,6 +6,7 @@ module.exports = {
     padding: {
       18: '4.5rem', // 72px
       22: '5.5rem', // 88px
+      34: '8.5rem', // 136px
     },
     extend: {
       lineHeight: {
@@ -53,10 +54,12 @@ module.exports = {
         'fit-content': 'fit-content',
         15: '3.75rem',
         'icon-describe-desk': 'calc(100% - 1rem - 0.75rem)',
+        18: '4.5rem'
       },
       height: {
         'fit-content': 'fit-content',
         15: '3.75rem',
+        18: '4.5rem'
       },
       outline: {
         green: ['2px solid #429383', '-6px'],
