@@ -65,7 +65,7 @@
       <div class="text-xl sm:text-2xl font-bold body">My Credentials</div>
 
       <div class="flex flex-row items-center">
-        <div class="ml-4">
+        <div class="ml-4 font-semibold">
           {#if $contractAddress}
             <PrimaryButton
               small

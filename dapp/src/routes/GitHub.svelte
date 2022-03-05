@@ -174,7 +174,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Create New Gist"
-            class="mt-8 lg:w-48 lg:mr-8 bg-blue-350"
+            class="mt-4 sm:mt-8 lg:w-48 lg:mr-8 bg-blue-350"
             onClick={() => {
               window.open('https://gist.github.com/');
             }}
@@ -182,7 +182,7 @@
 
           <PrimaryButton
             text="Done"
-            class="mt-8 lg:w-48"
+            class="mt-4 sm:mt-8 lg:w-48"
             onClick={() => next()}
           />
         </div>
@@ -197,7 +197,7 @@
       {#if currentStep === 4}
         <Input
           placeholder="Enter your gist URL"
-          class="my-8"
+          class="my-4 sm:my-6"
           bind:value={gistUrl}
           name="enter-gist-url"
         />

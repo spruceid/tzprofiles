@@ -41,7 +41,7 @@
 </script>
 
 <nav
-  class="flex justify-between px-4 pt-4 md:pt-8 pb-4 text-white md:px-12 xl:pt-10 fixed top-0 left-0 w-full bg-blue-light"
+  class="flex justify-between px-4 pt-4 md:pt-8 pb-4 text-white md:px-12 xl:pt-10 fixed top-0 left-0 z-10 w-full bg-blue-light"
 >
   <div
     on:click={() => {

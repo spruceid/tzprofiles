@@ -64,7 +64,7 @@
     <div>
       {#if showWalletButton}
         <PrimaryButton
-          class="mt-8 max-w-48 w-full"
+          class="mt-8 max-w-42 sm:max-w-48 w-full"
           onClick={async () => {
             await initWallet();
             const scrollY = document.body.style.top;

@@ -190,7 +190,7 @@
       {#if currentStep === 4}
         <Input
           placeholder="Enter your Discord message link"
-          class="my-8"
+          class="my-4 sm:my-6"
           bind:value={discordMessageUrl}
           name="enter-discord-message-url"
         />

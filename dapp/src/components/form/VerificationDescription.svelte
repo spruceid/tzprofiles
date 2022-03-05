@@ -10,8 +10,8 @@
   <div
     class="mb-4 text-2xl text-left font-bold body flex flex-row lg:items-center"
   >
-    <svelte:component this={display.icon} color={iconColor} class="h-6 w-6" />
-    <div class="ml-3">{display.title}</div>
+    <svelte:component this={display.icon} color={iconColor} class="h-6 w-6 flex items-center justify-center" />
+    <div class="ml-3 title-width">{display.title}</div>
   </div>
   <div class="body">
     {display.description}

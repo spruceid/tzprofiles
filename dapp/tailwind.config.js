@@ -32,6 +32,7 @@ module.exports = {
       maxWidth: {
         '4/5': 'calc(100% / 5 * 4)',
         '2/3': '66.67%',
+        42: '10.5rem', // 168px
         48: '12rem', // 192px
         52.5: '13.125rem', // 210px
         80: '20rem', // 320px
@@ -49,12 +50,14 @@ module.exports = {
       minHeight: {
         8: '2rem',
         22: '5.5rem', // 88px
+        32: '8rem', // 128px
       },
       width: {
         'fit-content': 'fit-content',
         15: '3.75rem',
+        18: '4.5rem',
         'icon-describe-desk': 'calc(100% - 1rem - 0.75rem)',
-        18: '4.5rem'
+        'title-width': 'calc(100% - 1.5rem - 0.75rem)'
       },
       height: {
         'fit-content': 'fit-content',
