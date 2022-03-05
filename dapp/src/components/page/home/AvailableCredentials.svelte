@@ -59,7 +59,7 @@
   });
 </script>
 
-<div class="table-container fade-in dropshadow-default mb-4">
+<div class="table-container fade-in mb-4">
   <div class="header-row-container">
     <div class="body flex flex-row items-center w-full justify-between">
       <div class="text-xl sm:text-2xl font-bold body">My Credentials</div>

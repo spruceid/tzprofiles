@@ -47,7 +47,7 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x flex-wrap items-center justify-center fade-in overflow-y-auto"
+  class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-32"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
     <div

@@ -38,7 +38,7 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-4 sm:px-8 overflow-visible flex-wrap items-center justify-center"
+  class="flex flex-grow text-white 2xl:px-32 px-4 sm:px-8 overflow-visible flex-wrap items-center justify-center pt-18 sm:pt-22 md:pt-32"
 >
   <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <VerificationDescription {display} />

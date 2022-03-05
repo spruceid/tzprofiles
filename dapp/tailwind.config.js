@@ -3,6 +3,10 @@ module.exports = {
   purge: ['./src/**/*.html', './src/**/*.js', './src/**/*.svelte'],
   darkMode: false,
   theme: {
+    padding: {
+      18: '4.5rem', // 72px
+      22: '5.5rem', // 88px
+    },
     extend: {
       lineHeight: {
         16: '4rem',
@@ -20,12 +24,16 @@ module.exports = {
           370: '#A0A4A8',
           650: '#3E3E3E',
         },
+        blue: {
+          'light': '#ecf2fe',
+        }
       },
       maxWidth: {
         '4/5': 'calc(100% / 5 * 4)',
         '2/3': '66.67%',
         48: '12rem', // 192px
         52.5: '13.125rem', // 210px
+        80: '20rem', // 320px
         60: '15rem', // 240px
         144: '36rem', // 576px
       },
@@ -39,6 +47,7 @@ module.exports = {
       },
       minHeight: {
         8: '2rem',
+        22: '5.5rem', // 88px
       },
       width: {
         'fit-content': 'fit-content',

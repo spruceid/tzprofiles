@@ -26,7 +26,7 @@
   class:opacity-50={!isFilled}
 >
   <div
-    class="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-4 rounded-full flex items-center justify-center state-container-border text-bold"
+    class="w-6 h-6 mt-0.5 mr-1 sm:mr-4 rounded-full flex items-center justify-center state-container-border text-bold"
     class:state-container={isFilled}
   >
     {#if error}
@@ -34,12 +34,12 @@
     {:else if loading}
       <SpinnerIcon class="w-6 h-6 animate-spin" />
     {:else if isDone}
-      <CheckIcon class="w-4 h-4" />
+      <CheckIcon class="w-6 h-6" />
     {:else}
-      <span class="w-4 h-4 sm:w-6 sm:h-6 p-1 sm:p-2 text-xs sm:text-sm flex items-center justify-center font-bold text-center">{step}</span>
+      <span class="w-6 h-6 p-1 text-xs sm:text-sm flex items-center justify-center font-bold text-center">{step}</span>
     {/if}
   </div>
-  <div class="flex flex-col w-full overflow-visible md:mr-8">
+  <div class="flex flex-col w-full overflow-visible lg:mr-8 ml-2 md:ml-0">
     <div class="mb-4 text-2xl text-left font-bold body">{title}</div>
     {#if description}
       <div class="font-inter body">{description}</div>

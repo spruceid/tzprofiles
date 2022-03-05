@@ -22,7 +22,7 @@
 {#if errorMessage}
   <p>{errorMessage}</p>
 {/if}
-<BasePage class="flex-col flex-wrap items-center justify-center w-full">
+<BasePage class="flex-col flex-wrap items-center flex justify-center w-full flex-1 pt-18 sm:pt-22 md:pt-32">
   <div class="splash-container fade-in">
     <div class="flex flex-col items-center">
       <div class="text-4xl sm:text-5xl lg:text-7xl sm:text-6xl font-bold text-center mb-12">

@@ -50,7 +50,7 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x flex-wrap items-center justify-center fade-in overflow-y-auto"
+  class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-32"
 >
   <div class="flex flex-col justify-evenly md:w-1/2">
     <VerificationDescription {display} iconColor="#00ACEE" />
@@ -61,10 +61,10 @@
       title="Enter Account Handle"
       description="Enter your Twitter account handle to verify and include in a message signed via your wallet."
     >
-      <div class="flex w-full mt-4 flex-wrap">
+      <div class="flex w-full lg:items-center lg:mt-4 flex-col lg:flex-row">
         <Input
           placeholder="Enter your Twitter handle"
-          class="mr-8 mt-4"
+          class="lg:mr-3 mt-4"
           prefix="@"
           bind:value={twitterHandle}
           disabled={currentStep !== 1}
@@ -93,7 +93,7 @@
                 }
               });
             }}
-            class="mt-4"
+            class="mt-4 w-max"
             disabled={twitterHandle.length < 1}
             small
           />
@@ -112,7 +112,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Signature Prompt"
-          class="mt-8 lg:w-48"
+          class="mt-4 lg:w-48"
           onClick={() => {
             next(async () => {
               try {

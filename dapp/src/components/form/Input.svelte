@@ -18,14 +18,14 @@
 </script>
 
 <div
-  class="relative transition-all ease-in-out duration-500 flex flex-row items-center"
+  class="relative transition-all ease-in-out duration-500 flex flex-row items-center input-wrapper"
   class:w-full={fluid}
   class:opacity-60={disabled}
   class:cursor-not-allowed={disabled}
 >
   {#if prefix}
     <span
-      class="absolute text-xs left-2 leading-3 top-8"
+      class="absolute text-sm left-2 leading-3 top-8"
       class:text-gray-350={!value}
       class:text-gray-500={value}
       class:cursor-not-allowed={disabled}
@@ -40,9 +40,9 @@
     {name}
     {placeholder}
     class="disabled:opacity-100 flex w-full py-3 px-4 text-sm rounded-lg focus:outline-none {clazz} body input-container h-12"
-    class:lg:w-80={!fluid}
+    class:lg:max-w-80={!fluid}
     class:text-gray-350={!value}
-    class:pl-6={prefix}
+    class:pl-8={prefix}
     {disabled}
     readonly={disabled}
     class:cursor-not-allowed={disabled}
