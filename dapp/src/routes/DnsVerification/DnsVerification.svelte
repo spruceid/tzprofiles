@@ -135,7 +135,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Sign Message"
-          class="mt-4 w-max sm:w-48 flex items-center justify-center"
+          class="mt-4 w-full max-w-48 flex items-center justify-center"
           onClick={async () => {
             next(async () => {
               dnsMessage = await getSignedAttestation(
@@ -192,7 +192,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Done"
-            class="mt-4 w-max sm:w-48 flex items-center justify-center"
+            class="mt-4 w-full max-w-48 flex items-center justify-center"
             onClick={() => next()}
           />
         </div>
@@ -206,7 +206,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Verify Signature"
-            class="mt-4 w-max sm:w-48 flex items-center justify-center"
+            class="mt-4 w-full max-w-48 flex items-center justify-center"
             onClick={() => {
               next(async () =>
                 verifyDnsInfo(

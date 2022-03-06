@@ -129,7 +129,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Signature Prompt"
-          class="mt-4 w-max sm:w-48 flex items-center justify-center"
+          class="mt-4 w-full max-w-48 flex items-center justify-center"
           onClick={async () => {
             next(async () => {
               discordMessage = await getFullAttestation(
@@ -174,7 +174,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Done"
-            class="mt-4 w-max sm:w-48 flex items-center justify-center"
+            class="mt-4 w-full max-w-48 flex items-center justify-center"
             onClick={() => next()}
           />
         </div>
@@ -196,7 +196,7 @@
         />
         <PrimaryButton
           text="Verify Message"
-          class="w-max sm:w-48 flex items-center justify-center"
+          class="w-full max-w-48 flex items-center justify-center"
           onClick={() => {
             next(async () =>
               verifyDiscord($userData, discordHandle, discordMessageUrl)

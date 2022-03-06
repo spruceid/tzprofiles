@@ -198,7 +198,7 @@
       <div class="flex flex-col">
         {#if currentStep === 1}
           <PrimaryButton
-            class="my-4 w-max sm:w-48"
+            class="my-4 w-full max-w-48"
             text="Connect"
             title="Connect"
             onClick={connectMetaMask}
