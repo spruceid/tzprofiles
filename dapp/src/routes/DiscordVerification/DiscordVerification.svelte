@@ -48,7 +48,7 @@
 <BasePage
   class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-34"
 >
-  <div class="flex flex-col justify-evenly md:w-1/2">
+  <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <div
       class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-4 sm:p-10 rounded-lg dropshadow-default"
     >
@@ -73,7 +73,7 @@
       <div class="flex w-full mt-4 flex-wrap">
         <Input
           placeholder="Enter your Discord handle"
-          class="mr-8 mt-4"
+          class="mt-4"
           bind:value={discordHandle}
           disabled={currentStep !== 1}
           name="enter-discord-handle"
@@ -118,7 +118,7 @@
       {#if currentStep >= 2}
         <div class="flex items-center w-full py-2 mt-8">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
+            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none min-h-22 sm:min-h-32"
             bind:value={discordClaim}
             readonly
             disabled
@@ -129,7 +129,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Signature Prompt"
-          class="mt-8 lg:w-48"
+          class="mt-4 w-max sm:w-48 flex items-center justify-center"
           onClick={async () => {
             next(async () => {
               discordMessage = await getFullAttestation(
@@ -162,7 +162,7 @@
       {#if currentStep > 2}
         <div class="flex items-center w-full py-2 mt-8">
           <textarea
-            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none"
+            class="overflow-x-auto rounded-lg bg-gray-100 body p-2 mr-4 w-full resize-none min-h-22 sm:min-h-32"
             bind:value={discordMessage}
             readonly
             disabled
@@ -174,7 +174,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Done"
-            class="mt-8 lg:w-48"
+            class="mt-4 w-max sm:w-48 flex items-center justify-center"
             onClick={() => next()}
           />
         </div>
@@ -196,7 +196,7 @@
         />
         <PrimaryButton
           text="Verify Message"
-          class="lg:w-48"
+          class="w-max sm:w-48 flex items-center justify-center"
           onClick={() => {
             next(async () =>
               verifyDiscord($userData, discordHandle, discordMessageUrl)

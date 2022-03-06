@@ -52,7 +52,7 @@
 <BasePage
   class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-34"
 >
-  <div class="flex flex-col justify-evenly md:w-1/2">
+  <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <VerificationDescription {display} iconColor="#00ACEE" />
 
     <VerificationStep
@@ -112,7 +112,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Signature Prompt"
-          class="mt-4 lg:w-48"
+          class="mt-4 w-max sm:w-48 flex items-center justify-center"
           onClick={() => {
             next(async () => {
               try {
@@ -145,7 +145,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Tweet"
-            class="mt-4 sm:mt-8 lg:w-48 lg:mr-8 bg-blue-350"
+            class="mt-4 sm:mt-8 w-max sm:w-48 flex items-center justify-center lg:mr-8 bg-blue-350"
             onClick={() => {
               window.open(
                 `https://twitter.com/intent/tweet?text=${encodeURI(
@@ -157,7 +157,7 @@
 
           <PrimaryButton
             text="Done"
-            class="mt-4 sm:mt-8 lg:w-48"
+            class="mt-4 sm:mt-8 w-max sm:w-48 flex items-center justify-center"
             onClick={() => next()}
           />
         </div>
@@ -178,7 +178,7 @@
         />
         <PrimaryButton
           text="Verify Tweet"
-          class="lg:w-48"
+          class="w-max sm:w-48 flex items-center justify-center"
           onClick={() => {
             next(async () => verifyTweet($userData, twitterHandle, tweetURL)).then(
               (vc) => {

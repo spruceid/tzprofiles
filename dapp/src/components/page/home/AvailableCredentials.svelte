@@ -82,7 +82,7 @@
         </div>
 
         {#if canUpload($claimsStream)}
-          <div>
+          <div class="ml-2">
             {#if $contractAddress !== null}
               {#if !isAllOnChain($claimsStream)}
                 <PrimaryButton

@@ -3,11 +3,6 @@ module.exports = {
   purge: ['./src/**/*.html', './src/**/*.js', './src/**/*.svelte'],
   darkMode: false,
   theme: {
-    padding: {
-      18: '4.5rem', // 72px
-      22: '5.5rem', // 88px
-      34: '8.5rem', // 136px
-    },
     extend: {
       lineHeight: {
         16: '4rem',
@@ -63,6 +58,11 @@ module.exports = {
         'fit-content': 'fit-content',
         15: '3.75rem',
         18: '4.5rem'
+      },
+      padding: {
+        18: '4.5rem', // 72px
+        22: '5.5rem', // 88px
+        34: '8.5rem', // 136px
       },
       outline: {
         green: ['2px solid #429383', '-6px'],

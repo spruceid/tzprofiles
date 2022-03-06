@@ -186,7 +186,7 @@
 <BasePage
   class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-34"
 >
-  <div class="flex flex-col justify-evenly md:w-1/2">
+  <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <VerificationDescription {display} />
 
     <VerificationStep
@@ -198,14 +198,14 @@
       <div class="flex flex-col">
         {#if currentStep === 1}
           <PrimaryButton
-            class="mt-4 mb-4 lg:w-48"
+            class="my-4 w-max sm:w-48"
             text="Connect"
             title="Connect"
             onClick={connectMetaMask}
           />
         {/if}
         {#if currentStep > 1}
-          <div class="mt-4 body">Connected to {address}</div>
+          <div class="mt-4 body">Connected to <span class="break-all">{address}</span></div>
         {/if}
       </div>
     </VerificationStep>

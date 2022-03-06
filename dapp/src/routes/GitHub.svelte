@@ -83,7 +83,7 @@
 <BasePage
   class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-34"
 >
-  <div class="flex flex-col justify-evenly md:w-1/2">
+  <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <VerificationDescription {display} />
 
     <VerificationStep
@@ -95,7 +95,7 @@
       <div class="flex w-full mt-4 flex-wrap">
         <Input
           placeholder="Enter your GitHub username"
-          class="mr-8 mt-4"
+          class=""
           prefix=""
           bind:value={githubHandle}
           disabled={currentStep !== 1}
@@ -141,7 +141,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Signature Prompt"
-          class="mt-8 lg:w-48"
+          class="mt-4 w-max sm:w-48 flex items-center justify-center"
           onClick={() => {
             next(async () => {
               try {
@@ -174,7 +174,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Create New Gist"
-            class="mt-4 sm:mt-8 lg:w-48 lg:mr-8 bg-blue-350"
+            class="mt-4 sm:mt-8 w-max sm:w-48 flex items-center justify-center lg:mr-8 bg-blue-350"
             onClick={() => {
               window.open('https://gist.github.com/');
             }}
@@ -182,7 +182,7 @@
 
           <PrimaryButton
             text="Done"
-            class="mt-4 sm:mt-8 lg:w-48"
+            class="mt-4 sm:mt-8 w-max sm:w-48 flex items-center justify-center"
             onClick={() => next()}
           />
         </div>
@@ -203,7 +203,7 @@
         />
         <PrimaryButton
           text="Verify Gist"
-          class="lg:w-48"
+          class="w-max sm:w-48 flex items-center justify-center"
           onClick={() => {
             next(verifyGist).then((vc) => {
               let nextClaimMap = readClaimMap;

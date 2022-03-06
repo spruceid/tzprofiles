@@ -12,6 +12,9 @@
     background-color: white;
     max-height: 80vh;
     overflow: auto;
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 40px 20px;
   }
 </style>
 
@@ -54,11 +57,11 @@
   onMount(onOpen);
 </script>
 
-<div class="bg fade-in fixed pin z-50 overflow-auto flex">
+<div class="bg fade-in fixed pin z-50 overflow-auto flex items-center justify-center">
   <div class="modal-container relative px-8 py-10 bg-white w-full max-w-sm m-auto flex-col flex items-center justify-center text-center relative">
-    <div class="primary cursor-pointer text-bold flex items-center justify-end top-4 right-6 absolute" on:click={()=> innerClose()}
+    <div class="primary cursor-pointer text-bold flex items-center justify-end top-4 right-4 absolute" on:click={()=> innerClose()}
       >
-      <CloseIcon class="fill-current h-5 w-5 flex items-center justify-center" />
+      <CloseIcon class="fill-current h-5 w-5" />
     </div>
     <slot />
   </div>
