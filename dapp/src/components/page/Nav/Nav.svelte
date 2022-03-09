@@ -41,7 +41,7 @@
 </script>
 
 <nav
-  class="flex justify-between px-4 md:px-12 pt-4 md:pt-8 xl:pt-10 pb-4 text-white fixed top-0 left-0 z-10 w-full bg-blue-light"
+  class="flex justify-between px-4 md:px-12 pt-4 md:pt-8 pb-4 text-white fixed top-0 left-0 z-10 w-full bg-blue-light"
 >
   <div
     on:click={() => {
@@ -66,7 +66,7 @@
     {/if}
 
     {#if $userData}
-      <div class="relative sm:ml-6 ml-2">
+      <div class="relative sm:ml-6 ml-2 hidden sm:flex">
         <div
           class="flex flex-row items-center address-container py-3 px-4 cursor-pointer overall-wallet-container"
         >

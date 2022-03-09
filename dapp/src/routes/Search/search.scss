@@ -1,9 +1,5 @@
-.search-container{
-    max-width: 732px;
-    width: 100%;
-    padding: 24px;
-    border-radius: 6px;
-    background-color: white;
-    margin-left: auto;
-    margin-right: auto;
+@layer components {
+    .search-container {
+        @apply max-w-183 w-full p-6 rounded-md bg-white mx-auto;
+    }
 }

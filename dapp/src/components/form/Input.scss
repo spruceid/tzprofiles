@@ -1,19 +1,11 @@
-.input-container {
-    background-color: rgb(247, 247, 247);
-    font-size: 16px;
-    font-weight: normal;
-    color: black;
-}
-
-.input-wrapper {
-    width: inherit;
-}
-
-// input[type="text"]:disabled {
-//     opacity: 1;
-//     background: black;
-// }
-
-#enter-twitter-handle {
-    padding-left: 28px;
+@layer components {
+    .input-container {
+        @apply text-black font-normal text-base bg-beige-4;
+    }
+    .input-wrapper {
+        @apply w-inherit;
+    }
+    #enter-twitter-handle {
+        @apply pl-7;
+    }
 }
