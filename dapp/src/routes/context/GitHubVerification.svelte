@@ -1,9 +1,3 @@
-<style>
-  .table-font {
-    color: white;
-  }
-</style>
-
 <div class="table-font">
   <h1>GitHub Verification</h1>
   <p>GitHub verification for tzprofiles</p>

@@ -1,9 +1,3 @@
-<style>
-  .table-font {
-    color: white;
-  }
-</style>
-
 <script lang="ts">
   import { Link } from 'svelte-navigator';
 </script>

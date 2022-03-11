@@ -63,6 +63,58 @@
   .body2 {
     @apply text-base;
   }
+  .table-font {
+    @apply text-white;
+  }
+  [data-tooltip] {
+    @apply relative z-2 block;
+  }
+
+  [data-tooltip]:before,
+  [data-tooltip]:after {
+    @apply invisible opacity-0 pointer-events-none;
+  }
+
+  [data-tooltip]:before,
+  [data-tooltip]:after {
+    transition: 0.2s ease-out;
+    transform: translate(-50%, 5px);
+  }
+
+  [data-tooltip]:before {
+    @apply absolute bottom-full left-2/4 mb-5px p-7px w-full rounded-3px max-w-100 w-full min-w-32.5 bg-black bg-opacity-90 bg-dark-3 text-white text-center text-sm leading-tight break-normal break-words;
+  }
+
+  [data-tooltip]:before {
+    content: attr(data-tooltip);
+    transition: 0.2s ease-out;
+  }
+
+  [data-tooltip]:after {
+    @apply absolute bottom-full left-2/4 w-0 border-solid border-t-5px border-r-5px border-l-5px;
+  }
+
+  [data-tooltip]:after {    
+    content: ' ';    
+    font-size: 0;
+    line-height: 0;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: rgba(51, 51, 51, 0.9);
+  }
+
+  [data-tooltip]:hover:before,
+  [data-tooltip]:hover:after {
+    @apply visible opacity-100;
+  }
+  [data-tooltip]:hover:before,
+  [data-tooltip]:hover:after {
+    transform: translate(-50%, 0);
+  }
+  [data-tooltip='false']:hover:before,
+  [data-tooltip='false']:hover:after {
+    @apply opacity-0 invisible;
+  }
 </style>
 
 <script lang="ts">

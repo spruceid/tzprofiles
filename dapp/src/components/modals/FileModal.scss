@@ -1,0 +1,8 @@
+@layer components {
+  .bg {
+    @apply absolute w-full h-full top-0 left-0 bg-opacity-50 bg-dark-2;
+  }
+  .modal-container {
+    @apply bg-white max-h-80vh overflow-auto mx-4 py-10 px-5;
+  }
+}
