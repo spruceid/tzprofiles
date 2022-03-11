@@ -9,7 +9,7 @@
   export let displayIcon: boolean = true;
   export let disabled: boolean = false;
   export { clazz as class };
-  let clazz: string = 'w-8 h-8';
+  let clazz: string = 'w-6 sm:w-8 h-6 sm:h-8';
 
   let copyToClipboard: () => void;
 

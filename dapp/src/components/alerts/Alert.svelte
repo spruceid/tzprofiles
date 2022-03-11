@@ -59,9 +59,7 @@
 </script>
 
 <div
-  class="pl-4 pr-8 py-3 rounded fixed top-6 left-0 right-0 w-72 mx-auto
-  lg:w-fit-content lg:max-w-2/3 lg:min-w-72
-  transition-all ease-in-out duration-500 
+  class="pl-4 pr-8 py-3 rounded fixed top-10 inset-x-0 z-20 mx-auto max-w-4/5 lg:max-w-2/3 w-full transition-all ease-in-out duration-500 
   {style} "
   role="alert"
   class:opacity-0={!fade}
@@ -72,6 +70,6 @@
     >{$alert?.message}</span
   >
   <span class="absolute top-0 bottom-0 right-0 px-4 py-3" on:click={reset}>
-    <CloseIcon class="fill-current h-6 w-6 {iconColor}" />
+    <CloseIcon class="fill-current h-5 w-5 flex items-center justify-center {iconColor}" />
   </span>
 </div>

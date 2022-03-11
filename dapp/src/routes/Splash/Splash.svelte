@@ -22,10 +22,10 @@
 {#if errorMessage}
   <p>{errorMessage}</p>
 {/if}
-<BasePage class="flex-col flex-wrap items-center justify-center w-full">
+<BasePage class="flex-col flex-wrap items-center flex justify-center w-full flex-1 pt-18 sm:pt-22">
   <div class="splash-container fade-in">
     <div class="flex flex-col items-center">
-      <div class="text-5xl lg:text-7xl sm:text-6xl font-bold text-center mb-12">
+      <div class="text-4xl sm:text-5xl lg:text-7xl sm:text-6xl font-bold text-center mb-12">
         Control Your Identity on Tezos
       </div>
 
@@ -34,14 +34,14 @@
         Tezos account.
       </div>
 
-      <div class="text-center">
+      <div class="text-center grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 w-full">
         <PrimaryButton
-          class="my-4 mx-2.5"
+          class="w-full max-w-42 max-w-48 mx-auto sm:mr-0"
           onClick={() => connect()}
           text="Connect Wallet"
         />
         <PrimaryButton
-          class="my-4 mx-2.5"
+          class="w-full max-w-42 max-w-48 mx-auto sm:ml-0"
           onClick={() => navigate('/search')}
           text="Search Profiles"
           secondary

@@ -36,7 +36,7 @@
   {#if isOpen}
     <div class="panel-container">
       <div
-        class="cursor-pointer my-3"
+        class="cursor-pointer my-2 sm:my-3"
         on:click={() => {
           closePanel();
           onClickDelete();
@@ -45,7 +45,7 @@
         Delete
       </div>
 
-      <div class="cursor-pointer my-3" on:click={() => closePanel()}>
+      <div class="cursor-pointer my-2 sm:my-3" on:click={() => closePanel()}>
         <a
           aria-label=""
           alt=""

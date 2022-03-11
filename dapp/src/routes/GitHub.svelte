@@ -81,9 +81,9 @@
 </script>
 
 <BasePage
-  class="flex flex-grow text-white 2xl:px-32 px-8 overflow-hidden-x flex-wrap items-center justify-center fade-in"
+  class="flex flex-1 flex-wrap items-center justify-center text-white 2xl:px-32 sm:px-8 px-4 overflow-hidden-x fade-in overflow-y-auto pt-18 sm:pt-22 md:pt-34"
 >
-  <div class="flex flex-col justify-evenly md:w-1/2">
+  <div class="flex flex-col justify-evenly w-full md:max-w-144">
     <VerificationDescription {display} />
 
     <VerificationStep
@@ -92,10 +92,10 @@
       title="Enter Username"
       description="Enter your GitHub username to verify and include in a message signed by your wallet."
     >
-      <div class="flex w-full mt-8">
+      <div class="flex w-full mt-4 flex-wrap">
         <Input
           placeholder="Enter your GitHub username"
-          class="mr-8"
+          class=""
           prefix=""
           bind:value={githubHandle}
           disabled={currentStep !== 1}
@@ -122,7 +122,7 @@
                 }
               });
             }}
-            class="ml-4 lg:ml-0"
+            class="mt-4"
             disabled={githubHandle.length < 1}
             small
           />
@@ -141,7 +141,7 @@
       {#if currentStep === 2}
         <PrimaryButton
           text="Signature Prompt"
-          class="mt-8 lg:w-48"
+          class="mt-4 w-full max-w-48 flex items-center justify-center"
           onClick={() => {
             next(async () => {
               try {
@@ -174,7 +174,7 @@
         <div class="flex flex-col lg:flex-row">
           <PrimaryButton
             text="Create New Gist"
-            class="mt-8 lg:w-48 lg:mr-8 bg-blue-350"
+            class="mt-4 sm:mt-8 w-full max-w-48 flex items-center justify-center lg:mr-8 bg-blue-350"
             onClick={() => {
               window.open('https://gist.github.com/');
             }}
@@ -182,7 +182,7 @@
 
           <PrimaryButton
             text="Done"
-            class="mt-8 lg:w-48"
+            class="mt-4 sm:mt-8 w-full max-w-48 flex items-center justify-center"
             onClick={() => next()}
           />
         </div>
@@ -197,13 +197,13 @@
       {#if currentStep === 4}
         <Input
           placeholder="Enter your gist URL"
-          class="my-8"
+          class="my-4 sm:my-6"
           bind:value={gistUrl}
           name="enter-gist-url"
         />
         <PrimaryButton
           text="Verify Gist"
-          class="lg:w-48"
+          class="w-full max-w-48 flex items-center justify-center"
           onClick={() => {
             next(verifyGist).then((vc) => {
               let nextClaimMap = readClaimMap;
@@ -233,7 +233,7 @@
 
     {#if currentStep > 4}
       <div
-        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-10 rounded-lg dropshadow-default"
+        class="flex flex-col mb-4 transition-all ease-in-out duration-500 bg-white p-4 sm:p-10 rounded-lg dropshadow-default"
       >
         <PrimaryButton
           text="Return to Profile"

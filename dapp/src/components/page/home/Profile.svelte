@@ -129,7 +129,7 @@
       {#if !isAllOnChain($claimsStream)}
         {#if isAddingClaims}
           <div class="w-full flex flex-col items-center">
-            <LoadingSpinner class="rotating my-6" />
+            <LoadingSpinner class="rotating my-6 w-18 h-18 flex items-center justify-center" />
             Please be patient
           </div>
         {:else}

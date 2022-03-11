@@ -32,10 +32,10 @@
   });
 </script>
 
-<BasePage class="justify-center flex flex-col items-center">
+<BasePage class="flex flex-col flex-1 justify-center items-center mx-4 pt-18 sm:pt-22">
   {#if fetching}
     <div class="items-center justify-center w-full mb-8 flex">
-      <LoadingSpinner class="rotating" />
+      <LoadingSpinner class="rotating w-18 h-18 flex items-center justify-center" />
     </div>
   {/if}
 

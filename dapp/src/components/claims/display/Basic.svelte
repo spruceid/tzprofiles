@@ -67,13 +67,13 @@
 
   <div class="flex items-center justify-between">
     <div
-      class="flex items-center justify-center w-32 h-32 text-center border rounded-lg border-gray-200 text-gray-350"
+      class="flex flex-col items-center justify-center w-32 h-32 text-center border rounded-lg border-gray-200 text-gray-350"
       class:opacity-60={true}
     >
       {#if draft.logo}
         <img
           name="basic-logo"
-          class="object-contain"
+          class="object-cover object-center w-full h-full rounded-lg flex items-center justify-center"
           src={draft.logo}
           alt="Basic profile logo"
         />

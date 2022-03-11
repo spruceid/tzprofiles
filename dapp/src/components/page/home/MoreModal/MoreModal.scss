@@ -1,12 +1,9 @@
 .panel-container {
-  position: absolute;
-  top: 20px;
-  left: -100px;
-  width: 150px;
-  background-color: rgb(252, 252, 252);
-  border: 1px solid rgb(235, 235, 235);
   box-shadow: 0px 0px 60px rgba(82, 82, 82, 0.1);
-  border-radius: 12px;
-  padding: 12px 12px;
-  z-index: 100;
+}
+
+@layer components {
+  .panel-container {
+    @apply absolute top-5 -left-29 sm:-left-25 w-30.5 sm:w-37.5 bg-beige-5 border border-beige-6 rounded-xl py-2 px-3 z-100;
+  }
 }

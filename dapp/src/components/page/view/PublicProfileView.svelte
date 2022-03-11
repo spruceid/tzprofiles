@@ -31,7 +31,7 @@
 </script>
 
 <div
-  class="self-center w-full break-all p-6 fade-in rounded-xl bg-white dropshadow-default public-profile-container"
+  class="self-center w-full break-all p-6 fade-in rounded-xl bg-white dropshadow-default public-profile-container mb-4"
 >
   {#if basicClaim}
     {#if !basicDraft.logo || !shouldDisplayOriginalImage}
@@ -51,14 +51,14 @@
     </div>
   {/if}
   <div class="flex flex-row items-center">
-    <div class="flex flex-row items-center cursor-pointer bubble-outline">
-      <div class="address-container">
-        {$params.address}
+    <div class="flex flex-row items-center cursor-pointer bubble-outline mr-0">
+      <div class="address-container mr-2">
+        {$params.address.slice(0,5)}...{$params.address.slice(-4)}
       </div>
-      <CopyButton text={$params.address} color="gray" class="w-4 h-4 ml-2" />
+      <CopyButton text={$params.address} color="gray" class="w-4 h-4" />
     </div>
   </div>
-  <div class="flex flex-row items-center mt-2">
+  <div class="flex flex-row items-center mt-3">
     {#each Object.values(otherClaims) as claim}
       <ClaimIcon {claim} tooltip={publicProfileViewTooltip(claim)} />
     {/each}
@@ -72,7 +72,7 @@
     <div class="break-normal description-section">
       {basicDraft.description || ''}
     </div>
-    <div class="mt-12 mb-4">
+    <div class="mt-10 mb-4">
       <hr />
     </div>
   {/if}
@@ -85,7 +85,7 @@
   </div>
   {#if isCredentialSourceDropdownOpen}
     {#each Object.values(claimsMap).filter((x) => !!x.content) as claim}
-      <div class="flex w-full justify-between items-center mb-1 pr-3">
+      <div class="flex w-full justify-between items-center mb-1">
         <small class="text-gray-370">{claim.display.proof}</small>
 
         <Tooltip
@@ -109,7 +109,7 @@
       <div class="flex w-full justify-between	mb-2">
         <div>{claim.display.display}</div>
         <IconLink
-          class="block mr-3 w-4 h-4"
+          class="block w-4 h-4"
           icon={DownloadIcon}
           href={makeDownloadable(claim.content || claim.preparedContent)}
           download={`${claim.display.display}.json`}
