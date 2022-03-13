@@ -7,9 +7,9 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-# dipdup = "^4.0.2"
-dipdup = {path = "../../../dipdup", develop = true}
-# dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "tmp/prometheus-and-metadata"}
+dipdup = "5.0.0-rc2"
+# dipdup = {path = "../../../dipdup", develop = true}
+# dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "fix/5.0-fixes"}
 tenacity = "^8.0.1"
 didkit = "0.0.2"
 
