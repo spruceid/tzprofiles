@@ -12,5 +12,5 @@ hasura:
   allow_aggregations: false
 
 sentry:
-  dsn: https://27d26eb33f1b4633852c2a0e9855bd3a@sentry.baking-bad.org/9
-  environment: production
+  dsn: https://ef33481a853b44e39187bdf2d9eef773@newsentry.baking-bad.org/6
+  environment: piltover
