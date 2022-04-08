@@ -1,5 +1,5 @@
-.landing-container{
-    max-width: 100px;
-    display: flex;
-    flex-direction: column;
+@layer components {
+    .landing-container {
+        @apply max-w-25 w-full flex flex-col;
+    }
 }

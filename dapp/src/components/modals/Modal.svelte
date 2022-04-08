@@ -52,7 +52,7 @@
       <div class={`${backgroundColor} py-6 h-full`}>
         <div class="flex flex-col sm:items-start h-full">
           <p on:click={toggle} class="underline pl-6 cursor-pointer text-black">
-            <CloseIcon class="fill-current h-6 w-6" />
+            <CloseIcon class="fill-current h-5 w-5" />
           </p>
           <slot id="modal-title" name="title" />
           <slot id="modal-body" name="body" />

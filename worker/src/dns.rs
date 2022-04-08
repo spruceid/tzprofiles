@@ -48,12 +48,13 @@ pub fn extract_dns_signature(record: String) -> Result<String> {
 pub async fn retrieve_txt_records(domain: String) -> Result<DnsResponse> {
     let client = reqwest::Client::new();
     let request_url = format!(
-        "https://cloudflare-dns.com/dns-query?name={}&type=txt&ct=application/dns-json",
+        "https://cloudflare-dns.com/dns-query?name={}&type=txt",
         domain
     );
 
     let res = client
         .get(Url::parse(&request_url)?)
+        .header("accept", "application/dns-json")
         .send()
         .await?
         .json()

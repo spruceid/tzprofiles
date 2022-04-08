@@ -1,11 +1,8 @@
-.splash-container{
-    margin: 50px auto;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
-}
-
-.subtitle-container{
-    max-width: 550px
+@layer components {
+    .splash-container {
+        @apply mb-12.5 mt-10 lg:mt-12.5 mx-auto max-w-200 w-full flex flex-col px-4 lg:px-6 py-6;
+    }
+    .subtitle-container {
+        @apply max-w-137.5 w-full;
+    }
 }

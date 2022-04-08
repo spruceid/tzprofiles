@@ -4,12 +4,11 @@
 </script>
 
 <svg
-  width="71"
-  height="71"
   viewBox="0 0 71 71"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
   class="{clazz} opacity-20"
+  preserveAspectRatio="xMidYMin meet"
 >
   <path
     fill-rule="evenodd"

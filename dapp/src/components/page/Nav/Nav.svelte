@@ -41,7 +41,7 @@
 </script>
 
 <nav
-  class="flex justify-between px-8 pt-8 pb-4 text-white sm:px-12 xl:pt-14 mb-6"
+  class="flex justify-between px-4 md:px-12 pt-4 md:pt-8 pb-4 text-white fixed top-0 left-0 z-10 w-full bg-blue-light"
 >
   <div
     on:click={() => {
@@ -52,34 +52,34 @@
     class="cursor-pointer flex flex-row items-center"
   >
     <TZProfileLogo class="sm:h-12 h-8" />
-    <div class="body font-semibold ml-6">Tezos Profiles</div>
+    <div class="body font-semibold ml-2 sm:ml-6 ml-4 hidden sm:flex">Tezos Profiles</div>
   </div>
   <div />
   <div class="flex flex-row items-center">
     {#if $userData}
-      <Link to="/connect" class="mx-4 body font-semibold">My Profile</Link>
+      <Link to="/connect" class="sm:ml-6 ml-4 body font-semibold">My Profile</Link>
     {/if}
 
-    <Link to="/search" class="mx-4 body font-semibold">Search Profiles</Link>
+    <Link to="/search" class="sm:ml-6 ml-4 body font-semibold">Search Profiles</Link>
     {#if !$wallet}
-      <Link to="/faq" class="mx-4 body font-semibold">FAQ</Link>
+      <Link to="/faq" class="sm:ml-6 ml-4 body font-semibold">FAQ</Link>
     {/if}
 
     {#if $userData}
-      <div class="relative">
+      <div class="relative sm:ml-6 ml-2 hidden sm:flex">
         <div
           class="flex flex-row items-center address-container py-3 px-4 cursor-pointer overall-wallet-container"
         >
           <div
-            class="address-text-container cursor-pointer"
+            class="address-text-container cursor-pointer mr-2"
             on:click={() => (isAdminDropdownOpen = !isAdminDropdownOpen)}
           >
-            {$userData.account.address}
+            {$userData.account.address.slice(0,5)}...{$userData.account.address.slice(-4)}
           </div>
           <CopyButton
             text={$userData.account.address}
             color="gray"
-            class="w-4 h-4 ml-2"
+            class="w-4 h-4"
           />
         </div>
         {#if isAdminDropdownOpen && $wallet}

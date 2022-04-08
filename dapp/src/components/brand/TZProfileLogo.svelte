@@ -4,8 +4,6 @@
 </script>
 
 <svg
-  width="56"
-  height="55"
   viewBox="0 0 56 55"
   fill="none"
   class={clazz}

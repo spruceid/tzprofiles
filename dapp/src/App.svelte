@@ -12,17 +12,7 @@
   }
   html,
   body {
-    position: relative;
-    width: 100vw;
-    min-height: 100vh;
-    margin: 0px;
-    padding: 0px;
-    font-size: 16px;
-    font-family: 'Inter';
-    background: #ecf2fe;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
+    @apply relative bg-blue-light w-screen min-h-screen m-0 p-0 text-base flex font-inter flex-col overflow-x-hidden;
   }
 
   h1,
@@ -30,23 +20,19 @@
   h3,
   h4,
   h5 {
-    font-family: 'Inter';
-    font-weight: 600;
-    color: #222222;
+    @apply font-inter font-semibold text-dark-1;
   }
 
   body {
-    color: #222222;
+    @apply text-dark-1;
   }
 
   a {
-    text-decoration: none;
-    color: #1a75ff;
+    @apply no-underline text-blue-1;
   }
   td,
   th {
-    font-family: 'Inter';
-    font-weight: 400;
+    @apply font-inter font-normal;
   }
 
   pre {
@@ -61,8 +47,7 @@
   Custom scrollbar settings
   */
   ::-webkit-scrollbar-track {
-    border-radius: 8px;
-    background-color: #ccc;
+    @apply rounded-lg bg-beige-1;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -70,10 +55,13 @@
     background-color: #888;
   }
   ::-webkit-scrollbar {
-    height: 6px;
-    border-radius: 8px;
-    width: 6px;
-    background-color: #ccc;
+    @apply bg-beige-1 rounded-lg h-1.5 w-1.5;
+  }
+  .body1 {
+    @apply text-xl;
+  }
+  .body2 {
+    @apply text-base;
   }
 </style>
 
