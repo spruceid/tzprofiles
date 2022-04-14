@@ -34,7 +34,7 @@ image:
 	docker build . -t tzprofiles-indexer:${TAG}
 
 up:
-	docker-compose -f docker-compose.local.yml up -d db hasura
+	docker-compose -f docker-compose.yml up -d db hasura
 
 down:
-	docker-compose -f docker-compose.local.yml down -v 
+	docker-compose -f docker-compose.yml down

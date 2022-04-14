@@ -3,7 +3,6 @@ from typing import Any, Dict
 from dipdup.datasources.datasource import Datasource
 
 
-# TODO: For DipDup: inject datasource classes?
 class TZPDatasource(Datasource):
     async def run(self) -> None:
         await self._http.__aenter__()
