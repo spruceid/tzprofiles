@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-dipdup = "5.0.1"
+dipdup = "^5.0.4"
 # dipdup = {path = "../../../dipdup", develop = true}
 # dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "fix/5.0-fixes"}
 tenacity = "^8.0.1"
