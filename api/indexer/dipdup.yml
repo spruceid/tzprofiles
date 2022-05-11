@@ -13,6 +13,7 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
+    buffer_size: 2
     http:
       retry_count: 10
       retry_sleep: 60
