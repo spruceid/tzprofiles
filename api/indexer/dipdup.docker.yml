@@ -8,4 +8,8 @@ database:
 
 hasura:
   url: http://hasura:8080
-  admin_secret: ${ADMIN_SECRET:-changeme}
+  admin_secret: ${HASURA_SECRET:-changeme}
+
+sentry:
+  dsn: ${SENTRY_DSN:-""}
+  environment: ${SENTRY_ENVIRONMENT:-docker}

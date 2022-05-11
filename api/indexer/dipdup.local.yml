@@ -8,5 +8,8 @@ database:
 
 hasura:
   url: http://127.0.0.1:8080
-  admin_secret: ${ADMIN_SECRET:-changeme}
+  admin_secret: ${HASURA_SECRET:-changeme}
 
+sentry:
+  dsn: ${SENTRY_DSN:-""}
+  environment: ${SENTRY_ENVIRONMENT:-local}
