@@ -11,6 +11,7 @@ async def on_update(
     ctx: HandlerContext,
     tzprofile_update: Transaction[DefaultParameter, TzprofileStorage],
 ) -> None:
-    profile = await models.TZProfile.get(account=tzprofile_update.storage.owner)
-    if profile.contract == tzprofile_update.data.target_address:
+    contract = tzprofile_update.data.target_address
+    profile = await models.TZProfile.get(account=tzprofile_update.storage.owner).select_for_update()
+    if profile.contract == contract:
         await save_claims(profile, tzprofile_update.storage.claims)

@@ -6,4 +6,5 @@ RUN inject_pyproject
 
 COPY tzprofiles_indexer tzprofiles_indexer
 COPY dipdup.yml dipdup.docker.yml ./
-ENTRYPOINT ["python", "-m", "tzprofiles_indexer.cli"]
+ENTRYPOINT ["poetry", "run", "dipdup"]
+CMD ["-c", "dipdup.yml", "run"]

@@ -25,8 +25,10 @@ async def on_factory_origination(
         values=dict(contract=originated_contract),
     )
 
+    contract = tzprofile_origination.data.originated_contract_address
+
     profile, _ = await models.TZProfile.get_or_create(
         account=tzprofile_origination.storage.owner,
-        defaults={"contract": tzprofile_origination.data.originated_contract_address},
+        defaults={"contract": contract},
     )
     await save_claims(profile, tzprofile_origination.storage.claims)
