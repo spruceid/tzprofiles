@@ -6,10 +6,10 @@ authors = ["Spruce Systems, Inc."]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-dipdup = "^5.1.2"
+python = ">=3.10,<3.11"
+# dipdup = "^5.1.2"
 # dipdup = {path = "../../../dipdup", develop = true}
-# dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "fix/buffer-corruption"}
+dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "exp/sequential-indexing"}
 tenacity = "^8.0.1"
 didkit = "0.3.1"
 

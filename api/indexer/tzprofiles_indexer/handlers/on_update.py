@@ -1,3 +1,5 @@
+from typing import cast
+
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
 
@@ -11,7 +13,7 @@ async def on_update(
     ctx: HandlerContext,
     tzprofile_update: Transaction[DefaultParameter, TzprofileStorage],
 ) -> None:
-    contract = tzprofile_update.data.target_address
-    profile = await models.TZProfile.get(account=tzprofile_update.storage.owner).select_for_update()
+    contract = cast(str, tzprofile_update.data.target_address)
+    profile = await models.TZProfile.filter(account=tzprofile_update.storage.owner).get()
     if profile.contract == contract:
         await save_claims(profile, tzprofile_update.storage.claims)

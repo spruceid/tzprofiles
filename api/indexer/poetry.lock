@@ -134,7 +134,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "asyncpg"
-version = "0.24.0"
+version = "0.25.0"
 description = "An asyncio PostgreSQL driver"
 category = "main"
 optional = false
@@ -228,7 +228,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "datamodel-code-generator"
-version = "0.11.20"
+version = "0.12.1"
 description = "Datamodel Code Generator"
 category = "main"
 optional = false
@@ -261,36 +261,43 @@ python-versions = "*"
 
 [[package]]
 name = "dipdup"
-version = "5.1.2"
+version = "5.1.3"
 description = "Python SDK for developing indexers of Tezos smart contracts inspired by The Graph"
 category = "main"
 optional = false
-python-versions = ">=3.10,<4.0"
+python-versions = ">=3.10,<3.11"
+develop = false
 
 [package.dependencies]
-aiohttp = ">=3.8.0,<4.0.0"
-aiolimiter = ">=1.0.0-beta.1,<2.0.0"
-anyio = ">=3.3.2,<4.0.0"
-APScheduler = ">=3.8.0,<4.0.0"
-asyncclick = ">=8.0.1,<9.0.0"
-asyncpg = ">=0.24.0,<0.25.0"
-datamodel-code-generator = ">=0.11.18,<0.12.0"
-fcache = ">=0.4.7,<0.5.0"
-orjson = ">=3.6.6,<4.0.0"
-prometheus-client = ">=0.12.0,<0.13.0"
-pydantic = ">=1.8.2,<2.0.0"
-pyhumps = ">=3.0.2,<4.0.0"
-pysignalr = ">=0.1.2,<0.2.0"
-python-dotenv = ">=0.19.0,<0.20.0"
-"ruamel.yaml" = ">=0.17.2,<0.18.0"
-sentry-sdk = ">=1.4.3,<2.0.0"
-sqlparse = ">=0.4.2,<0.5.0"
-tabulate = ">=0.8.9,<0.9.0"
+aiohttp = "^3.8.0"
+aiolimiter = "^1.0.0-beta.1"
+anyio = "^3.3.2"
+APScheduler = "^3.8.0"
+asyncclick = "^8.0.1"
+asyncpg = "^0.25.0"
+datamodel-code-generator = "^0.12.1"
+fcache = "^0.4.7"
+orjson = "^3.6.6"
+prometheus-client = "^0.14.1"
+pydantic = "^1.8.2"
+pyhumps = "^3.0.2"
+pysignalr = "^0.1.2"
+python-dotenv = "^0.19.0"
+"ruamel.yaml" = "^0.17.2"
+sentry-sdk = "^1.4.3"
+sqlparse = "^0.4.2"
+tabulate = "^0.8.9"
 tortoise-orm = "0.19.1"
-typing-inspect = ">=0.6.0,<0.7.0"
+typing-inspect = "^0.7.1"
 
 [package.extras]
-pytezos = ["pytezos (>=3.2.4,<4.0.0)"]
+pytezos = ["pytezos (>=3.5.1,<4.0.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/dipdup-net/dipdup-py.git"
+reference = "exp/sequential-indexing"
+resolved_reference = "22d68c9eba5e16e4282145bb447d5b011aa6222d"
 
 [[package]]
 name = "dnspython"
@@ -618,11 +625,11 @@ ssv = ["swagger-spec-validator (>=2.4,<3.0)"]
 
 [[package]]
 name = "prometheus-client"
-version = "0.12.0"
+version = "0.14.1"
 description = "Python client for the Prometheus monitoring system."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+python-versions = ">=3.6"
 
 [package.extras]
 twisted = ["twisted"]
@@ -937,7 +944,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "typing-inspect"
-version = "0.6.0"
+version = "0.7.1"
 description = "Runtime inspection utilities for typing module."
 category = "main"
 optional = false
@@ -1006,8 +1013,8 @@ multidict = ">=4.0"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.10"
-content-hash = "df53b1aabbc9cc360ec81adec3c41349f313b9385a4dd9334a7e52c5a60a8656"
+python-versions = ">=3.10,<3.11"
+content-hash = "9eca5329a166a712168485d5a49d149d60f73f6f7be0ca122d5bd0342fc6a764"
 
 [metadata.files]
 aiohttp = [
@@ -1120,19 +1127,32 @@ asyncclick = [
     {file = "asyncclick-8.0.3.2.tar.gz", hash = "sha256:251030d8497c139a09d51f8c4b9b8c261a2be0b7d5722f1b7916cc6770368684"},
 ]
 asyncpg = [
-    {file = "asyncpg-0.24.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c4fc0205fe4ddd5aeb3dfdc0f7bafd43411181e1f5650189608e5971cceacff1"},
-    {file = "asyncpg-0.24.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a7095890c96ba36f9f668eb552bb020dddb44f8e73e932f8573efc613ee83843"},
-    {file = "asyncpg-0.24.0-cp310-cp310-win_amd64.whl", hash = "sha256:8ff5073d4b654e34bd5eaadc01dc4d68b8a9609084d835acd364cd934190a08d"},
-    {file = "asyncpg-0.24.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e36c6806883786b19551bb70a4882561f31135dc8105a59662e0376cf5b2cbc5"},
-    {file = "asyncpg-0.24.0-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:ddffcb85227bf39cd1bedd4603e0082b243cf3b14ced64dce506a15b05232b83"},
-    {file = "asyncpg-0.24.0-cp37-cp37m-win_amd64.whl", hash = "sha256:41704c561d354bef01353835a7846e5606faabbeb846214dfcf666cf53319f18"},
-    {file = "asyncpg-0.24.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:29ef6ae0a617fc13cc2ac5dc8e9b367bb83cba220614b437af9b67766f4b6b20"},
-    {file = "asyncpg-0.24.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:eed43abc6ccf1dc02e0d0efc06ce46a411362f3358847c6b0ec9a43426f91ece"},
-    {file = "asyncpg-0.24.0-cp38-cp38-win_amd64.whl", hash = "sha256:129d501f3d30616afd51eb8d3142ef51ba05374256bd5834cec3ef4956a9b317"},
-    {file = "asyncpg-0.24.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:a458fc69051fbb67d995fdda46d75a012b5d6200f91e17d23d4751482640ed4c"},
-    {file = "asyncpg-0.24.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:556b0e92e2b75dc028b3c4bc9bd5162ddf0053b856437cf1f04c97f9c6837d03"},
-    {file = "asyncpg-0.24.0-cp39-cp39-win_amd64.whl", hash = "sha256:a738f4807c853623d3f93f0fea11f61be6b0e5ca16ea8aeb42c2c7ee742aa853"},
-    {file = "asyncpg-0.24.0.tar.gz", hash = "sha256:dd2fa063c3344823487d9ddccb40802f02622ddf8bf8a6cc53885ee7a2c1c0c6"},
+    {file = "asyncpg-0.25.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:bf5e3408a14a17d480f36ebaf0401a12ff6ae5457fdf45e4e2775c51cc9517d3"},
+    {file = "asyncpg-0.25.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:2bc197fc4aca2fd24f60241057998124012469d2e414aed3f992579db0c88e3a"},
+    {file = "asyncpg-0.25.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:1a70783f6ffa34cc7dd2de20a873181414a34fd35a4a208a1f1a7f9f695e4ec4"},
+    {file = "asyncpg-0.25.0-cp310-cp310-win32.whl", hash = "sha256:43cde84e996a3afe75f325a68300093425c2f47d340c0fc8912765cf24a1c095"},
+    {file = "asyncpg-0.25.0-cp310-cp310-win_amd64.whl", hash = "sha256:56d88d7ef4341412cd9c68efba323a4519c916979ba91b95d4c08799d2ff0c09"},
+    {file = "asyncpg-0.25.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:a84d30e6f850bac0876990bcd207362778e2208df0bee8be8da9f1558255e634"},
+    {file = "asyncpg-0.25.0-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:beaecc52ad39614f6ca2e48c3ca15d56e24a2c15cbfdcb764a4320cc45f02fd5"},
+    {file = "asyncpg-0.25.0-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:6f8f5fc975246eda83da8031a14004b9197f510c41511018e7b1bedde6968e92"},
+    {file = "asyncpg-0.25.0-cp36-cp36m-win32.whl", hash = "sha256:ddb4c3263a8d63dcde3d2c4ac1c25206bfeb31fa83bd70fd539e10f87739dee4"},
+    {file = "asyncpg-0.25.0-cp36-cp36m-win_amd64.whl", hash = "sha256:bf6dc9b55b9113f39eaa2057337ce3f9ef7de99a053b8a16360395ce588925cd"},
+    {file = "asyncpg-0.25.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:acb311722352152936e58a8ee3c5b8e791b24e84cd7d777c414ff05b3530ca68"},
+    {file = "asyncpg-0.25.0-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:0a61fb196ce4dae2f2fa26eb20a778db21bbee484d2e798cb3cc988de13bdd1b"},
+    {file = "asyncpg-0.25.0-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:2633331cbc8429030b4f20f712f8d0fbba57fa8555ee9b2f45f981b81328b256"},
+    {file = "asyncpg-0.25.0-cp37-cp37m-win32.whl", hash = "sha256:863d36eba4a7caa853fd7d83fad5fd5306f050cc2fe6e54fbe10cdb30420e5e9"},
+    {file = "asyncpg-0.25.0-cp37-cp37m-win_amd64.whl", hash = "sha256:fe471ccd915b739ca65e2e4dbd92a11b44a5b37f2e38f70827a1c147dafe0fa8"},
+    {file = "asyncpg-0.25.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:72a1e12ea0cf7c1e02794b697e3ca967b2360eaa2ce5d4bfdd8604ec2d6b774b"},
+    {file = "asyncpg-0.25.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:4327f691b1bdb222df27841938b3e04c14068166b3a97491bec2cb982f49f03e"},
+    {file = "asyncpg-0.25.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:739bbd7f89a2b2f6bc44cb8bf967dab12c5bc714fcbe96e68d512be45ecdf962"},
+    {file = "asyncpg-0.25.0-cp38-cp38-win32.whl", hash = "sha256:18d49e2d93a7139a2fdbd113e320cc47075049997268a61bfbe0dde680c55471"},
+    {file = "asyncpg-0.25.0-cp38-cp38-win_amd64.whl", hash = "sha256:191fe6341385b7fdea7dbdcf47fd6db3fd198827dcc1f2b228476d13c05a03c6"},
+    {file = "asyncpg-0.25.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:52fab7f1b2c29e187dd8781fce896249500cf055b63471ad66332e537e9b5f7e"},
+    {file = "asyncpg-0.25.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a738f1b2876f30d710d3dc1e7858160a0afe1603ba16bf5f391f5316eb0ed855"},
+    {file = "asyncpg-0.25.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:5e4105f57ad1e8fbc8b1e535d8fcefa6ce6c71081228f08680c6dea24384ff0e"},
+    {file = "asyncpg-0.25.0-cp39-cp39-win32.whl", hash = "sha256:f55918ded7b85723a5eaeb34e86e7b9280d4474be67df853ab5a7fa0cc7c6bf2"},
+    {file = "asyncpg-0.25.0-cp39-cp39-win_amd64.whl", hash = "sha256:649e2966d98cc48d0646d9a4e29abecd8b59d38d55c256d5c857f6b27b7407ac"},
+    {file = "asyncpg-0.25.0.tar.gz", hash = "sha256:63f8e6a69733b285497c2855464a34de657f2cccd25aeaeeb5071872e9382540"},
 ]
 attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
@@ -1184,8 +1204,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 datamodel-code-generator = [
-    {file = "datamodel-code-generator-0.11.20.tar.gz", hash = "sha256:aac5a5afa9a3170dbdca0fbdd3cdb5bf372d60f506c624af0699fb8d8c06c8cc"},
-    {file = "datamodel_code_generator-0.11.20-py3-none-any.whl", hash = "sha256:ee2e29cd8be3e15deb6d588f6d1b5bff785a765c72b9d2755bd8ea7affb862b7"},
+    {file = "datamodel-code-generator-0.12.1.tar.gz", hash = "sha256:e1c4a66fc2665ae91f509407cf5444a506961ca5056a3aef0ef4f916333eb94d"},
+    {file = "datamodel_code_generator-0.12.1-py3-none-any.whl", hash = "sha256:eadfc87b783f322996cf1b95ac6533077b52e78d14add349e26e2838be3f8568"},
 ]
 didkit = [
     {file = "didkit-0.3.1-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:8d849efd41291c8731b0c1ddb91c8e1c95d1490d80d66db12ed7f883ae77d722"},
@@ -1222,10 +1242,7 @@ didkit = [
     {file = "didkit-0.3.1-pp37-pypy37_pp73-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:02d94a038d227304e9ed2060d35de6b56e096a3b6c720fcd8d95c82f53eca20e"},
     {file = "didkit-0.3.1-pp37-pypy37_pp73-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:47023bfe6b585b41fe978861ea5d5c8f51ed7453ce692a251d4413325e07c348"},
 ]
-dipdup = [
-    {file = "dipdup-5.1.2-py3-none-any.whl", hash = "sha256:5408c0b2ae3db6acb3adf7446375630be358dfce025d437a1b9aa3da997db925"},
-    {file = "dipdup-5.1.2.tar.gz", hash = "sha256:2b0b236be8e625837a8cffc3497ea6dc9ab321101b51b8a46ca0ff22610535e7"},
-]
+dipdup = []
 dnspython = [
     {file = "dnspython-2.2.1-py3-none-any.whl", hash = "sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f"},
     {file = "dnspython-2.2.1.tar.gz", hash = "sha256:0f7569a4a6ff151958b64304071d370daa3243d15941a7beedf0c9fe5105603e"},
@@ -1570,8 +1587,8 @@ prance = [
     {file = "prance-0.21.8.0.tar.gz", hash = "sha256:ce06feef8814c3436645f3b094e91067b1a111bc860a51f239f93437a8d4b00e"},
 ]
 prometheus-client = [
-    {file = "prometheus_client-0.12.0-py2.py3-none-any.whl", hash = "sha256:317453ebabff0a1b02df7f708efbab21e3489e7072b61cb6957230dd004a0af0"},
-    {file = "prometheus_client-0.12.0.tar.gz", hash = "sha256:1b12ba48cee33b9b0b9de64a1047cbd3c5f2d0ab6ebcead7ddda613a750ec3c5"},
+    {file = "prometheus_client-0.14.1-py3-none-any.whl", hash = "sha256:522fded625282822a89e2773452f42df14b5a8e84a86433e3f8a189c1d54dc01"},
+    {file = "prometheus_client-0.14.1.tar.gz", hash = "sha256:5459c427624961076277fdc6dc50540e2bacb98eebde99886e59ec55ed92093a"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.7.0-py2.py3-none-any.whl", hash = "sha256:514f76d918fcc0b55c6680472f0a37970994e07bbb80725808c17089be302068"},
@@ -1794,9 +1811,9 @@ typing-extensions = [
     {file = "typing_extensions-4.2.0.tar.gz", hash = "sha256:f1c24655a0da0d1b67f07e17a5e6b2a105894e6824b92096378bb3668ef02376"},
 ]
 typing-inspect = [
-    {file = "typing_inspect-0.6.0-py2-none-any.whl", hash = "sha256:de08f50a22955ddec353876df7b2545994d6df08a2f45d54ac8c05e530372ca0"},
-    {file = "typing_inspect-0.6.0-py3-none-any.whl", hash = "sha256:3b98390df4d999a28cf5b35d8b333425af5da2ece8a4ea9e98f71e7591347b4f"},
-    {file = "typing_inspect-0.6.0.tar.gz", hash = "sha256:8f1b1dd25908dbfd81d3bebc218011531e7ab614ba6e5bf7826d887c834afab7"},
+    {file = "typing_inspect-0.7.1-py2-none-any.whl", hash = "sha256:b1f56c0783ef0f25fb064a01be6e5407e54cf4a4bf4f3ba3fe51e0bd6dcea9e5"},
+    {file = "typing_inspect-0.7.1-py3-none-any.whl", hash = "sha256:3cd7d4563e997719a710a3bfe7ffb544c6b72069b6812a02e9b414a8fa3aaa6b"},
+    {file = "typing_inspect-0.7.1.tar.gz", hash = "sha256:047d4097d9b17f46531bf6f014356111a1b6fb821a24fe7ac909853ca2a782aa"},
 ]
 tzdata = [
     {file = "tzdata-2022.1-py2.py3-none-any.whl", hash = "sha256:238e70234214138ed7b4e8a0fab0e5e13872edab3be586ab8198c407620e2ab9"},

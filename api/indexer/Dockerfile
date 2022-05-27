@@ -1,5 +1,5 @@
-FROM dipdup/dipdup:5.1.1
-# FROM ghcr.io/dipdup-net/dipdup-py:pr-332
+# FROM dipdup/dipdup:5.1.1
+FROM ghcr.io/dipdup-net/dipdup-py:pr-364
 
 COPY pyproject.toml poetry.lock ./
 RUN inject_pyproject

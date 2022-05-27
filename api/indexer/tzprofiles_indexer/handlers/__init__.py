@@ -174,7 +174,6 @@ async def resolve_profile(profile: TZProfile) -> None:
         except Exception as e:
             logging.exception(e)
             profile.failed = True  # type: ignore
-            await profile.save()
             return
 
     profile.unprocessed_claims = []  # type: ignore

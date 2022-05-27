@@ -1,22 +1,6 @@
 spec_version: 1.2
 package: tzprofiles_indexer
 
-database:
-  kind: postgres
-  host: ${PSQL_HOST:-db}
-  port: 5432
-  user: dipdup
-  password: ${POSTGRES_PASSWORD:-changeme}
-  database: dipdup
-
-hasura:
-  url: ${HASURA_URL:-http://hasura:8080}
-  admin_secret: ${ADMIN_SECRET:-changeme}
-
-# database:
-#   kind: sqlite
-#   path: tzprofiles.sqlite3
-
 contracts:
   tzprofile_old:
     address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
@@ -71,22 +55,17 @@ indexes:
 hooks:
   resolver:
     callback: resolver
-    atomic: True
 
 jobs:
   resolver:
     hook: resolver
-    interval: 10
+    daemon: True
 
 advanced:
-  # postpone_jobs: True
+  sync_limit: 5
   early_realtime: True
   merge_subscriptions: True
   metadata_interface: True
   reindex:
     rollback: ignore
-  scheduler:
-    apscheduler.job_defaults.coalesce: True
 
-prometheus:
-  host: 0.0.0.0

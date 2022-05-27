@@ -13,3 +13,6 @@ hasura:
 sentry:
   dsn: ${SENTRY_DSN:-""}
   environment: ${SENTRY_ENVIRONMENT:-docker}
+
+prometheus:
+  host: 0.0.0.0
