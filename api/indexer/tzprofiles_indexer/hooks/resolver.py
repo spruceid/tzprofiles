@@ -28,7 +28,7 @@ async def _resolve(ctx: HookContext, profile: TZProfile):
         await profile.save()
         await ctx.update_contract_metadata(
             network='mainnet',
-            address=profile.contract,
+            address=profile.account,
             metadata=profile.metadata,
         )
         ctx.logger.info('Resolved in %.2f, saved in %.2f seconds', resolved_at - started_at, time.perf_counter() - resolved_at)
