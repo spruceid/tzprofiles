@@ -7,9 +7,9 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
-# dipdup = "^5.1.2"
+dipdup = "^5.1.4"
 # dipdup = {path = "../../../dipdup", develop = true}
-dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "exp/sequential-indexing"}
+# dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "exp/sequential-indexing"}
 tenacity = "^8.0.1"
 didkit = "0.3.1"
 

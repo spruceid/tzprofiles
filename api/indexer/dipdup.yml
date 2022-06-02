@@ -62,7 +62,7 @@ jobs:
     daemon: True
 
 advanced:
-  sync_limit: 5
+  # sync_limit: 5
   early_realtime: True
   merge_subscriptions: True
   metadata_interface: True
