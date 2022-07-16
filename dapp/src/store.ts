@@ -409,7 +409,17 @@ network.subscribe((network) => {
     networkStrTemp = network;
     strNetwork = network;
 
-    urlNode = `https://${network}.api.tez.ie/`;
+    switch(network ){
+      case "mainnet":
+        urlNode = `https://${network}.api.tez.ie`;
+        break;
+      case 'ghostnet':
+        urlNode = 'https://ghostnet.ecadinfra.com';
+        break;
+      default:
+        urlNode = `https://${network}.api.tez.ie`;
+        break;
+    }
     nodeUrl.set(urlNode);
 
     tzktBaseTemp = `https://api.${networkStrTemp}.tzkt.io`;

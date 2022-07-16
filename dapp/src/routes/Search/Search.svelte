@@ -58,7 +58,9 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<BasePage class="flex flex-col items-center justify-center mx-4 flex-1 pt-18 sm:pt-22 md:pt-34">
+<BasePage
+  class="flex flex-col items-center justify-center mx-4 flex-1 pt-18 sm:pt-22 md:pt-34"
+>
   <div class="search-container dropshadow-default fade-in">
     <div class="mb-4 text-2xl text-left font-bold body">
       Tezos Profiles Explorer
@@ -80,8 +82,7 @@
             class="w-full"
           >
             <Option value="mainnet" text="mainnet" selected />
-            <Option value="hangzhounet" text="hangzhounet" />
-            <!-- Option value="ithicanet" text="ithicanet" / -->
+            <Option value="ghostnet" text="ghostnet" />
             <Option value="custom" text="localhost" />
           </Select>
           <div
