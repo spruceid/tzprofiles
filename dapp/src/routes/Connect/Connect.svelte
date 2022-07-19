@@ -43,9 +43,7 @@
     <div class="text-2xl font-bold body mb-6 pt-4">
       Choose network and connect
     </div>
-    <div
-      class="flex items-center relative max-w-60 w-full mx-auto cursor-pointer"
-    >
+    <div class="flex items-center relative max-w-60 w-full mx-auto cursor-pointer">
       <Select
         name="network"
         id="network"
@@ -53,7 +51,8 @@
         onChange={setSelectedNetwork}
       >
         <Option value="mainnet" text="mainnet" selected />
-        <Option value="ghostnet" text="ghostnet" />
+        <Option value="hangzhounet" text="hangzhounet" />
+        <!-- Option value="ithicanet" text="ithicanet" -->
         <Option value="custom" text="localhost" />
       </Select>
       <div
