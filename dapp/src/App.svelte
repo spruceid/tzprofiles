@@ -110,7 +110,7 @@ import { Router, Route } from 'svelte-navigator';
     (window as any).onUsersnapCXLoad = function (api) {
       api.init();
     };
-    var script = document.createElement('script');
+    let script = document.createElement('script');
     script.defer = true;
     script.src =
       'https://widget.usersnap.com/global/load/da7045df-1276-4e2b-8260-c86e55f6e519?onload=onUsersnapCXLoad';
