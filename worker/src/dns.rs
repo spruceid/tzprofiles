@@ -21,12 +21,17 @@ pub struct AnswerResponse {
 
 pub fn find_signature_to_resolve(dns_result: DnsResponse) -> Result<String> {
     for answer in dns_result.answer {
-        let mut trimmed_signature: &str = &answer.data;
-        if trimmed_signature.starts_with('"') && trimmed_signature.ends_with('"') {
-            trimmed_signature = &answer.data[1..answer.data.len() - 1];
+        let mut trimmed_signature = answer.data.to_string();
+        if trimmed_signature.starts_with('"') {
+            trimmed_signature = trimmed_signature.trim_start_matches('"').to_string();
         }
+
+        if trimmed_signature.ends_with('"') {
+            trimmed_signature = trimmed_signature.trim_end_matches('"').to_string();
+        }
+
         if trimmed_signature.starts_with("tzprofiles-verification") {
-            return Ok(trimmed_signature.to_string());
+            return Ok(trimmed_signature);
         }
     }
 

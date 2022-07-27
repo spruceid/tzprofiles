@@ -10,7 +10,7 @@
   import { useNavigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
   import { defaultSearchOpts, search, network, alert } from 'src/store';
-  import type NetworkType from 'enumsNetworkType';
+  import NetworkType from 'enums/NetworkType';
   import { findAddressFromDomain } from './searchHelper';
   import './search.scss';
 
@@ -32,7 +32,9 @@
   };
 
   const setSelectedNetwork = () => {
-    network.set(localNetwork as NetworkType);
+    if (Object.values(NetworkType).includes(localNetwork as NetworkType)) {
+      network.set(localNetwork as NetworkType);
+    }
   };
 
   const searchProfiles = async () => {

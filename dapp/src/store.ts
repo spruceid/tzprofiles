@@ -391,8 +391,13 @@ wallet.subscribe((w) => {
   }
 });
 
-network.subscribe((network) => {
-  if (network === NetworkType.CUSTOM) {
+network.subscribe((n) => {
+  if (!Object.values(NetworkType).includes(n as NetworkType)) {
+    network.set(NetworkType.MAINNET)
+    return
+  }
+
+  if (n === NetworkType.CUSTOM) {
     networkStr.set('custom');
     // TODO can't read from writeable, but then I don't understand why others work.
     networkStrTemp = 'custom';
@@ -404,12 +409,12 @@ network.subscribe((network) => {
     tzktBaseTemp = 'http://localhost:5000';
     tzktBase.set(tzktBaseTemp);
   } else {
-    networkStr.set(network);
+    networkStr.set(n);
     // TODO can't read from writeable, but then I don't understand why others work.
-    networkStrTemp = network;
-    strNetwork = network;
+    networkStrTemp = n;
+    strNetwork = n;
 
-    urlNode = `https://${network}.api.tez.ie/`;
+    urlNode = `https://${n}.api.tez.ie/`;
     nodeUrl.set(urlNode);
 
     tzktBaseTemp = `https://api.${networkStrTemp}.tzkt.io`;

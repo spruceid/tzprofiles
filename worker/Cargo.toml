@@ -35,7 +35,7 @@ anyhow = "1"
 serde = "1"
 serde_json = "1"
 reqwest = { version = "=0.11.2", features = ["json"] }
-url = "2.2"
+url = { version = "2.2", features = ["serde"] }
 chrono = { version = "0.4", features = ["serde", "wasmbind"] }
 uuid = { version = "0.8", features = ["serde", "v4", "stdweb"] }
 regex = "1"

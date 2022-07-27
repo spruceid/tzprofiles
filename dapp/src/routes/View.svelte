@@ -8,7 +8,7 @@
     search,
     network,
   } from 'src/store';
-  import type NetworkType from 'enumsNetworkType';
+  import NetworkType from 'enums/NetworkType';
   import { BasePage, LoadingSpinner, PublicProfileView } from 'components';
 
   const params = useParams();
@@ -21,9 +21,13 @@
   onMount(() => {
     // TODO: Generalize over claim types?
     if (!$searchClaims?.basic.content || !$searchClaims?.twitter.content) {
-      network.set(
-        ($params.network as NetworkType) || ('mainnet' as NetworkType)
-      );
+      const n = $params.network;
+      if (Object.values(NetworkType).includes(n as NetworkType)) {
+        network.set(n as NetworkType);
+      } else {
+        network.set(NetworkType.MAINNET)
+      }
+
       fetching = true;
       search($params.address, defaultSearchOpts).finally(() => {
         fetching = false;
