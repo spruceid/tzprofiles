@@ -409,7 +409,7 @@ network.subscribe((network) => {
     networkStrTemp = network;
     strNetwork = network;
 
-    urlNode = `https://${network}.api.tez.ie/`;
+    urlNode =  `https://${network}.smartpy.io`
     nodeUrl.set(urlNode);
 
     tzktBaseTemp = `https://api.${networkStrTemp}.tzkt.io`;
