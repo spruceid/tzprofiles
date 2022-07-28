@@ -1,14 +1,5 @@
-<style>
-  .state-container {
-    background-color: rgb(224, 224, 224);
-  }
-
-  .state-container-border {
-    border: 1.5px solid rgb(224, 224, 224);
-  }
-</style>
-
 <script lang="ts">
+  import './Input.scss';
   import { CheckIcon, SpinnerIcon, ErrorIcon } from 'components';
   export let step: number;
   export let currentStep: number;

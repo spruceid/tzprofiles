@@ -1,24 +1,5 @@
-<style>
-  .bg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background-color: rgba(5, 5, 5, 0.5);
-  }
-
-  .modal-container {
-    background-color: white;
-    max-height: 80vh;
-    overflow: auto;
-    margin-left: 16px;
-    margin-right: 16px;
-    padding: 40px 20px;
-  }
-</style>
-
 <script lang="ts">
+  import './FileModal.scss';
   import {
     CloseIcon
   } from 'components/icons';

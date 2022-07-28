@@ -1,9 +1,3 @@
-<style>
-  .table-font {
-    color: white;
-  }
-</style>
-
 <div class="table-font">
   <h1>Basic Profile</h1>
   <p>Basic Profile for tzprofiles</p>
