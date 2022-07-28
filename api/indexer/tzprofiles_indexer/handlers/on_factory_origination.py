@@ -1,10 +1,10 @@
-from dipdup.models import Origination
-from dipdup.context import HandlerContext
 from typing import cast
 
+from dipdup.context import HandlerContext
+from dipdup.models import Origination
 
 import tzprofiles_indexer.models as models
-
+from tzprofiles_indexer.handlers import save_claims
 from tzprofiles_indexer.types.tzprofile.storage import TzprofileStorage
 
 
@@ -12,9 +12,7 @@ async def on_factory_origination(
     ctx: HandlerContext,
     tzprofile_origination: Origination[TzprofileStorage],
 ) -> None:
-    originated_contract = cast(
-        str, tzprofile_origination.data.originated_contract_address
-    )
+    originated_contract = cast(str, tzprofile_origination.data.originated_contract_address)
     index_name = f"tzprofiles_{originated_contract}"
     await ctx.add_contract(
         name=originated_contract,
@@ -26,3 +24,11 @@ async def on_factory_origination(
         template="tzprofiles",
         values=dict(contract=originated_contract),
     )
+
+    contract = tzprofile_origination.data.originated_contract_address
+
+    profile, _ = await models.TZProfile.get_or_create(
+        account=tzprofile_origination.storage.owner,
+        defaults={"contract": contract},
+    )
+    await save_claims(profile, tzprofile_origination.storage.claims)
