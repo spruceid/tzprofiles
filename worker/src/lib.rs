@@ -162,6 +162,7 @@ pub async fn witness_instagram_post(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
+        let mut context_loader = ssi::jsonld::ContextLoader::default();
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
@@ -169,7 +170,8 @@ pub async fn witness_instagram_post(
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
                 },
-                &DIDWeb
+                &DIDWeb,
+                &mut context_loader
             )
             .await
         );
@@ -245,6 +247,7 @@ pub async fn witness_tweet(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
+        let mut context_loader = ssi::jsonld::ContextLoader::default();
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
@@ -252,7 +255,8 @@ pub async fn witness_tweet(
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
                 },
-                &DIDWeb
+                &DIDWeb,
+                &mut context_loader
             )
             .await
         );
@@ -289,6 +293,7 @@ pub async fn witness_discord(
             discord::retrieve_discord_message(discord_authorization_key, channel_id, message_id)
                 .await
         );
+
         let formatted_discord_handle = format!(
             "{}#{}",
             discord_res.author.username, discord_res.author.discriminator
@@ -348,7 +353,7 @@ pub async fn witness_discord(
             property_set: Some(evidence_map),
         };
         vc.evidence = Some(OneOrMany::One(evidence));
-
+        let mut context_loader = ssi::jsonld::ContextLoader::default();
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
@@ -356,7 +361,8 @@ pub async fn witness_discord(
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
                 },
-                &DIDWeb
+                &DIDWeb,
+                &mut context_loader
             )
             .await
         );
@@ -423,6 +429,7 @@ pub async fn dns_lookup(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
+        let mut context_loader = ssi::jsonld::ContextLoader::default();
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
@@ -430,7 +437,8 @@ pub async fn dns_lookup(
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
                 },
-                &DIDWeb
+                &DIDWeb,
+                &mut context_loader
             )
             .await
         );
@@ -551,6 +559,7 @@ pub async fn gist_lookup(
         };
         vc.evidence = Some(OneOrMany::One(evidence));
 
+        let mut context_loader = ssi::jsonld::ContextLoader::default();
         let proof = jserr!(
             vc.generate_proof(
                 &sk,
@@ -558,7 +567,8 @@ pub async fn gist_lookup(
                     verification_method: Some(URI::String(format!("{}#controller", SPRUCE_DIDWEB))),
                     ..Default::default()
                 },
-                &DIDWeb
+                &DIDWeb,
+                &mut context_loader
             )
             .await
         );
