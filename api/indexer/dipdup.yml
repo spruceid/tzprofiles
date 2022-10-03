@@ -1,6 +1,18 @@
 spec_version: 1.2
 package: tzprofiles_indexer
 
+database:
+  kind: postgres
+  host: ${PSQL_HOST:-db}
+  port: 5432
+  user: dipdup
+  password: ${POSTGRES_PASSWORD:-changeme}
+  database: dipdup
+
+hasura:
+  url: ${HASURA_URL:-http://hasura:8080}
+  admin_secret: ${ADMIN_SECRET:-changeme}
+
 contracts:
   tzprofile_old:
     address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
@@ -13,14 +25,13 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
-    buffer_size: 2
     http:
-      retry_count: 10
-      retry_sleep: 60
-      retry_multiplier: 1
-      ratelimit_rate: 100
-      ratelimit_period: 1
-      connection_timeout: 900
+      retry_count: ${HTTP_RETRY_COUNT:-25}
+      retry_sleep: ${HTTP_RETRY_SLEEP:-60}
+      retry_multiplier: ${HTTP_RETRY_MULTIPLIER:-2}
+      ratelimit_rate: ${HTTP_RATELIMIT_RATE:-100}
+      ratelimit_period: ${HTTP_RATELIMIT_PERIOD:-1}
+      connection_timeout: ${HTTP_CONNECTION_TIMEOUT:-3000}
 
 templates:
   tzprofiles:
@@ -60,6 +71,8 @@ jobs:
   resolver:
     hook: resolver
     daemon: True
+
+logging: ${LOG_LEVEL:-quiet}
 
 advanced:
   # sync_limit: 5

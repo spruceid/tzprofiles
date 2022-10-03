@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
-from tortoise import Model, fields
+from tortoise import fields
+from dipdup.models import Model
 
 
 class TZProfile(Model):
@@ -23,7 +24,6 @@ class TZProfile(Model):
     discord = fields.CharField(max_length=256, null=True)
     github = fields.CharField(max_length=256, null=True)
     ethereum = fields.CharField(max_length=42, null=True)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     def reset(self) -> None:
         self.valid_claims = []  # type: ignore
