@@ -13,10 +13,6 @@ hasura:
   url: ${HASURA_URL:-http://hasura:8080}
   admin_secret: ${ADMIN_SECRET:-changeme}
 
-# database:
-#   kind: sqlite
-#   path: tzprofiles.sqlite3
-
 contracts:
   tzprofile_old:
     address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
@@ -30,12 +26,12 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
-      retry_count: 10
-      retry_sleep: 60
-      retry_multiplier: 1
-      ratelimit_rate: 100
-      ratelimit_period: 1
-      connection_timeout: 900
+      retry_count: ${HTTP_RETRY_COUNT:-25}
+      retry_sleep: ${HTTP_RETRY_SLEEP:-60}
+      retry_multiplier: ${HTTP_RETRY_MULTIPLIER:-2}
+      ratelimit_rate: ${HTTP_RATELIMIT_RATE:-100}
+      ratelimit_period: ${HTTP_RATELIMIT_PERIOD:-1}
+      connection_timeout: ${HTTP_CONNECTION_TIMEOUT:-3000}
 
 templates:
   tzprofiles:
@@ -45,12 +41,7 @@ templates:
       - <contract>
     types:
       - transaction
-      - origination
     handlers:
-      - callback: on_origination
-        pattern:
-          - type: origination
-            originated_contract: <contract>
       - callback: on_update
         pattern:
           - destination: <contract>
@@ -63,17 +54,31 @@ indexes:
     types:
       - origination
     handlers:
-      # - callback: on_factory_origination
-      #   pattern:
-      #     - type: origination
-      #       similar_to: tzprofile
+      - callback: on_factory_origination
+        pattern:
+          - type: origination
+            similar_to: tzprofile
       - callback: on_factory_origination
         pattern:
           - type: origination
             similar_to: tzprofile_old
 
+hooks:
+  resolver:
+    callback: resolver
+
+jobs:
+  resolver:
+    hook: resolver
+    daemon: True
+
+logging: ${LOG_LEVEL:-quiet}
+
 advanced:
-  # skip_hasura: True
-  # postpone_jobs: True
-  # early_realtime: True
+  # sync_limit: 5
+  early_realtime: True
   merge_subscriptions: True
+  metadata_interface: True
+  reindex:
+    rollback: ignore
+

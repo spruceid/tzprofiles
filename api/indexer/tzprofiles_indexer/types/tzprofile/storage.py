@@ -5,16 +5,22 @@ from __future__ import annotations
 
 from typing import Dict, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class Claim(BaseModel):
-    bytes: str
+    class Config:
+        extra = Extra.forbid
+
     string_0: str
+    bytes: str
     string_1: str
 
 
 class TzprofileStorage(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
     claims: List[Claim]
     contract_type: str
     metadata: Dict[str, str]

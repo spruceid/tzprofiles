@@ -6,16 +6,36 @@ authors = ["Spruce Systems, Inc."]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-# dipdup = "^3.1.0"
-# dipdup = { git = "https://github.com/spruceid/dipdup-py.git", branch = "master" }
-dipdup = {git = "https://github.com/dipdup-net/dipdup-py.git", branch = "feat/subs-manager-revived"}
-aiohttp = "^3.7.4"
+python = ">=3.10,<3.11"
+dipdup = "^6.1.3"
 tenacity = "^8.0.1"
-didkit = "0.0.2"
+didkit = "0.3.1"
 
 [tool.poetry.dev-dependencies]
+black = "^22.1.0"
+flake8 = "3.9.0"
+flakehell = "^0.9.0"
+isort = "^5.7.0"
+mypy = "^0.900"
+
+[tool.isort]
+line_length = 140
+
+[tool.black]
+line-length = 140
+target-version = ['py310']
+skip-string-normalization = true
+
+[tool.flakehell]
+format = "colored"
+max_line_length = 140
+show_source = true
+
+[tool.flakehell.plugins]
+pyflakes = ["+*"]
+"flake8-*" = ["+*"]
+flake8-docstrings = ["-*"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
