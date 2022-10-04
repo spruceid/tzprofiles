@@ -6,6 +6,7 @@
 !pyproject.toml
 !poetry.lock
 !README.md
+!dipdup.yml
 
 # Add code
 !tzprofiles_indexer

@@ -10,6 +10,7 @@ from tzprofiles_indexer.models import TZProfile
 SLEEP = 5
 BATCH = 50
 
+
 async def _resolve(ctx: HookContext, profile: TZProfile):
     ctx.logger.info(f'Resolving profile {profile.contract}')
 

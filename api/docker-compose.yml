@@ -8,7 +8,6 @@ services:
       - db
       - hasura
     restart: always
-    # command: ["-c", "dipdup.yml", "-l", "debug.yml", "run"]
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
