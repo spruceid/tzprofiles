@@ -8,12 +8,19 @@ from urllib.parse import urljoin
 
 import aiohttp
 from didkit import verify_credential
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential, after_log
 
 from tzprofiles_indexer.models import TZProfile
 from tzprofiles_indexer.types.tzprofile.storage import Claim
 
 KEPLER_ENDPOINT = os.getenv("KEPLER_ENDPOINT", "https://kepler.tzprofiles.com/")
+
+LOGGER = None
+
+
+def set_logger(logger):
+    global LOGGER
+    LOGGER = logger
 
 
 class Credential(Enum):
@@ -62,7 +69,12 @@ class DeletedCredential(ValueError):
         super().__init__(self.message)
 
 
-@retry(stop=stop_after_attempt(10), retry=retry_if_exception_type(aiohttp.ClientResponseError), wait=wait_exponential(multiplier=5, min=1))
+@retry(
+    stop=stop_after_attempt(10),
+    retry=retry_if_exception_type(aiohttp.ClientResponseError),
+    wait=wait_exponential(multiplier=5, min=1),
+    after=after_log(LOGGER, logging.WARNING),
+)
 async def retrieve_claim(kepler_link: str) -> str:
     orbit_id, file_hash = tuple(kepler_link.replace("kepler://", "").replace('v0:', '').split("/"))
     url = urljoin(KEPLER_ENDPOINT, orbit_id + "/" + file_hash)
@@ -75,7 +87,12 @@ async def retrieve_claim(kepler_link: str) -> str:
             return (await response.text(encoding="utf-8")).strip()
 
 
-@retry(stop=stop_after_attempt(5), retry=retry_if_exception_type(FailedVerification), wait=wait_exponential(multiplier=5, min=1))
+@retry(
+    stop=stop_after_attempt(5),
+    retry=retry_if_exception_type(FailedVerification),
+    wait=wait_exponential(multiplier=5, min=1),
+    after=after_log(LOGGER, logging.WARNING),
+)
 async def resolve_claim(kepler_link: str, checksum: str) -> Dict[str, Any]:
     claim = await retrieve_claim(kepler_link)
 

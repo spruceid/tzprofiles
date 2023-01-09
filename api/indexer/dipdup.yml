@@ -81,4 +81,4 @@ advanced:
   metadata_interface: True
   reindex:
     rollback: ignore
-
+    config_modified: ignore
