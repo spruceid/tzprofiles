@@ -33,6 +33,8 @@ async def _resolve(ctx: HookContext, profile: TZProfile):
                 metadata=profile.metadata,
             )
             ctx.logger.debug('Resolved in %.2f, saved in %.2f seconds', resolved_at - started_at, time.perf_counter() - resolved_at)
+        if not success:
+            await asyncio.sleep(1)
 
 
 async def resolver(

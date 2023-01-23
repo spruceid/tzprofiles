@@ -1,3 +1,4 @@
+import asyncio
 from typing import cast
 
 from dipdup.context import HandlerContext
@@ -15,9 +16,11 @@ async def on_update(
 ) -> None:
     contract = cast(str, tzprofile_update.data.target_address)
     success = False
-    while success:
+    while not success:
         async with ctx._transactions.in_transaction():
             success = True
             profile = await models.TZProfile.select_for_update().get(account=tzprofile_update.storage.owner)
             if profile.contract == contract:
                 await save_claims(profile, tzprofile_update.storage.claims)
+        if not success:
+            await asyncio.sleep(1)
