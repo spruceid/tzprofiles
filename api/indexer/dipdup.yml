@@ -15,10 +15,10 @@ hasura:
 
 contracts:
   tzprofile_old:
-    address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
+    code_hash: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
     typename: tzprofile
   tzprofile:
-    address: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
+    code_hash: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
     typename: tzprofile
 
 datasources:
@@ -57,11 +57,11 @@ indexes:
       - callback: on_factory_origination
         pattern:
           - type: origination
-            similar_to: tzprofile
+            originated_contract: tzprofile
       - callback: on_factory_origination
         pattern:
           - type: origination
-            similar_to: tzprofile_old
+            originated_contract: tzprofile_old
 
 hooks:
   resolver:
