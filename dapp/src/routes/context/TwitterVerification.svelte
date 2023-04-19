@@ -1,9 +1,3 @@
-<style>
-  .table-font {
-    color: white;
-  }
-</style>
-
 <div class="table-font">
   <h1>Twitter Verification</h1>
   <p>Twitter verification for tzprofiles</p>
