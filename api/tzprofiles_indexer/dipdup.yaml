@@ -1,0 +1,72 @@
+spec_version: 2.0
+package: tzprofiles_indexer
+
+contracts:
+  tzprofile_old:
+    kind: tezos
+    code_hash: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
+    typename: tzprofile
+  tzprofile:
+    kind: tezos
+    code_hash: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
+    typename: tzprofile
+
+datasources:
+  tzkt:
+    kind: tezos.tzkt
+    url: ${TZKT_URL:-https://api.tzkt.io}
+    http:
+      retry_count: ${HTTP_RETRY_COUNT:-25}
+      retry_sleep: ${HTTP_RETRY_SLEEP:-60}
+      retry_multiplier: ${HTTP_RETRY_MULTIPLIER:-2}
+      ratelimit_rate: ${HTTP_RATELIMIT_RATE:-100}
+      ratelimit_period: ${HTTP_RATELIMIT_PERIOD:-1}
+      connection_timeout: ${HTTP_CONNECTION_TIMEOUT:-3000}
+
+templates:
+  tzprofile:
+    kind: tezos.tzkt.operations
+    datasource: tzkt
+    contracts:
+      - <contract>
+    types:
+      - origination
+      - transaction
+    handlers:
+      - callback: on_origination
+        pattern:
+          - type: origination
+            destination: <contract>
+      - callback: on_update
+        pattern:
+          - destination: <contract>
+            entrypoint: default
+
+indexes:
+  tzprofiles:
+    template: tzprofile
+    values:
+      contract: tzprofile
+
+  tzprofiles_old:
+    template: tzprofile
+    values:
+      contract: tzprofile_old
+
+hooks:
+  resolver:
+    callback: resolver
+
+jobs:
+  resolver:
+    hook: resolver
+    daemon: True
+
+logging: ${LOG_LEVEL:-INFO}
+
+advanced:
+  early_realtime: True
+  merge_subscriptions: True
+  reindex:
+    rollback: ignore
+    config_modified: ignore

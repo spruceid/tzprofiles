@@ -1,0 +1,57 @@
+[project]
+name = "tzprofiles_indexer"
+version = "0.0.1"
+description = "DipDup indexer for Tezos Profiles"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Spruce Systems, Inc." }
+]
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "dipdup~=7.0.0rc2",
+    "tenacity>=8.2.2",
+    "didkit>=0.3.2",
+]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "isort",
+    "black",
+    "ruff",
+    "mypy",
+    "-e file:///${PROJECT_ROOT}/../../../dipdup#egg=dipdup",
+]
+
+[tool.pdm.scripts]
+_isort = "isort ."
+_black = "black ."
+_ruff = "ruff check --fix ."
+_mypy = "mypy ."
+all = { composite = ["fmt", "lint"] }
+fmt = { composite = ["_isort", "_black"] }
+lint = { composite = ["_ruff", "_mypy"] }
+image = "docker buildx build . --load --progress plain -f deploy/Dockerfile -t tzprofiles_indexer:latest"
+
+clean = "git clean -xdf --exclude=.venv"
+
+[tool.isort]
+line_length = 120
+force_single_line = true
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+skip-string-normalization = true
+
+[tool.ruff]
+line-length = 120
+target-version = 'py311'
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
