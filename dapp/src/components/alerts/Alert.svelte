@@ -65,7 +65,8 @@
   class:opacity-0={!fade}
   class:hidden={!$alert?.message}
 >
-  <span class="block sm:inline pr-4 overflow-ellipsis overflow-hidden"
+  <span
+    class="block sm:inline pr-4 overflow-ellipsis overflow-hidden whitespace-pre-wrap"
     >{$alert?.message}</span
   >
   <span class="absolute top-0 bottom-0 right-0 px-4 py-3" on:click={reset}>
