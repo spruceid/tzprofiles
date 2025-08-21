@@ -97,6 +97,7 @@ import { Router, Route } from 'svelte-navigator';
     DiscordVerification,
     DnsVerification,
   } from './routes';
+  import { alert } from 'src/store';
 
   //This avoids PurgeCSS from deleting classes from production build
   const classes: string =
@@ -104,6 +105,15 @@ import { Router, Route } from 'svelte-navigator';
      text-gray-500 hidden w-full w-80 italic pl-6 bg-green-550 text-gray-370 \
      opacity-100 translate-y-0 scale-100 translate-y-4 sm:translate-y-0 \
      sm:scale-95 lg:w-80';
+
+  alert.set({
+    message: `
+      TzProfiles is no longer maintained and will be archived on August 27th, 2025.
+      Over the past years, TzProfiles served as an early experiment in decentralized identity for the Tezos ecosystem. While it helped demonstrate what was possible, it has been in minimal maintenance mode for some time, with long-standing issues that prevented it from offering a good user experience. Meanwhile, the ecosystem has continued to evolve and moved on to other solutions.
+      We are grateful to everyone who used and contributed to TzProfiles, and we hope it played a small role in inspiring what came next.
+      `,
+    variant: 'error',
+  });
 
   //Loads UserSnap when not in production
   if (BUILD_MODE_DEV) {

@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> TzProfiles is now archived and no longer maintained.
+> Over the past years, TzProfiles served as an early experiment in decentralized identity for the Tezos ecosystem. While it helped demonstrate what was possible, it has been in minimal maintenance mode for some time, with long-standing issues that prevented it from offering a good user experience. Meanwhile, the ecosystem has continued to evolve and moved on to other solutions.
+> We are grateful to everyone who used and contributed to TzProfiles, and we hope it played a small role in inspiring what came next.
+
 ![tp header](/docs/tpheader.png)
 
 [![](https://img.shields.io/badge/License-Apache--2.0-green)](https://github.com/spruceid/didkit/blob/main/LICENSE) [![](https://img.shields.io/twitter/follow/tzprofiles?label=Follow&style=social)](https://twitter.com/tzprofiles)
