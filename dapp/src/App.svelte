@@ -66,7 +66,7 @@
 </style>
 
 <script lang="ts">
-import { Router, Route } from 'svelte-navigator';
+  import { Router, Route } from 'svelte-navigator';
   import {
     Address,
     Connect,
@@ -108,8 +108,8 @@ import { Router, Route } from 'svelte-navigator';
 
   alert.set({
     message: `
-      TzProfiles is no longer maintained and will be archived on August 27th, 2025.
-      Over the past years, TzProfiles served as an early experiment in decentralized identity for the Tezos ecosystem. While it helped demonstrate what was possible, it has been in minimal maintenance mode for some time, with long-standing issues that prevented it from offering a good user experience. Meanwhile, the ecosystem has continued to evolve and moved on to other solutions.
+      TzProfiles is no longer maintained and will be archived on August 27th, 2025.\n
+      Over the past years, TzProfiles served as an early experiment in decentralized identity for the Tezos ecosystem. While it helped demonstrate what was possible, it has been in minimal maintenance mode for some time, with long-standing issues that prevented it from offering a good user experience. Meanwhile, the ecosystem has continued to evolve and moved on to other solutions.\n
       We are grateful to everyone who used and contributed to TzProfiles, and we hope it played a small role in inspiring what came next.
       `,
     variant: 'error',
