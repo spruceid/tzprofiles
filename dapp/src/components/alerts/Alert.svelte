@@ -66,10 +66,12 @@
   class:hidden={!$alert?.message}
 >
   <span
-    class="block sm:inline pr-4 overflow-ellipsis overflow-hidden whitespace-nowrap"
+    class="block sm:inline pr-4 overflow-ellipsis overflow-hidden whitespace-pre-wrap"
     >{$alert?.message}</span
   >
   <span class="absolute top-0 bottom-0 right-0 px-4 py-3" on:click={reset}>
-    <CloseIcon class="fill-current h-5 w-5 flex items-center justify-center {iconColor}" />
+    <CloseIcon
+      class="fill-current h-5 w-5 flex items-center justify-center {iconColor}"
+    />
   </span>
 </div>
