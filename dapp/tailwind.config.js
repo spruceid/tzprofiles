@@ -19,6 +19,7 @@ module.exports = {
           350: '#AAAAAA',
           370: '#A0A4A8',
           650: '#3E3E3E',
+          1: '#e0e0e0',
         },
         blue: {
           'light': '#ecf2fe',
@@ -28,6 +29,8 @@ module.exports = {
         },
         dark: {
           1: '#222222',
+          2: '#050505',
+          3: '#333333'
         },
         beige: {
           1: '#ccc',
@@ -63,6 +66,7 @@ module.exports = {
         52.5: '13.125rem', // 210px
         60: '15rem', // 240px
         80: '20rem', // 320px
+        100: '25rem', // 400px
         '112.5': '28.125rem', // 450px
         '137.5': '34.375rem', // 550px
         144: '36rem', // 576px
@@ -75,9 +79,11 @@ module.exports = {
         '2/3': '66.67%',
         '5/6': '83.33%',
         25: '6.25rem', // 100px
+        '80vh': '80vh'
       },
       minWidth: {
         25: '6.25rem', // 100px
+        '32.5': '8.125rem', // 130px
         72: '18rem', // 288px
       },
       minHeight: {
@@ -104,12 +110,14 @@ module.exports = {
       },
       padding: {
         '0.75': '0.1875rem', // 3px
+        '7px': '0.4375rem', // 7px
         '4.5': '1.125rem', // 18px
         18: '4.5rem', // 72px
         22: '5.5rem', // 88px
         34: '8.5rem', // 136px
       },
       margin: {
+        '5px': '0.3125rem', // 5px
         '12.5': '3.125rem', // 50px
       },
       inset: {
@@ -118,10 +126,16 @@ module.exports = {
         '-29': '-7.25rem', // -116px
       },
       zIndex: {
+        '2': 2,
         '100': 100,
       },
       borderRadius: {
+        '3px': '3px', // 3px
         25: '6.25rem', // 100px
+      },
+      borderWidth: {
+        '1.5px': '1.5px',
+        '5px': '5px'
       },
       outline: {
         green: ['2px solid #429383', '-6px'],

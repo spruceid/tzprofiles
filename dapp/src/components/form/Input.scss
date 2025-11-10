@@ -8,4 +8,10 @@
     #enter-twitter-handle {
         @apply pl-7;
     }
+    .state-container {
+        @apply bg-gray-1;
+    }
+    .state-container-border {
+        @apply border-1.5px border-solid border-gray-1;
+    }
 }
